@@ -1,0 +1,149 @@
+package hotel;
+import java.util.ArrayList;
+
+/**
+ * The Room class represents a room in a hotel.
+ */
+public class Room {
+    private String name;
+    private double pricePerNight;
+    private ArrayList<Reservation> reservations;
+    private boolean isBooked = false;
+
+    /**
+     * Constructs a Room object with the specified name and price per night.
+     *
+     * @param name           the name of the room
+     * @param pricePerNight  the price per night of the room
+     */
+    public Room(String name, double pricePerNight) {
+        this.name = name;
+        this.pricePerNight = pricePerNight;
+        this.reservations = new ArrayList<Reservation>();
+    }
+
+    /**
+     * Returns the name of the room.
+     *
+     * @return the name of the room
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the price per night of the room.
+     *
+     * @return the price per night of the room
+     */
+    public double getPricePerNight() {
+        return pricePerNight;
+    }
+
+    /**
+     * Returns the booking status of the room.
+     *
+     * @return true if the room is booked, false otherwise
+     */
+    public boolean getBookStatus() {
+        return isBooked;
+    }
+
+    /**
+     * Returns the list of reservations for the room.
+     *
+     * @return the list of reservations for the room
+     */
+    public ArrayList<Reservation> getReservations() {
+        return reservations;
+    }
+
+    /**
+     * Prints the reservations for the room.
+     *
+     * @param status the status of the reservations to be printed ("View" or "none")
+     */
+    public void printReservations(String status) {
+        int count = 0;
+
+        for (Reservation reservation : reservations) {
+            if (status.equals("View"))
+                System.out.print("[" + (++count) + "] Reservation " + count);
+
+            System.out.print(" | 1-");
+
+            if (reservation.getCheckInDate() < 10)
+                System.out.print("0" + reservation.getCheckInDate() + " to 1-");
+            else
+                System.out.print(reservation.getCheckInDate() + " to 1-");
+
+            if (reservation.getCheckOutDate() < 10)
+                System.out.print("0" + reservation.getCheckOutDate());
+            else
+                System.out.print(reservation.getCheckOutDate());
+
+            if (status.equals("none")) {
+                if (reservations.size() == 1)
+                    System.out.print(" |");
+            }
+
+            if (status.equals("View"))
+                System.out.println();
+        }
+
+        if (reservations.size() != 1)
+            System.out.print(" |");
+
+        System.out.println();
+    }
+
+    /**
+     * Checks if a reservation with the specified check-in and check-out dates can be made for the room.
+     *
+     * @param newCheckIn   the check-in date of the new reservation
+     * @param newCheckOut  the check-out date of the new reservation
+     * @return true if the reservation is valid, false otherwise
+     */
+    public boolean isReservationValid(int newCheckIn, int newCheckOut) {
+        int allReservations = reservations.size();
+        int i;
+
+        for (i = 0; i < allReservations; i++) {
+            if (newCheckIn > reservations.get(allReservations - 1).getCheckInDate()) {
+                if (newCheckIn >= reservations.get(allReservations - 1).getCheckOutDate()) {
+                    return true;
+                } else
+                    return false;
+            }
+            --allReservations;
+        }
+        return false;
+    }
+
+    /**
+     * Sets the name of the room.
+     *
+     * @param name the name of the room
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the booking status of the room.
+     *
+     * @param isBooked true if the room is booked, false otherwise
+     */
+    public void setBookStatus(boolean isBooked) {
+        this.isBooked = isBooked;
+    }
+
+    /**
+     * Sets the price per night of the room.
+     *
+     * @param pricePerNight the price per night of the room
+     */
+    public void setPricePerNight(double pricePerNight) {
+        this.pricePerNight = pricePerNight;
+    }
+}
