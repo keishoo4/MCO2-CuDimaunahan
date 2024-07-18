@@ -1,6 +1,7 @@
 package hotel;
 
 import java.util.ArrayList;
+import utils.ScannerUtil;
 
 /**
  * The Hotel class represents a hotel with rooms and 
@@ -187,4 +188,144 @@ public class Hotel {
             }
         }
     }
+
+    /**
+     * Changes the name of the hotel.
+     *
+     * @param hotelList   the HotelList object containing the list of hotels
+     * @param hotel       the Hotel object to modify
+     */
+    public void changeHotelName(HotelList hotelList) {
+        System.out.print("Enter new hotel name: ");
+        String newHotelName = ScannerUtil.readString();
+
+        if (hotelList.sameHotelName(newHotelName)) {
+            System.out.println("Hotel with this name already exists");
+            return;
+        }
+
+        System.out.println("Confirm change of hotel name from \"" + this.name +
+                "\" to \"" + newHotelName + "\"");
+        System.out.print("Confirm [Yes/No]: ");
+        boolean confirmed = ScannerUtil.readBoolean();
+
+        if (!confirmed) {
+            System.out.println("\nHotel name change cancelled.\n");
+            return;
+        }
+
+        this.name = newHotelName;
+        System.out.println("Hotel name changed to \"" + newHotelName + "\"");
+    }
+
+    /**
+     * Adds rooms to the hotel.
+     *
+     * @param sc    the Scanner object for user input
+     * @param hotel the Hotel object to modify
+     */
+    public void addRooms(Hotel hotel) {
+        System.out.print("Enter number of rooms to add: ");
+        int numRooms = ScannerUtil.readInt();
+
+        if (numRooms < 1) {
+            System.out.println("Invalid number of rooms!\n");
+            return;
+        } 
+
+        if (numRooms + hotel.getRooms().size() > 50) {
+            System.out.println("Cannot exceed 50 rooms!\n");
+            return;
+        }
+
+        System.out.println("Confirm adding " + numRooms + 
+                           " room(s) to \"" + hotel.getName() + "\"");
+        System.out.print("Confirm [Yes/No]: ");
+        boolean confirmed = ScannerUtil.readBoolean();
+
+        if (!confirmed) {
+            System.out.println("\nRoom addition cancelled.\n");
+            return;
+        }
+
+        hotel.addRooms(numRooms);
+        System.out.println("Total Room(s) is " + hotel.getRooms().size() + ".\n");
+    }
+
+    /**
+     * Calculates the total number of rooms reserved in the hotel.
+     *
+     * @param hotel the Hotel object to calculate the total reserved rooms
+     * @return the total number of reserved rooms
+     */
+    public int totalRoomsReserved(Hotel hotel) {
+        int totalRooms = 0;
+        for (Room room : hotel.getRooms()) {
+            if (room.getBookStatus())
+                totalRooms++;
+        }
+        return totalRooms;
+    }
+
+    /**
+     * Removes rooms from the hotel.
+     *
+     * @param sc    the Scanner object for user input
+     * @param hotel the Hotel object to modify
+     */
+    public void removeRooms(Hotel hotel) {
+        int lastRoom = rooms.size();
+
+        if (lastRoom == 1) {
+            System.out.println("A hotel cannot have zero rooms.\n");
+            return;
+        }
+
+        int removableRooms = removableRooms();
+        if (removableRooms == 0) {
+            System.out.println("All rooms have reservations.\nCannot remove any rooms.\n");
+            return;
+        }
+
+        System.out.println("Available Rooms for Removal:     " + removableRooms);
+        System.out.print("Enter number of rooms to remove: ");
+        int numRooms = ScannerUtil.readInt();
+        System.out.println();
+
+        if (numRooms < 1) {
+            System.out.println("Invalid number of rooms!\n");
+            return;
+        }
+
+        if (numRooms > (lastRoom - totalRoomsReserved(this))) {
+            System.out.println("Picked room numbers for removal exceed current unoccupied rooms.\n");
+            return;
+        }
+
+        System.out.println("Confirm removing " + numRooms + " room(s) from \"" + name + "\"");
+        System.out.print("Confirm [Yes/No]: ");
+        boolean confirmed = ScannerUtil.readBoolean();
+
+        if (!confirmed) {
+            System.out.println("\nRoom removal cancelled.\n");
+            return;
+        }
+
+        int i = 0;
+        while (numRooms > 0) {
+            if (!rooms.get(lastRoom - i - 1).getBookStatus()) {
+                rooms.remove(lastRoom - i - 1);
+                --numRooms;
+            }
+            ++i;
+        }
+
+        System.out.println("Shifting Room Numbers...");
+        for (i = 0; i < rooms.size(); i++) {
+            rooms.get(i).setName("RM" + (i + 1));
+        }
+
+        System.out.println("Removal Success!\n");
+    }
+
 }

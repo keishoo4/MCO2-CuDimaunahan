@@ -16,73 +16,73 @@ public class HotelManager {
      * @param sc        the Scanner object for user input
      * @param hotelList the HotelList object containing the list of hotels
      */
-    public void modifyHotel(Scanner sc, HotelList hotelList) {
-        int hotelNum = 1;
-        while (hotelNum != 0) {
-            hotelList.displayAllHotels();
-            System.out.println("[0] Back to Main Menu");
-            System.out.print("Enter hotel number to manage: ");
-            hotelNum = sc.nextInt();
-            System.out.println();
+    // public void modifyHotel(Scanner sc, HotelList hotelList) {
+    //     int hotelNum = 1;
+    //     while (hotelNum != 0) {
+    //         hotelList.displayAllHotels();
+    //         System.out.println("[0] Back to Main Menu");
+    //         System.out.print("Enter hotel number to manage: ");
+    //         hotelNum = sc.nextInt();
+    //         System.out.println();
 
-            if (hotelNum != 0) {
-                if (hotelNum < 1 || hotelNum > hotelList.getHotels().size()) {
-                    System.out.println("Invalid hotel number!");
-                    return;
-                }
+    //         if (hotelNum != 0) {
+    //             if (hotelNum < 1 || hotelNum > hotelList.getHotels().size()) {
+    //                 System.out.println("Invalid hotel number!");
+    //                 return;
+    //             }
 
-                manageHotelConfig(sc, hotelList, hotelList.getHotels().get(hotelNum - 1),
-                        hotelList.getHotels().get(hotelNum - 1).getRooms());
-            }
-        }
-    }
+    //             manageHotelConfig(sc, hotelList, hotelList.getHotels().get(hotelNum - 1),
+    //                     hotelList.getHotels().get(hotelNum - 1).getRooms());
+    //         }
+    //     }
+    // }
 
-    /**
-     * Manages the configuration of the selected hotel by displaying the available options,
-     * prompting the user to select an option, and performing the corresponding action.
-     *
-     * @param sc     the Scanner object for user input
-     * @param hotelList the HotelList object containing the list of hotels
-     * @param hotel  the Hotel object to manage
-     * @param rooms  the list of rooms in the hotel
-     */
-    public void manageHotelConfig(Scanner sc, HotelList hotelList, Hotel hotel, ArrayList<Room> rooms) {
-        System.out.println("[1] Change Hotel Name  - " + hotel.getName());
-        System.out.println("[2] Add Room           - " + hotel.getRooms().size() + " room(s)");
-        System.out.println("[3] Remove Room          [CAUTION]");
-        System.out.println("[4] Update Room Price  - " + hotel.getPrice());
-        System.out.println("[5] Remove Reservation - " + hotel.getAllReservations() + " reservation(s)");
-        System.out.println("[6] Remove Hotel         [CAUTION]");
-        System.out.println("[7] Back to Main Menu");
-        System.out.print("Enter choice: ");
-        int choice = sc.nextInt();
-        System.out.println();
+    // /**
+    //  * Manages the configuration of the selected hotel by displaying the available options,
+    //  * prompting the user to select an option, and performing the corresponding action.
+    //  *
+    //  * @param sc     the Scanner object for user input
+    //  * @param hotelList the HotelList object containing the list of hotels
+    //  * @param hotel  the Hotel object to manage
+    //  * @param rooms  the list of rooms in the hotel
+    //  */    
+    // public void manageHotelConfig(Scanner sc, HotelList hotelList, Hotel hotel, ArrayList<Room> rooms) {
+    //     System.out.println("[1] Change Hotel Name  - " + hotel.getName());
+    //     System.out.println("[2] Add Room           - " + hotel.getRooms().size() + " room(s)");
+    //     System.out.println("[3] Remove Room          [CAUTION]");
+    //     System.out.println("[4] Update Room Price  - " + hotel.getPrice());
+    //     System.out.println("[5] Remove Reservation - " + hotel.getAllReservations() + " reservation(s)");
+    //     System.out.println("[6] Remove Hotel         [CAUTION]");
+    //     System.out.println("[7] Back to Main Menu");
+    //     System.out.print("Enter choice: ");
+    //     int choice = sc.nextInt();
+    //     System.out.println();
 
-        switch (choice) {
-            case 1:
-                changeHotelName(sc, hotelList, hotel);
-                break;
-            case 2:
-                addRooms(sc, hotel);
-                break;
-            case 3:
-                removeRooms(sc, hotel);
-                break;
-            case 4:
-                updateRoomPrice(sc, hotel);
-                break;
-            case 5:
-                removeReservations(sc, hotel, rooms);
-                break;
-            case 6:
-                removeHotel(sc, hotelList, hotel);
-                break;
-            case 7:
-                return;
-            default:
-                System.out.println("Invalid choice!");
-        }
-    }
+    //     switch (choice) {
+    //         case 1:
+    //             changeHotelName(sc, hotelList, hotel);
+    //             break;
+    //         case 2:
+    //             addRooms(sc, hotel);
+    //             break;
+    //         case 3:
+    //             removeRooms(sc, hotel);
+    //             break;
+    //         case 4:
+    //             updateRoomPrice(sc, hotel);
+    //             break;
+    //         case 5:
+    //             removeReservations(sc, hotel, rooms);
+    //             break;
+    //         case 6:
+    //             removeHotel(sc, hotelList, hotel);
+    //             break;
+    //         case 7:
+    //             return;
+    //         default:
+    //             System.out.println("Invalid choice!");
+    //     }
+    // }
 
     /**
      * Changes the name of the hotel.
@@ -91,30 +91,30 @@ public class HotelManager {
      * @param hotelList   the HotelList object containing the list of hotels
      * @param hotel       the Hotel object to modify
      */
-    public void changeHotelName(Scanner sc, HotelList hotelList, Hotel hotel) {
-        System.out.print("Enter new hotel name: ");
-        sc.nextLine(); // Consume
-        String newHotelName = sc.nextLine();
+    // public void changeHotelName(Scanner sc, HotelList hotelList, Hotel hotel) {
+    //     System.out.print("Enter new hotel name: ");
+    //     sc.nextLine(); // Consume
+    //     String newHotelName = sc.nextLine();
 
-        if (hotelList.sameHotelName(newHotelName)) {
-            System.out.println("Hotel with this name already exists\n");
-            return;
-        }
+    //     if (hotelList.sameHotelName(newHotelName)) {
+    //         System.out.println("Hotel with this name already exists\n");
+    //         return;
+    //     }
 
-        System.out.println("Confirm change of hotel name from \"" + hotel.getName() 
-                            + "\" to \"" + newHotelName + "\"");
-        System.out.print("Confirm [Yes/No]: ");
-        String confirm = sc.nextLine();
+    //     System.out.println("Confirm change of hotel name from \"" + hotel.getName() 
+    //                         + "\" to \"" + newHotelName + "\"");
+    //     System.out.print("Confirm [Yes/No]: ");
+    //     String confirm = sc.nextLine();
 
-        if (!confirm.equalsIgnoreCase("yes")) {
-            System.out.println("\nHotel name change cancelled.\n");
-            return;
-        }
+    //     if (!confirm.equalsIgnoreCase("yes")) {
+    //         System.out.println("\nHotel name change cancelled.\n");
+    //         return;
+    //     }
 
-        hotel.setName(newHotelName);
-        System.out.println("Hotel name changed to \"" + newHotelName + "\"");
-        System.out.println();
-    }
+    //     hotel.setName(newHotelName);
+    //     System.out.println("Hotel name changed to \"" + newHotelName + "\"");
+    //     System.out.println();
+    // }
 
     /**
      * Adds rooms to the hotel.
@@ -122,34 +122,34 @@ public class HotelManager {
      * @param sc    the Scanner object for user input
      * @param hotel the Hotel object to modify
      */
-    public void addRooms(Scanner sc, Hotel hotel) {
-        System.out.print("Enter number of rooms to add: ");
-        int numRooms = sc.nextInt();
+    // public void addRooms(Scanner sc, Hotel hotel) {
+    //     System.out.print("Enter number of rooms to add: ");
+    //     int numRooms = sc.nextInt();
 
-        if (numRooms < 1) {
-            System.out.println("Invalid number of rooms!\n");
-            return;
-        } 
+    //     if (numRooms < 1) {
+    //         System.out.println("Invalid number of rooms!\n");
+    //         return;
+    //     } 
 
-        if (numRooms + hotel.getRooms().size() > 50) {
-            System.out.println("Cannot exceed 50 rooms!\n");
-            return;
-        }
+    //     if (numRooms + hotel.getRooms().size() > 50) {
+    //         System.out.println("Cannot exceed 50 rooms!\n");
+    //         return;
+    //     }
 
-        System.out.println("Confirm adding " + numRooms + 
-                           " room(s) to \"" + hotel.getName() + "\"");
-        sc.nextLine(); // Consume
-        System.out.print("Confirm [Yes/No]: ");
-        String confirm = sc.nextLine();
+    //     System.out.println("Confirm adding " + numRooms + 
+    //                        " room(s) to \"" + hotel.getName() + "\"");
+    //     sc.nextLine(); // Consume
+    //     System.out.print("Confirm [Yes/No]: ");
+    //     String confirm = sc.nextLine();
         
-        if (!confirm.equalsIgnoreCase("yes")) {
-            System.out.println("\nRoom addition cancelled.\n");
-            return;
-        }
+    //     if (!confirm.equalsIgnoreCase("yes")) {
+    //         System.out.println("\nRoom addition cancelled.\n");
+    //         return;
+    //     }
 
-        hotel.addRooms(numRooms);
-        System.out.println("Total Room(s) is " + hotel.getRooms().size() + ".\n");
-    }
+    //     hotel.addRooms(numRooms);
+    //     System.out.println("Total Room(s) is " + hotel.getRooms().size() + ".\n");
+    // }
 
     /**
      * Calculates the total number of rooms reserved in the hotel.
@@ -157,14 +157,14 @@ public class HotelManager {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved rooms
      */
-    public int totalRoomsReserved(Hotel hotel) {
-        int totalRooms = 0;
-        for (Room room : hotel.getRooms()) {
-            if (room.getBookStatus())
-                totalRooms++;
-        }
-        return totalRooms;
-    }
+    // public int totalRoomsReserved(Hotel hotel) {
+    //     int totalRooms = 0;
+    //     for (Room room : hotel.getRooms()) {
+    //         if (room.getBookStatus())
+    //             totalRooms++;
+    //     }
+    //     return totalRooms;
+    // }
 
     /**
      * Removes rooms from the hotel.
@@ -172,65 +172,65 @@ public class HotelManager {
      * @param sc    the Scanner object for user input
      * @param hotel the Hotel object to modify
      */
-    public void removeRooms(Scanner sc, Hotel hotel) {
-        int lastRoom = hotel.getRooms().size();
+    // public void removeRooms(Scanner sc, Hotel hotel) {
+    //     int lastRoom = hotel.getRooms().size();
 
-        if (lastRoom == 1) {
-            System.out.println("A hotel cannot have zero rooms.\n");
-            return;
-        }
+    //     if (lastRoom == 1) {
+    //         System.out.println("A hotel cannot have zero roms.\n");
+    //         return;
+    //     }
 
-        int removableRooms = hotel.removableRooms();
-        if (removableRooms == 0) {
-            System.out.println("All rooms have reservations.\n"
-                    + "Cannot remove any rooms.\n");
-            return;
-        }
+    //     int removableRooms = hotel.removableRooms();
+    //     if (removableRooms == 0) {
+    //         System.out.println("All rooms have reservations.\n"
+    //                 + "Cannot remove any rooms.\n");
+    //         return;
+    //     }
 
-        System.out.println("Available Rooms for Removal:     " + removableRooms);
-        System.out.print("Enter number of rooms to remove: ");
-        int numRooms = sc.nextInt();
-        System.out.println();
+    //     System.out.println("Available Rooms for Removal:     " + removableRooms);
+    //     System.out.print("Enter number of rooms to remove: ");
+    //     int numRooms = sc.nextInt();
+    //     System.out.println();
         
-        if (numRooms < 1) {
-            System.out.println("Invalid number of rooms!\n");
-            return;
-        }
+    //     if (numRooms < 1) {
+    //         System.out.println("Invalid number of rooms!\n");
+    //         return;
+    //     }
         
-        if (numRooms > (lastRoom - totalRoomsReserved(hotel))) {
-            System.out.println("Picked room numbers for removal\n"
-                    + "exceed current unoccupied rooms.\n");
-            return;
-        }
+    //     if (numRooms > (lastRoom - totalRoomsReserved(hotel))) {
+    //         System.out.println("Picked room numbers for removal\n"
+    //                 + "exceed current unoccupied rooms.\n");
+    //         return;
+    //     }
 
-        System.out.println("Confirm removing " + numRooms + 
-                           " room(s) from \"" + hotel.getName() + "\"");
-        sc.nextLine(); // Consume
-        System.out.print("Confirm [Yes/No]: ");
-        String confirm = sc.nextLine();
+    //     System.out.println("Confirm removing " + numRooms + 
+    //                        " room(s) from \"" + hotel.getName() + "\"");
+    //     sc.nextLine(); // Consume
+    //     System.out.print("Confirm [Yes/No]: ");
+    //     String confirm = sc.nextLine();
 
-        if (!confirm.equalsIgnoreCase("yes")) {
-            System.out.println("\nRoom removal cancelled.\n");
-            return;
-        }
+    //     if (!confirm.equalsIgnoreCase("yes")) {
+    //         System.out.println("\nRoom removal cancelled.\n");
+    //         return;
+    //     }
 
-        int i = 0;
-        while (numRooms > 0) {
-            if (hotel.getRooms().get(lastRoom - i - 1).getBookStatus() == false) {
-                hotel.getRooms().remove(lastRoom - i - 1);
+    //     int i = 0;
+    //     while (numRooms > 0) {
+    //         if (hotel.getRooms().get(lastRoom - i - 1).getBookStatus() == false) {
+    //             hotel.getRooms().remove(lastRoom - i - 1);
 
-                --numRooms;
-            }
-            ++i;
-        }
+    //             --numRooms;
+    //         }
+    //         ++i;
+    //     }
 
-        System.out.println("Shifting Room Numbers...");
-        for (i = 0; i < hotel.getRooms().size(); i++) {
-            hotel.getRooms().get(i).setName("RM" + (i + 1));
-        }
+    //     System.out.println("Shifting Room Numbers...");
+    //     for (i = 0; i < hotel.getRooms().size(); i++) {
+    //         hotel.getRooms().get(i).setName("RM" + (i + 1));
+    //     }
 
-        System.out.println("Removal Success!\n");
-    }
+    //     System.out.println("Removal Success!\n");
+    // }
 
     /**
      * Updates the price of the hotel room.

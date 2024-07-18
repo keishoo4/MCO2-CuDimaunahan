@@ -6,6 +6,7 @@ import hotel.HotelList;
 import hotel.HotelManager;
 import hotel.HotelViewManager;
 import hotel.Hotel;
+import hotel.Room;
 
 import utils.ScannerUtil;
 
@@ -34,9 +35,9 @@ public class Driver {
                 // case 2:
                 //     viewHotel.mainHotelSelection(sc, hotelList);
                 //     break;
-                // case 3:
-                //     manageHotel.modifyHotel(sc, hotelList);
-                //     break;
+                case 3:
+                    modifyHotel(hotelList);
+                    break;
                 case 4:
                     simulateBooking(hotelList);
                     break;
@@ -134,4 +135,65 @@ public class Driver {
     }
 
     // private static void viewHotel(HotelList hotelList) {
+
+    public static void modifyHotel(HotelList hotelList) {
+        int hotelNum = 1;
+        while (hotelNum != 0) {
+            hotelList.displayAllHotels();
+            System.out.println("[0] Back to Main Menu");
+            System.out.print("Enter hotel number to manage: ");
+            hotelNum = ScannerUtil.readInt();
+            System.out.println();
+
+            if (hotelNum != 0) {
+                if (hotelNum < 1 || hotelNum > hotelList.getHotels().size()) {
+                    System.out.println("Invalid hotel number!");
+                    return;
+                }
+
+                manageHotelConfig(hotelList, hotelList.getHotels().get(hotelNum - 1),
+                    hotelList.getHotels().get(hotelNum - 1).getRooms());
+            }
+        }
+    }
+    
+    private static void manageHotelConfig(HotelList hotelList, Hotel hotel, ArrayList<Room> rooms) {
+        System.out.println("[1] Change Hotel Name  - " + hotel.getName());
+        System.out.println("[2] Add Room           - " + hotel.getRooms().size() + " room(s)");
+        System.out.println("[3] Remove Room          [CAUTION]");
+        System.out.println("[4] Update Room Price  - " + hotel.getPrice());
+        System.out.println("[5] Remove Reservation - " + hotel.getAllReservations() + " reservation(s)");
+        System.out.println("[6] Remove Hotel         [CAUTION]");
+        System.out.println("[7] Back to Main Menu");
+        System.out.print("Enter choice: ");
+        int choice = ScannerUtil.readInt();
+        System.out.println();
+
+        switch (choice) {
+            case 1:
+                hotel.changeHotelName(hotelList);
+                break;
+            case 2:
+                hotel.addRooms(hotel);
+                break;
+            case 3:
+                hotel.removeRooms(hotel);
+                break;
+            case 4:
+                // updateRoomPrice(hotel);
+                // break;
+            case 5:
+                // removeReservations(hotel, rooms);
+                // break;
+            case 6:
+                // removeHotel(hotelList, hotel);
+                // break;
+            case 7:
+                return;
+            default:
+                System.out.println("Invalid choice!");
+        }
+    }
+
+    
 }
