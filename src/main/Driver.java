@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 import hotel.BookingManager;
 import hotel.HotelList;
-import hotel.HotelManager;
+// import hotel.HotelManager;
 import hotel.HotelViewManager;
 import hotel.Hotel;
 import hotel.Room;
@@ -14,7 +14,7 @@ public class Driver {
     public static void main(String[] args) {
         HotelList              hotelList = new HotelList();
         HotelViewManager       viewHotel = new HotelViewManager();
-        HotelManager         manageHotel = new HotelManager();
+        // HotelManager         manageHotel = new HotelManager();
         BookingManager   simulateBooking = new BookingManager();
 
         while (true) {
@@ -180,14 +180,14 @@ public class Driver {
                 hotel.removeRooms(hotel);
                 break;
             case 4:
-                // updateRoomPrice(hotel);
-                // break;
+                hotel.updateRoomPrice(hotel);
+                break;
             case 5:
-                // removeReservations(hotel, rooms);
-                // break;
+                hotel.removeReservations(hotel, rooms);
+                break;
             case 6:
-                // removeHotel(hotelList, hotel);
-                // break;
+                hotelList.removeHotel(hotel);
+                break;
             case 7:
                 return;
             default:

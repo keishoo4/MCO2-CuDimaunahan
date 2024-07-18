@@ -270,7 +270,6 @@ public class Hotel {
     /**
      * Removes rooms from the hotel.
      *
-     * @param sc    the Scanner object for user input
      * @param hotel the Hotel object to modify
      */
     public void removeRooms(Hotel hotel) {
@@ -328,4 +327,70 @@ public class Hotel {
         System.out.println("Removal Success!\n");
     }
 
+    /**
+     * Updates the price of the hotel room.
+     *
+     * @param hotel the Hotel object to modify
+     */
+    public void updateRoomPrice(Hotel hotel) {
+        System.out.print("Enter the new room price: ");
+        double newPrice = ScannerUtil.readDouble();
+
+        System.out.println("Confirm change of room price to " + newPrice);
+        System.out.print("Confirm [Yes/No]: ");
+        boolean confirmed = ScannerUtil.readBoolean();
+
+        if (!confirmed) {
+            System.out.println("\nRoom price change cancelled.\n");
+            return;
+        }
+
+        hotel.setNewPrice(newPrice); // Update the base price
+        hotel.changeRoomPrice(newPrice); // Update the price of all rooms
+        System.out.println("Room price updated to " + newPrice + ".\n");
+    }
+
+    public void removeReservations(Hotel hotel, ArrayList<Room> rooms) {
+        hotel.showRooms("Reserved");
+        System.out.println("[0] Back to Main Menu");
+        System.out.print("Input Room Name: ");
+        String roomTracker = ScannerUtil.readString();
+        System.out.println();
+
+        if (roomTracker.equals("0"))
+            return;
+
+        int roomNum = Integer.parseInt(roomTracker.substring(2)) - 1;
+
+        if (roomNum >= rooms.size()) {
+            System.out.println("Invalid room number!\n");
+            return;
+        }
+
+        rooms.get(roomNum).printReservations("View");
+        System.out.println("[0] Back to Main Menu");
+        System.out.print("Pick reservation(s) to remove: ");
+        int resNum = ScannerUtil.readInt();
+
+        if (resNum == 0)
+            return;
+
+        System.out.println("\nConfirm removal of reservation for \"" + hotel.getName() + "\"");
+        System.out.print("Confirm [Yes/No]: ");
+        boolean confirmed = ScannerUtil.readBoolean();
+
+        if (!confirmed) {
+            System.out.println("\nReservation removal cancelled.\n");
+            return;
+        }        
+
+        rooms.get(roomNum).getReservations().remove(resNum - 1);
+        if (rooms.get(roomNum).getReservations().isEmpty())
+            rooms.get(roomNum).setBookStatus(false); // Set room to unoccupied (false)
+
+        System.out.println("Reservation " + resNum + " of " +
+                rooms.get(roomNum).getName() + " removed!\n");
+    }
+
+    
 }

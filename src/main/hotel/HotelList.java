@@ -2,6 +2,7 @@ package hotel;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import utils.ScannerUtil;
 
 /**
  * The HotelList class represents a list of hotels.
@@ -86,5 +87,24 @@ public class HotelList {
 
         hotelList.addHotel(hotelName, roomCount);
         System.out.println("\nHotel \"" + hotelName + "\" created successfully!\n");
+    }
+
+    public void removeHotel(Hotel hotel) {
+        if (hotel.reservationStatus()) {
+            System.out.println("Cannot remove hotel with reservation(s).\n");
+            return;
+        }
+
+        System.out.println("Confirm removal of \"" + hotel.getName() + "\" from the hotel list");
+        System.out.print("Confirm [Yes/No]: ");
+        boolean confirmed = ScannerUtil.readBoolean();
+
+        if (!confirmed) {
+            System.out.println("\nHotel removal cancelled.\n");
+            return;
+        }
+
+        hotels.remove(hotel);
+        System.out.println("Hotel \"" + hotel.getName() + "\" removed\n");
     }
 }
