@@ -4,7 +4,7 @@ import java.util.Scanner;
 import hotel.BookingManager;
 import hotel.HotelList;
 // import hotel.HotelManager;
-import hotel.HotelViewManager;
+// import hotel.HotelViewManager;
 import hotel.Hotel;
 import hotel.Room;
 
@@ -13,7 +13,7 @@ import utils.ScannerUtil;
 public class Driver {
     public static void main(String[] args) {
         HotelList              hotelList = new HotelList();
-        HotelViewManager       viewHotel = new HotelViewManager();
+        // HotelViewManager       viewHotel = new HotelViewManager();
         // HotelManager         manageHotel = new HotelManager();
         BookingManager   simulateBooking = new BookingManager();
 
@@ -32,9 +32,9 @@ public class Driver {
                 case 1:
                     createHotel(hotelList);
                     break;
-                // case 2:
-                //     viewHotel.mainHotelSelection(sc, hotelList);
-                //     break;
+                case 2:
+                    mainHotelSelection(hotelList);
+                    break;
                 case 3:
                     modifyHotel(hotelList);
                     break;
@@ -195,5 +195,63 @@ public class Driver {
         }
     }
 
+    /**
+     * Displays the list of hotels and prompts the user to select a hotel to manage.
+     * 
+     * @param sc The Scanner object used for user input.
+     * @param hotelList The HotelList object containing the list of hotels.
+     */
+    public static void mainHotelSelection(HotelList hotelList) {
+        hotelList.displayAllHotels();
+        System.out.print("Enter hotel number to manage: ");
+        int hotelNum = ScannerUtil.readInt();;
+
+        if (hotelNum < 1 || hotelNum > hotelList.getHotels().size()) {
+            System.out.println("Invalid hotel number");
+            return;
+        }
+
+        displayHotel(hotelList, hotelNum - 1);
+    }
+
+    /**
+     * Displays the menu for viewing hotel information and handles user input.
+     *
+     * @param hotelList The HotelList object containing the list of hotels.
+     * @param hotelNum The index of the hotel to be displayed.
+     */
+
+    private static void displayHotel(HotelList hotelList, int hotelNum) {
+        Hotel hotel = hotelList.getHotels().get(hotelNum);
+        while (true) {
+            System.out.println("\n[1] View High-level Information");
+            System.out.println("[2] View Available and Booked Rooms for a Date");
+            System.out.println("[3] View Information about a Room");
+            System.out.println("[4] View Information about a Reservation");
+            System.out.println("[5] Back to Main Menu");
+            System.out.print("Enter choice: ");
+            int choice = ScannerUtil.readInt();
+            System.out.println();
+
+            switch (choice) {
+                case 1:
+                    hotel.viewHighLevelInfo(hotel);
+                    break;
+                case 2:
+                    hotel.viewAvailableAndBookedRooms(hotel);
+                    break;
+                case 3:
+                    hotel.viewRoomInfo(hotel);
+                    break;
+                case 4:
+                    hotel.viewReservationInfo(hotel);
+                    break;
+                case 5:
+                    return;
+                default:
+                    System.out.println("Invalid choice");
+            }
+        }
+    }
     
 }

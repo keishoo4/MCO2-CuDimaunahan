@@ -67,6 +67,12 @@ public class HotelList {
             System.out.println("[" + (++count) + "] " + hotel.getName());
     }
 
+    /**
+     * Adds a new hotel to the hotel list.
+     *
+     * @param sc       the Scanner object for user input
+     * @param hotelList the HotelList object to add the hotel to
+     */
     public void addHotels(Scanner sc, HotelList hotelList) {
         System.out.print("Enter hotel name: ");
         sc.nextLine(); // Consume the newline left over from previous input
@@ -89,6 +95,11 @@ public class HotelList {
         System.out.println("\nHotel \"" + hotelName + "\" created successfully!\n");
     }
 
+    /**
+     * Removes the hotel from the hotel list.
+     *
+     * @param hotel     the Hotel object to remove
+     */
     public void removeHotel(Hotel hotel) {
         if (hotel.reservationStatus()) {
             System.out.println("Cannot remove hotel with reservation(s).\n");

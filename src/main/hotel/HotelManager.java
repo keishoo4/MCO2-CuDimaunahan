@@ -117,11 +117,11 @@ package hotel;
 //     // }
 
 //     /**
-//      * Adds rooms to the hotel.
-//      *
-//      * @param sc    the Scanner object for user input
-//      * @param hotel the Hotel object to modify
-//      */
+    //  * Adds rooms to the hotel.
+    //  *
+    //  * @param sc    the Scanner object for user input
+    //  * @param hotel the Hotel object to modify
+    //  */
 //     // public void addRooms(Scanner sc, Hotel hotel) {
 //     //     System.out.print("Enter number of rooms to add: ");
 //     //     int numRooms = sc.nextInt();
@@ -268,13 +268,13 @@ package hotel;
 //     //     System.out.println("\nNew Price set to " + hotel.getPrice() + "!\n");
 //     // }
 
-//     /**
-//      * Removes reservations from the hotel room.
-//      *
-//      * @param sc    the Scanner object for user input
-//      * @param hotel the Hotel object to modify
-//      * @param rooms the list of rooms in the hotel
-//      */
+    // /**
+    //  * Removes reservations from the hotel room.
+    //  *
+    //  * @param sc    the Scanner object for user input
+    //  * @param hotel the Hotel object to modify
+    //  * @param rooms the list of rooms in the hotel
+    //  */
 //     // public void removeReservations(Scanner sc, Hotel hotel, ArrayList<Room> rooms) {
 //     //     hotel.showRooms("Reserved");
 //     //     System.out.println("[0] Back to Main Menu");

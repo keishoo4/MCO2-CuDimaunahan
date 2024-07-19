@@ -1,6 +1,7 @@
 package hotel;
 
 import java.util.ArrayList;
+
 import utils.ScannerUtil;
 
 /**
@@ -193,7 +194,6 @@ public class Hotel {
      * Changes the name of the hotel.
      *
      * @param hotelList   the HotelList object containing the list of hotels
-     * @param hotel       the Hotel object to modify
      */
     public void changeHotelName(HotelList hotelList) {
         System.out.print("Enter new hotel name: ");
@@ -221,7 +221,6 @@ public class Hotel {
     /**
      * Adds rooms to the hotel.
      *
-     * @param sc    the Scanner object for user input
      * @param hotel the Hotel object to modify
      */
     public void addRooms(Hotel hotel) {
@@ -350,6 +349,12 @@ public class Hotel {
         System.out.println("Room price updated to " + newPrice + ".\n");
     }
 
+    /**
+     * Removes reservations from the hotel room.
+     *
+     * @param hotel the Hotel object to modify
+     * @param rooms the list of rooms in the hotel
+     */
     public void removeReservations(Hotel hotel, ArrayList<Room> rooms) {
         hotel.showRooms("Reserved");
         System.out.println("[0] Back to Main Menu");
@@ -392,5 +397,124 @@ public class Hotel {
                 rooms.get(roomNum).getName() + " removed!\n");
     }
 
+    /**
+     * Displays the high-level information of a hotel, including the hotel name, total number of rooms,
+     * and estimated earnings for the month.
+     *
+     * @param hotel The hotel object for which to display the information.
+     */
+    public void viewHighLevelInfo(Hotel hotel) {
+        System.out.println("Hotel Name: " + hotel.getName());
+        System.out.println("Total Number of Rooms: " + hotel.getRooms().size());
+
+        double estimatedEarnings = hotel.getRooms().stream()
+                .flatMap(room -> room.getReservations().stream())
+                .mapToDouble(reservation -> {
+                    int checkInDate = reservation.getCheckInDate();
+                    int checkOutDate = reservation.getCheckOutDate();
+
+                    int diffInDays = checkOutDate - checkInDate;
+                    return (diffInDays) * reservation.getRoom().getPricePerNight(); // including the check-in day
+                })
+                .sum();
+
+        System.out.println("Estimated Earnings for the Month: " + estimatedEarnings);
+    }
+
+    /**
+     * Checks if a given date is within a specified range.
+     *
+     * @param date      the date to check
+     * @param startDate the start date of the range (inclusive)
+     * @param endDate   the end date of the range (inclusive)
+     * @return true if the date is within the range, false otherwise
+     */
+    public static boolean isDateInRange(int date, int startDate, int endDate) {
+        return date >= startDate && date <= endDate;
+    }
+
+    /**
+     * Displays the total number of available and booked rooms in the hotel based on the given date.
+     *
+     * @param hotel The hotel object containing the list of rooms.
+     */
+    public void viewAvailableAndBookedRooms(Hotel hotel) {
+        System.out.print("Enter the day of reservation (eg. 23): ");
+        int date = ScannerUtil.readInt();
+
+        if (date < 1 || date > 31) {
+            System.out.println("Invalid day input. Day must be between 1 and 31.");
+            return;
+        }
+
+        long bookedRoomsCount = hotel.getRooms().stream()
+                .flatMap(room -> room.getReservations().stream())
+                .filter(reservation -> isDateInRange(date, reservation.getCheckInDate(), reservation.getCheckOutDate()))
+                .count();
+
+        long availableRoomsCount = hotel.getRooms().size() - bookedRoomsCount;
+
+        System.out.println("Total Number of Available Rooms: " + availableRoomsCount);
+        System.out.println("Total Number of Booked Rooms: " + bookedRoomsCount);
+    }
+
+    /**
+     * Displays information about a specific room in the hotel.
+     *
+     * @param hotel the hotel object containing the rooms
+     */
+    public void viewRoomInfo(Hotel hotel) {
+        System.out.print("Enter room name: ");
+        String roomName = ScannerUtil.readString();
+        Room room = hotel.getRooms().stream()
+                .filter(r -> r.getName().equals(roomName))
+                .findFirst()
+                .orElse(null);
+
+        if (room == null) {
+            System.out.println("Room not found.");
+            return;
+        }
+
+        System.out.println("Room Name: " + room.getName());
+        System.out.println("Price per Night: " + room.getPricePerNight());
+        System.out.println("Availability for the Month:");
+        int maxDay = 31; // Assuming a fixed 31-day month for "1-DD" format
+        room.showReservations(maxDay, room);
+    }
+
+    /**
+     * Displays the reservation information for a given guest name.
+     * 
+     * @param hotel the Hotel object containing the rooms and reservations
+     */
+    public void viewReservationInfo(Hotel hotel) {
+        System.out.print("Enter guest name: ");
+        String guestName = ScannerUtil.readString();
+
+        Reservation reservation = hotel.getRooms().stream()
+                .flatMap(room -> room.getReservations().stream())
+                .filter(r -> r.getGuestName().equals(guestName))
+                .findFirst()
+                .orElse(null);
+
+        if (reservation == null) {
+            System.out.println("Reservation not found.");
+            return;
+        }
+
+        int checkInDate = reservation.getCheckInDate();
+        int checkOutDate = reservation.getCheckOutDate();
+
+        int diffInDays = checkOutDate - checkInDate;
+        double totalPrice = (diffInDays) * reservation.getRoom().getPricePerNight(); // including the check-in day
+
+        System.out.println("Guest Name: " + reservation.getGuestName());
+        System.out.println("Room Name: " + reservation.getRoom().getName());
+        System.out.println("Check-in Date: 1-" + (checkInDate < 10 ? "0" + checkInDate : checkInDate));
+        System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
+        System.out.println("Total Price: " + totalPrice);
+        System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight());
+    }
     
 }

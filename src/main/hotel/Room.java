@@ -146,4 +146,19 @@ public class Room {
     public void setPricePerNight(double pricePerNight) {
         this.pricePerNight = pricePerNight;
     }
+
+    /**
+     * Displays the availability of a room for each day within a specified range.
+     *
+     * @param maxDay the maximum day in the range
+     * @param room the room for which to display the reservations
+     */
+    public void showReservations(int maxDay, Room room) {
+        for (int d = 1; d <= maxDay; d++) {
+            final int day = d; // use a final var because of lambda expression, needs to be constant
+            boolean isBooked = room.getReservations().stream()
+                    .anyMatch(reservation -> Hotel.isDateInRange(day, reservation.getCheckInDate(), reservation.getCheckOutDate()));
+            System.out.println("1-" + (day < 10 ? "0" + day : day) + ": " + (isBooked ? "Booked" : "Available"));
+        }        
+    }
 }
