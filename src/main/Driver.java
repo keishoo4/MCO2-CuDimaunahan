@@ -7,11 +7,16 @@ import model.hotel.Reservation;
 import model.hotel.Hotel;
 import model.hotel.Room;
 
+import view.View;
+import controller.Controller;
+
 import utils.ScannerUtil;
 
 public class Driver {
     public static void main(String[] args) {
-        HotelList   hotelList = new HotelList();
+        HotelList   hotelList  = new HotelList();
+        View        view       = new View();
+        Controller  controller = new Controller(hotelList, view);
 
         while (true) {
             System.out.println("[HOTEL MANAGEMENT SYSTEM]");
