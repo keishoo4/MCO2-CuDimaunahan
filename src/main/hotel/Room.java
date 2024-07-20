@@ -1,4 +1,5 @@
 package hotel;
+
 import java.util.ArrayList;
 
 /**
@@ -160,5 +161,21 @@ public class Room {
                     .anyMatch(reservation -> Hotel.isDateInRange(day, reservation.getCheckInDate(), reservation.getCheckOutDate()));
             System.out.println("1-" + (day < 10 ? "0" + day : day) + ": " + (isBooked ? "Booked" : "Available"));
         }        
+    }
+
+    /**
+     * Adds a new reservation to the given list of reservations and updates the book status of the specified room.
+     *
+     * @param hotel The hotel object.
+     * @param roomToUse The index of the room to be booked.
+     * @param reservations The list of reservations.
+     * @param guestName The name of the guest making the reservation.
+     * @param checkInDate The check-in date of the reservation.
+     * @param checkOutDate The check-out date of the reservation.
+     */
+    public void bookInputInfo(Room room, ArrayList<Reservation> reservations, 
+                              String guestName, int checkInDate, int checkOutDate) {
+        reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room));
+        room.setBookStatus(true); // Most important part
     }
 }

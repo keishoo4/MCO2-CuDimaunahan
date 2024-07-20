@@ -104,6 +104,50 @@ public class Hotel {
         return -1;
     }
 
+        /**
+     * Prompts the user to enter a check-in date and validates the input.
+     * 
+     * @param sc the Scanner object used to read user input
+     * @return the valid check-in date entered by the user
+     */
+    public int checkIn() {
+        System.out.print(" Enter check-in date: 1-");
+        int checkInDate = ScannerUtil.readInt();
+
+        if (checkInDate >= 0 && checkInDate <= 30)
+            return checkInDate;
+        else {
+            System.out.println("Invalid date format. Please try again.\n");
+            return checkIn();
+        }
+    }
+
+    /**
+     * Prompts the user to enter a check-out date and validates the input.
+     * 
+     * @param sc the Scanner object used for user input
+     * @param checkInDay the check-in day to compare the check-out date with
+     * @return the valid check-out date if it is after the check-in date, otherwise 0
+     */
+    public int checkOut(int checkInDay) {
+        System.out.print("Enter check-out date: 1-");
+        int checkOutDate = ScannerUtil.readInt();
+        System.out.println();
+
+        if (checkOutDate >= 0 && checkOutDate <= 31) {
+            if (checkOutDate > checkInDay)
+                return checkOutDate;
+            else {
+                System.out.println("Check-out date must be after check-in date. Please try again.");
+                return 0;
+            }
+        } 
+        else {
+            System.out.println("Invalid date! Please try again.");
+            return checkOut(checkInDay);
+        }
+    }
+    
     /**
      * Returns the number of rooms that can be removed (i.e., not reserved).
      * 

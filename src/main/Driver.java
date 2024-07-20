@@ -1,10 +1,8 @@
-import java.util.ArrayList;
-import java.util.Scanner;
+// TODO: Make a new class for Managing the Reservation?
 
-import hotel.BookingManager;
+import java.util.ArrayList;
 import hotel.HotelList;
-// import hotel.HotelManager;
-// import hotel.HotelViewManager;
+import hotel.Reservation;
 import hotel.Hotel;
 import hotel.Room;
 
@@ -12,10 +10,7 @@ import utils.ScannerUtil;
 
 public class Driver {
     public static void main(String[] args) {
-        HotelList              hotelList = new HotelList();
-        // HotelViewManager       viewHotel = new HotelViewManager();
-        // HotelManager         manageHotel = new HotelManager();
-        BookingManager   simulateBooking = new BookingManager();
+        HotelList   hotelList = new HotelList();
 
         while (true) {
             System.out.println("[HOTEL MANAGEMENT SYSTEM]");
@@ -73,12 +68,17 @@ public class Driver {
     }
 
     public static void simulateBooking(HotelList hotelList) {        
-        int hotelNum = 1;
+        int hotelNum;
         int lastRoom, roomToUse, roomReserved,
             reservationNum, checkInDate, checkOutDate, 
             i;
         String guestName;
+        Hotel hotel;
+        Room room;
+        ArrayList<Reservation> reservations;
 
+
+        hotelNum = 1;
         while (hotelNum != 0) {
             hotelList.displayAllHotels();
             System.out.println("[0] Back to Main Menu");
@@ -91,17 +91,16 @@ public class Driver {
                     System.out.println("Invalid hotel number!\n");
                     return;
                 }
-
-                lastRoom = hotelList.getHotels().get(hotelNum-1).getRooms().size() - 1; // Last room of the hotel (index)
-
+                
+                hotel    = hotelList.getHotels().get(hotelNum-1);
+                lastRoom = hotel.getRooms().size() - 1; // Last room of the hotel (index)
 
                 roomReserved = 0;
                 roomToUse = 0;
                 i = 0;
                 while (i <= lastRoom) {
-                    if (!hotelList.getHotels().get(hotelNum-1).
-                         getRooms().get(i).getBookStatus()) { // If the room does not have a booking
-                        roomToUse = hotelList.getHotels().get(hotelNum-1).LatestRoomNoReservation();
+                    if (!hotel.getRooms().get(i).getBookStatus()) { // If the room does not have a booking
+                        roomToUse = hotel.LatestRoomNoReservation();
                         roomReserved = 1;
                         break;
                     }
@@ -113,7 +112,7 @@ public class Driver {
                     // roomToUse = chooseAnotherRoom(sc, hotel) - 1;
 
                     System.out.println("Choose a different date \nor go to a different hotel.\n");
-                    hotelList.getHotels().get(hotelNum-1).showRooms("All");
+                    hotel.showRooms("All");
                     System.out.println("[0] Back to Hotel Selection");
                     System.out.print("Enter room number: ");
                     roomToUse = ScannerUtil.readInt();
@@ -127,7 +126,50 @@ public class Driver {
                     }
                 }
 
+                room = hotel.getRooms().get(roomToUse);
+                reservations = room.getReservations();
+                System.out.println("[0] Exit Reservation");
+                System.out.print("Enter guest name: ");
+                guestName = ScannerUtil.readString();                
 
+                if (guestName.equals("0")) {
+                    System.out.println("Reservation cancelled.\n");
+                    return;
+                }
+        
+                if (hotel.getRooms().get(0).getBookStatus() == true && 
+                    hotel.sameGuestName(guestName)) {
+                    System.out.println("Guest name already exists. Please try again.\n");
+                    return;
+                }
+
+                checkInDate = 0;
+                checkOutDate = 0;
+                while (checkOutDate == 0) {
+                    System.out.println("   [0] Exit Reservation");
+                    System.out.println("   STRICT FORMATTING: 1-DD");
+                    checkInDate  = hotel.checkIn();
+        
+                    if (checkInDate == 0) {
+                        System.out.println("Reservation cancelled.\n");
+                        return;
+                    }
+        
+                    checkOutDate = hotel.checkOut(checkInDate);
+                }
+
+                if (room.getBookStatus() == true) { // if reservation is already made
+                    if (!(room.isReservationValid(checkInDate, checkOutDate))) {
+                        System.out.println("Invalid reservation! Try a new date or room.\n");
+                        return;
+                    }
+                }
+
+                room.bookInputInfo(room, reservations, guestName, checkInDate, checkOutDate);
+        
+                reservationNum = room.getReservations().size();
+                System.out.println("Reservation No.: " + reservationNum);
+                System.out.println(room.getName() + " booked successfully!\n");                
 
 
             }
@@ -152,7 +194,7 @@ public class Driver {
                 }
 
                 manageHotelConfig(hotelList, hotelList.getHotels().get(hotelNum - 1),
-                    hotelList.getHotels().get(hotelNum - 1).getRooms());
+                                  hotelList.getHotels().get(hotelNum - 1).getRooms());
             }
         }
     }
