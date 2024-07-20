@@ -98,7 +98,7 @@ public class HotelList {
     /**
      * Removes the hotel from the hotel list.
      *
-     * @param hotel     the Hotel object to remove
+     * @param hotel the Hotel object to remove
      */
     public void removeHotel(Hotel hotel) {
         if (hotel.reservationStatus()) {
