@@ -1,4 +1,4 @@
-package hotel;
+package model.hotel;
 
 import java.util.ArrayList;
 
@@ -527,20 +527,23 @@ public class Hotel {
         room.showReservations(maxDay, room);
     }
 
+
     /**
      * Displays the reservation information for a given guest name.
      * 
      * @param hotel the Hotel object containing the rooms and reservations
      */
     public void viewReservationInfo(Hotel hotel) {
+        Reservation reservation;
+        
         System.out.print("Enter guest name: ");
         String guestName = ScannerUtil.readString();
 
-        Reservation reservation = hotel.getRooms().stream()
-                .flatMap(room -> room.getReservations().stream())
-                .filter(r -> r.getGuestName().equals(guestName))
-                .findFirst()
-                .orElse(null);
+        reservation = hotel.getRooms().stream()
+                      .flatMap(room -> room.getReservations().stream())
+                      .filter(r -> r.getGuestName().equals(guestName))
+                      .findFirst()
+                      .orElse(null);
 
         if (reservation == null) {
             System.out.println("Reservation not found.");

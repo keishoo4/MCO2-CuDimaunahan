@@ -1,4 +1,4 @@
-package hotel;
+package zz_manager_deprecated;
 
 // import java.util.ArrayList;
 // import java.util.Scanner;

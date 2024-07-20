@@ -1,10 +1,11 @@
 // TODO: Make a new class for Managing the Reservation?
+// TODO: Translate into MVC
 
 import java.util.ArrayList;
-import hotel.HotelList;
-import hotel.Reservation;
-import hotel.Hotel;
-import hotel.Room;
+import model.hotel.HotelList;
+import model.hotel.Reservation;
+import model.hotel.Hotel;
+import model.hotel.Room;
 
 import utils.ScannerUtil;
 
@@ -59,7 +60,7 @@ public class Driver {
         int roomCount = ScannerUtil.readInt();
 
         if (roomCount < 1 || roomCount > 50) {
-            System.out.println("Invalid number of rooms! Must be between 1 and 50.");
+            System.out.println("Invalid number of rooms! Must be between 1 and 50.\n");
             return;
         }
 
@@ -249,7 +250,7 @@ public class Driver {
         int hotelNum = ScannerUtil.readInt();;
 
         if (hotelNum < 1 || hotelNum > hotelList.getHotels().size()) {
-            System.out.println("Invalid hotel number");
+            System.out.println("Invalid hotel number\n");
             return;
         }
 

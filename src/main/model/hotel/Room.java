@@ -1,4 +1,4 @@
-package hotel;
+package model.hotel;
 
 import java.util.ArrayList;
 

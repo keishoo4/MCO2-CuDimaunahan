@@ -1,4 +1,4 @@
-package hotel;
+package model.hotel;
 
 /**
  * The Reservation class represents a reservation made by a guest.
