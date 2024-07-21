@@ -63,6 +63,10 @@ public class Controller implements ActionListener, DocumentListener {
 
     }
 
+
+
+
+    
     public ArrayList<Hotel> getHotels() {
         return hotelList.getHotels();
     }

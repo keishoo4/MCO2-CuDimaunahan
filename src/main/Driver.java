@@ -15,6 +15,7 @@ public class Driver {
         GUI         gui       = new GUI();
         Controller  controller = new Controller(hotelList, gui);
 
+        gui.setVisible(true); // MOVE ELSEWHERE
         // TERMINAL VERSION
         while (true) {
             System.out.println("[HOTEL MANAGEMENT SYSTEM]");
