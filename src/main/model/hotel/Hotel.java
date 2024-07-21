@@ -272,7 +272,7 @@ public class Hotel {
      *
      * @param hotel the Hotel object to modify
      */
-    public void addRooms(Hotel hotel) {
+    public void addRoomsPrompt(Hotel hotel) {
         System.out.print("Enter number of rooms to add: ");
         int numRooms = ScannerUtil.readInt();
 

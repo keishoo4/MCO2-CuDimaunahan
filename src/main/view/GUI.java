@@ -85,10 +85,17 @@ public class GUI extends JFrame {
 
         displayHotels(tabHotelListPanel);
 
-        
-
-
         tabbedPane.addTab("Hotel List", tabHotelListPanel);
+
+
+        // LOWER LEFT OF OUR GUI
+        JPanel leftPanelLower = new JPanel();
+        leftPanelLower.setLayout(new BoxLayout(leftPanelLower, BoxLayout.Y_AXIS));
+
+
+
+        
+        leftPanel.add(leftPanelLower);
 
 
 

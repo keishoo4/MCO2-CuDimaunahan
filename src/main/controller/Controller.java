@@ -38,8 +38,15 @@ public class Controller implements ActionListener, DocumentListener {
         String hotelName;
         int rooms;
 
-        hotelName = gui.getHotelName();
+        hotelName = gui.getHotelName().trim();
         rooms = gui.getSliderValue();
+
+        // Check if hotelName is empty
+        if (hotelName.isEmpty()) {
+            JOptionPane.showMessageDialog(gui, "Please enter a hotel name.", 
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+            return; // Exit the method early
+        }
 
         if (hotelList.sameHotelName(hotelName)) {
             JOptionPane.showMessageDialog(gui, "Hotel with the same name already exists", 

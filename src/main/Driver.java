@@ -225,7 +225,7 @@ public class Driver {
                 hotel.changeHotelName(hotelList);
                 break;
             case 2:
-                hotel.addRooms(hotel);
+                hotel.addRoomsPrompt(hotel);
                 break;
             case 3:
                 hotel.removeRooms(hotel);
