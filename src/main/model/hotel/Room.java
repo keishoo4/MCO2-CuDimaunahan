@@ -10,6 +10,7 @@ public class Room {
     private double pricePerNight;
     private ArrayList<Reservation> reservations;
     private boolean isBooked = false;
+    private ArrayList<Date> dates;
 
     /**
      * Constructs a Room object with the specified name and price per night.

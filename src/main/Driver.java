@@ -12,10 +12,10 @@ import utils.ScannerUtil;
 public class Driver {
     public static void main(String[] args) {
         HotelList   hotelList  = new HotelList();
-        GUI         gui       = new GUI();
-        Controller  controller = new Controller(hotelList, gui);
+        // GUI         gui       = new GUI();
+        // Controller  controller = new Controller(hotelList, gui);
 
-        gui.setVisible(true);
+        // gui.setVisible(true);
 
         // TERMINAL VERSION
         while (true) {
@@ -171,13 +171,19 @@ public class Driver {
                     }
                 }
 
+                // double finalPrice = hotel.calculateFinalPrice(checkInDate, checkOutDate);
+                // finalPrice = hotel.applyDiscount(finalPrice, checkInDate, checkOutDate);
+
+                System.out.print("Enter discount code (or press Enter to skip): ");
+                String discountCode = ScannerUtil.readString();
+
                 room.bookInputInfo(room, reservations, guestName, checkInDate, checkOutDate);
+
+                // Instantiate arraylist for date
         
                 reservationNum = room.getReservations().size();
                 System.out.println("Reservation No.: " + reservationNum);
                 System.out.println(room.getName() + " booked successfully!\n");                
-
-
             }
         }    
     }

@@ -76,8 +76,8 @@ public class Hotel {
      * 
      * @param basePrice the new base price of the hotel
      */
-    public void setNewPrice(double basePrice) {
-        this.basePrice = basePrice;
+    public void setNewPrice(double pricePerNight) {
+        this.basePrice = pricePerNight;
     }
 
     /**
@@ -386,6 +386,11 @@ public class Hotel {
      * @param hotel the Hotel object to modify
      */
     public void updateRoomPrice(Hotel hotel) {
+        if (hotel.reservationStatus() == true) {
+            System.out.println("Cannot update price with reservation(s).\n");
+            return;
+        }
+
         System.out.print("Enter the new room price: ");
         double newPrice = ScannerUtil.readDouble();
 
@@ -540,6 +545,11 @@ public class Hotel {
     private double[] datePriceModifiers; // Array for storing the price modifiers 
 
     public void promptDatePriceModifier(Hotel hotel) {
+        if (hotel.reservationStatus() == true) {
+            System.out.println("Cannot modify price with reservation(s).\n");
+            return;
+        }
+        
         System.out.print("Enter the day of the month (1-31): ");
         int day = ScannerUtil.readInt();
         if (day < 1 || day > 31) {
@@ -565,6 +575,7 @@ public class Hotel {
         for (int day = checkInDay; day < checkOutDay; day++) { // loops through each day of the reservation 
             finalPrice += basePrice * datePriceModifiers[day - 1]; 
         }
+
         return finalPrice;
     }
 
@@ -601,13 +612,14 @@ public class Hotel {
         int checkInDate = reservation.getCheckInDate();
         int checkOutDate = reservation.getCheckOutDate();
 
-        double totalPrice = calculateFinalPrice(checkInDate, checkOutDate); // including the check-in day
+        // double initialPrice = hotel.calculateFinalPrice(checkInDate, checkOutDate);
+        // double finalPrice = applyDiscount(initialPrice, checkInDate, checkOutDate);
 
         System.out.println("Guest Name: " + reservation.getGuestName());
         System.out.println("Room Name: " + reservation.getRoom().getName());
         System.out.println("Check-in Date: 1-" + (checkInDate < 10 ? "0" + checkInDate : checkInDate));
         System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
-        System.out.println("Total Price: " + totalPrice);
+        System.out.println("Total Price: " + String.format("%.2f", finalPrice)); // NOT UPDATED TO CONSIDER DISCOUNT CODES, TO DO SOON
         System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight());
     }
 }
