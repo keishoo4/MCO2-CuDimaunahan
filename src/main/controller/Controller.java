@@ -18,10 +18,12 @@ public class Controller implements ActionListener, DocumentListener {
     private Room room;
     private Reservation reservation;
     private GUI gui;
+    private HotelController hotelController;
 
     public Controller(HotelList hotelList, GUI gui) {
         this.hotelList = hotelList;
         this.gui = gui;
+        this.hotelController = new HotelController(hotelList, gui);
 
         // updateView();
 
@@ -29,48 +31,73 @@ public class Controller implements ActionListener, DocumentListener {
         gui.setDocumentListener(this);
     }
 
-    public void updateView() {
+    public void updateHotelList() {
         gui.updateHotelList(hotelList.getHotels());
+    }
+
+    public void updateClearTextFields() {
+        gui.clearTextFields();
+    }
+
+    public void updateRoomBooking() {
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String hotelName;
-        int rooms;
+        String command = e.getActionCommand();
+    
+        switch (command) {
+            case "ADD_HOTEL":
+                String hotelName = gui.getHotelName().trim();
+                int rooms = gui.getSliderValue();
+                if (hotelName.isEmpty()) {
+                    JOptionPane.showMessageDialog(gui, "Please enter a hotel name.", 
+                                                  "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                hotelController.addHotel(hotelName, rooms);
+                updateHotelList();
+                break;
+            
+            case "CLEAR_HOTEL":
+                updateClearTextFields();
+                break;    
 
-        hotelName = gui.getHotelName().trim();
-        rooms = gui.getSliderValue();
-
-        // Check if hotelName is empty
-        if (hotelName.isEmpty()) {
-            JOptionPane.showMessageDialog(gui, "Please enter a hotel name.", 
-                                    "Error", JOptionPane.ERROR_MESSAGE);
-            return; // Exit the method early
+            case "BOOK_ROOM":
+                updateRoomBooking();
+                break;
         }
-
-        if (hotelList.sameHotelName(hotelName)) {
-            JOptionPane.showMessageDialog(gui, "Hotel with the same name already exists", 
-                                          "Error", JOptionPane.ERROR_MESSAGE);
-        } 
-        else {
-            hotelList.addHotel(hotelName, rooms);
-            JOptionPane.showMessageDialog(gui, "Hotel " + hotelName + " (" + rooms + " rooms)" 
-                                          + " created successfully!",
-                                    "Success", JOptionPane.INFORMATION_MESSAGE);
-        }
-
-        updateView();
-
     }
 
-
+    public class HotelController {
+        private HotelList hotelList;
+        private GUI gui;
+    
+        public HotelController(HotelList hotelList, GUI gui) {
+            this.hotelList = hotelList;
+            this.gui = gui;
+        }
+    
+        public void addHotel(String hotelName, int rooms) {
+            // Implementation for adding a hotel
+            if (hotelList.sameHotelName(hotelName)) {
+                JOptionPane.showMessageDialog(gui, "Hotel with the same name already exists", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                hotelList.addHotel(hotelName, rooms);
+                JOptionPane.showMessageDialog(gui, "Hotel " + hotelName + " (" + rooms + " rooms)" 
+                                              + " created successfully!",
+                                              "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
 
 
     
     public ArrayList<Hotel> getHotels() {
         return hotelList.getHotels();
     }
-
 
     @Override
     public void insertUpdate(DocumentEvent e) {

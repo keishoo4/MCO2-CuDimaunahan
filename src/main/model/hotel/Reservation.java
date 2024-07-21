@@ -99,32 +99,5 @@ public class Reservation {
 
     public void setDiscountCode(String discountCode) {
         this.discountCode = discountCode;
-    }
-
-    public double applyDiscount(double finalPrice, int checkInDay, int checkOutDay) {
-        double pricePerNight = room.getPricePerNight();
-        switch (discountCode) {
-            case "I_WORK_HERE":
-                totalPrice *= 0.9; // 10% discount
-                System.out.println("Discount code applied: I_WORK_HERE");
-                break;
-            case "STAY4_GET1":
-                if (checkOutDay - checkInDay >= 5) {
-                    totalPrice -= pricePerNight * datePriceModifiers[checkInDay - 1]; // first day free
-                    System.out.println("Discount code applied: STAY4_GET1");
-                }
-                break;
-            case "PAYDAY":
-                if ((checkInDay <= 15 && checkOutDay > 15) || (checkInDay <= 30 && checkOutDay > 30)) {
-                    totalPrice *= 0.93; // 7% discount
-                    System.out.println("Discount code applied: PAYDAY");
-                }
-                break;
-            default:
-                System.out.println("Invalid discount code or no discount code entered.");
-                break;
-        }
-    
-        return totalPrice;
     }    
 }

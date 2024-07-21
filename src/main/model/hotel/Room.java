@@ -10,7 +10,7 @@ public class Room {
     private double pricePerNight;
     private ArrayList<Reservation> reservations;
     private boolean isBooked = false;
-    private ArrayList<Date> dates;
+    private ArrayList<Date> dates = new ArrayList<Date>();
 
     /**
      * Constructs a Room object with the specified name and price per night.
@@ -162,6 +162,44 @@ public class Room {
                     .anyMatch(reservation -> Hotel.isDateInRange(day, reservation.getCheckInDate(), reservation.getCheckOutDate()));
             System.out.println("1-" + (day < 10 ? "0" + day : day) + ": " + (isBooked ? "Booked" : "Available"));
         }        
+    }
+
+    public ArrayList<Date> getDates() {
+        return dates;
+    }
+
+    // public void fillDates(double pricePerNight, int checkInDate, int checkOutDate) {
+    //     for (int i=1; i<=31; i++) {
+    //         if (i >= checkInDate && i <= checkOutDate)
+    //             dates.add(new Date(i, pricePerNight));
+    //         else
+    //             dates.add(new Date(i, 0));
+    //     }
+    // }
+
+    public void fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
+        for (int i=1; i<=31; i++) {
+            if (i >= checkInDate && i <= checkOutDate){
+                Date date = new Date(i, pricePerNight);
+                date.setDatePrice(pricePerNight, i, discountCode);
+                dates.add(new Date(i, pricePerNight));
+            }
+            else
+                dates.add(new Date(i, 0));
+        }
+    }
+
+    public double getDiscountCode(String discountCode) {
+        switch (discountCode) {
+            case "I_WORK_HERE":
+                return 0.9; // 10% discount
+            case "STAY4_GET1":
+                return 1.0; // No discount multiplier here; handled differently in applyDiscount
+            case "PAYDAY":
+                return 0.93; // 7% discount
+            default:
+                return 1.0; // No discount
+        }
     }
 
     /**

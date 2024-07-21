@@ -3,7 +3,7 @@ import model.hotel.HotelList;
 import model.hotel.Reservation;
 import model.hotel.Hotel;
 import model.hotel.Room;
-
+import model.hotel.Date;
 import view.GUI;
 import controller.Controller;
 
@@ -12,8 +12,8 @@ import utils.ScannerUtil;
 public class Driver {
     public static void main(String[] args) {
         HotelList   hotelList  = new HotelList();
-        // GUI         gui       = new GUI();
-        // Controller  controller = new Controller(hotelList, gui);
+        GUI         gui       = new GUI();
+        Controller  controller = new Controller(hotelList, gui);
 
         gui.setVisible(true);
 
@@ -171,11 +171,17 @@ public class Driver {
                     }
                 }
 
-                // double finalPrice = hotel.calculateFinalPrice(checkInDate, checkOutDate);
-                // finalPrice = hotel.applyDiscount(finalPrice, checkInDate, checkOutDate);
-
                 System.out.print("Enter discount code (or press Enter to skip): ");
                 String discountCode = ScannerUtil.readString();
+                if (discountCode != "I_WORK_HERE" && discountCode != "STAY4_GET1" && discountCode != "PAYDAY"){
+                    System.out.println("Invalid discount code!\n");
+                    return;
+                }
+
+                room.fillDates(room.getPricePerNight(),checkInDate, checkOutDate);
+
+                // double finalPrice = hotel.calculateFinalPrice(checkInDate, checkOutDate);
+                // finalPrice = hotel.applyDiscount(finalPrice, checkInDate, checkOutDate, discountCode, room);
 
                 room.bookInputInfo(room, reservations, guestName, checkInDate, checkOutDate);
 
@@ -244,7 +250,7 @@ public class Driver {
                 hotelList.removeHotel(hotel);
                 break;
             case 7:
-                hotel.promptDatePriceModifier(hotel);
+                Date.promptDatePriceModifier(hotel);
                 break;
             case 8:
                 return;
