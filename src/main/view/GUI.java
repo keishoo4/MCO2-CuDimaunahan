@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class GUI extends JFrame {
     private JTextField hotelNameField;
     private JButton createHotelButton;
-    private JSlider slider;
+    private JSlider slider1, slider; // SLIDER IS TEMPORARY
     private JList<Hotel> hotelJList;
     private DefaultListModel<Hotel> hotelListModel;
 
@@ -50,19 +50,47 @@ public class GUI extends JFrame {
         hotelNameAndRoomPanel.add(hotelNameField);
         leftPanelUpper.add(hotelNameAndRoomPanel);
 
+        setVisible(true); // MOVE ELSEWHERE
+
         // SLIDER 
-        JPanel sliderAndCreatePanel = new JPanel();
-        sliderAndCreatePanel.setLayout(new BorderLayout());
+        JPanel sliderRooms = new JPanel();
+        sliderRooms.setLayout(new BoxLayout(sliderRooms, BoxLayout.Y_AXIS));
 
-        JLabel sliderValueLabel = new JLabel("Allocate Room(s): 1");
-        JPanel sliderPanel = new JPanel(new BorderLayout());
+        // Normal Room Slider
+        JPanel sliderPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JLabel sliderValueLabel1 = new JLabel("Allocate Room(s): 1");
+        sliderPanel1.add(sliderValueLabel1);
+
+        slider1 = new JSlider(1, 50, 1);
+        sliderPanel1.add(slider1);
+
+        slider1.addChangeListener(e -> sliderValueLabel1.setText("Allocate Room(s): " 
+                                    + ((JSlider)e.getSource()).getValue()));
+
+        sliderRooms.add(sliderPanel1);
+
+
+        // Deluxe Room Slider
+        JPanel sliderPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        JLabel sliderValueLabel2 = new JLabel("Allocate Delxue Room(s): 1");
+        sliderPanel2.add(sliderValueLabel2);
+
         slider = new JSlider(1, 50, 1);
-        sliderPanel.add(sliderValueLabel, BorderLayout.NORTH);
-        sliderPanel.add(slider, BorderLayout.CENTER);
-        slider.addChangeListener(e -> sliderValueLabel.setText("Allocate Room(s): " 
-                                 + ((JSlider)e.getSource()).getValue()));
+        sliderPanel2.add(slider);
 
-        sliderAndCreatePanel.add(sliderPanel, BorderLayout.NORTH);
+        slider.addChangeListener(e -> sliderValueLabel2.setText("Allocate Delxue Room(s): " 
+                                    + ((JSlider)e.getSource()).getValue()));
+
+
+        sliderRooms.add(sliderPanel1);
+        sliderRooms.add(sliderPanel2);
+        // sliderRooms.add(sliderPanel3);
+
+
+
+
 
         // BUTTONS
         JPanel mainButtons = new JPanel();
@@ -74,9 +102,9 @@ public class GUI extends JFrame {
         JButton clearButton = new JButton("Clear");
         mainButtons.add(clearButton);
 
-        sliderAndCreatePanel.add(mainButtons, BorderLayout.CENTER);
+        // sliderAndCreatePanel.add(mainButtons, BorderLayout.CENTER);
 
-        leftPanelUpper.add(sliderAndCreatePanel);
+        leftPanelUpper.add(sliderRooms);
         leftPanel.add(leftPanelUpper);
 
         // TABBED PANE
@@ -94,7 +122,7 @@ public class GUI extends JFrame {
 
 
 
-        
+
         leftPanel.add(leftPanelLower);
 
 
@@ -128,7 +156,7 @@ public class GUI extends JFrame {
     }
 
     public int getSliderValue() {
-        return slider.getValue(); // Placeholder
+        return slider1.getValue(); // Placeholder
     }
 
     public void setHotelName(String hotelName) {
