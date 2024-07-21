@@ -33,6 +33,20 @@ public class ScannerUtil {
         }
     }
 
+    public static float readFloat() {
+        while (true) {
+            if (sc.hasNextFloat()) {
+                float value = sc.nextFloat();
+                sc.nextLine(); // Consume the newline
+                return value;
+            } 
+            else {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine(); // Consume the invalid input
+            }
+        }
+    }
+
     public static String readString() {
         return sc.nextLine();
     }

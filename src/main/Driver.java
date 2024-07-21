@@ -1,6 +1,3 @@
-// TODO: Make a new class for Managing the Reservation?
-// TODO: Translate into MVC
-
 import java.util.ArrayList;
 import model.hotel.HotelList;
 import model.hotel.Reservation;
@@ -213,7 +210,8 @@ public class Driver {
         System.out.println("[4] Update Room Price  - " + hotel.getPrice());
         System.out.println("[5] Remove Reservation - " + hotel.getAllReservations() + " reservation(s)");
         System.out.println("[6] Remove Hotel         [CAUTION]");
-        System.out.println("[7] Back to Main Menu");
+        System.out.println("[7] Set date price modifier");
+        System.out.println("[8] Back to Main Menu");
         System.out.print("Enter choice: ");
         int choice = ScannerUtil.readInt();
         System.out.println();
@@ -238,6 +236,9 @@ public class Driver {
                 hotelList.removeHotel(hotel);
                 break;
             case 7:
+                hotel.promptDatePriceModifier(hotel);
+                break;
+            case 8:
                 return;
             default:
                 System.out.println("Invalid choice!");

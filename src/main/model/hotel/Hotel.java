@@ -23,6 +23,11 @@ public class Hotel {
         this.name = name;
         this.rooms = new ArrayList<Room>();
         addRooms(nRooms);
+
+        this.datePriceModifiers = new double[31];  // Initialize the array with 31 days
+        for (int i = 0; i < datePriceModifiers.length; i++) {
+            datePriceModifiers[i] = 1.0; // No modification by default
+        }
     }
 
     /**
@@ -532,6 +537,44 @@ public class Hotel {
         room.showReservations(maxDay, room);
     }
 
+    private double[] datePriceModifiers; // Array for storing the price modifiers 
+
+    public void promptDatePriceModifier(Hotel hotel) {
+        System.out.print("Enter the day of the month (1-31): ");
+        int day = ScannerUtil.readInt();
+        if (day < 1 || day > 31) {
+            System.out.println("Invalid day. Please enter a value between 1 and 31.");
+            return;
+        }
+        
+        System.out.print("Enter the price modifier for day " + day + " in percentage.");
+        double priceModifier = ScannerUtil.readDouble();
+        double priceModifierPrice = priceModifier/100;
+        
+        if (priceModifier <= 0 || priceModifier > 150 || priceModifier < 50) {
+            System.out.println("Invalid price modifier.");
+            return;
+        }
+
+        setDatePriceModifier(day, priceModifierPrice);
+        System.out.println("Price modifier for day " + day + " updated to " + priceModifier + ".");
+    }
+
+    public double calculateFinalPrice(int checkInDay, int checkOutDay) {
+        double finalPrice = 0.0;
+        for (int day = checkInDay; day < checkOutDay; day++) { // loops through each day of the reservation 
+            finalPrice += basePrice * datePriceModifiers[day - 1]; 
+        }
+        return finalPrice;
+    }
+
+    public void setDatePriceModifier(int day, double priceModifier) {
+        if (day < 1 || day > 31) {
+            System.out.println("Invalid day! Please enter a day between 1 and 31.");
+            return;
+        }
+        datePriceModifiers[day - 1] = priceModifier; // sets day in the array to its price modifier 
+    }
 
     /**
      * Displays the reservation information for a given guest name.
@@ -558,8 +601,7 @@ public class Hotel {
         int checkInDate = reservation.getCheckInDate();
         int checkOutDate = reservation.getCheckOutDate();
 
-        int diffInDays = checkOutDate - checkInDate;
-        double totalPrice = (diffInDays) * reservation.getRoom().getPricePerNight(); // including the check-in day
+        double totalPrice = calculateFinalPrice(checkInDate, checkOutDate); // including the check-in day
 
         System.out.println("Guest Name: " + reservation.getGuestName());
         System.out.println("Room Name: " + reservation.getRoom().getName());
@@ -568,5 +610,4 @@ public class Hotel {
         System.out.println("Total Price: " + totalPrice);
         System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight());
     }
-    
 }
