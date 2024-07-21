@@ -34,6 +34,11 @@ public class Hotel {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return name + " - " + rooms.size() + " rooms";
+    }
+
     /**
      * Returns the base price of the hotel.
      * 

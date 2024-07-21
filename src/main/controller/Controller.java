@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import java.awt.event.*;
+import java.util.ArrayList;
 
 import model.hotel.HotelList;
 import model.hotel.Hotel;
@@ -28,9 +29,9 @@ public class Controller implements ActionListener, DocumentListener {
         gui.setDocumentListener(this);
     }
 
-    // public void updateView() {
-    //     gui.setHotelName();
-    // }
+    public void updateView() {
+        gui.updateHotelList(hotelList.getHotels());
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -46,13 +47,19 @@ public class Controller implements ActionListener, DocumentListener {
         } 
         else {
             hotelList.addHotel(hotelName, rooms);
-            JOptionPane.showMessageDialog(gui, "Hotel " + hotelName + "created successfully",
+            JOptionPane.showMessageDialog(gui, "Hotel " + hotelName + " (" + rooms + " rooms)" 
+                                          + " created successfully!",
                                     "Success", JOptionPane.INFORMATION_MESSAGE);
         }
 
-        // updateView();
+        updateView();
 
     }
+
+    public ArrayList<Hotel> getHotels() {
+        return hotelList.getHotels();
+    }
+
 
     @Override
     public void insertUpdate(DocumentEvent e) {

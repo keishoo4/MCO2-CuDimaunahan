@@ -4,14 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 
 import javax.swing.event.*;
+
+import model.hotel.Hotel;
+
 import java.awt.event.*;
 
 import java.util.ArrayList;
 
 public class GUI extends JFrame {
-    JTextField hotelNameField;
-    JButton createHotelButton;
-    JSlider slider;
+    private JTextField hotelNameField;
+    private JButton createHotelButton;
+    private JSlider slider;
+    private JList<Hotel> hotelJList;
+    private DefaultListModel<Hotel> hotelListModel;
 
 
     public GUI() {
@@ -25,7 +30,6 @@ public class GUI extends JFrame {
         init(mainPanel); // Main program UI
         add(mainPanel);
 
-        setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -79,10 +83,12 @@ public class GUI extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
         JPanel tabHotelListPanel = new JPanel();
 
+        displayHotels(tabHotelListPanel);
+
         
 
 
-        tabbedPane.addTab("Hotel List");
+        tabbedPane.addTab("Hotel List", tabHotelListPanel);
 
 
 
@@ -90,16 +96,32 @@ public class GUI extends JFrame {
         mainPanel.add(tabbedPane); // Add the rightPanel to the mainPanel
     }
 
+    public void displayHotels(JPanel tabHotelListPanel) {
+        hotelListModel = new DefaultListModel<>();
+        hotelJList     = new JList<>(hotelListModel);
+
+        JScrollPane hotelListScrollPane = new JScrollPane(hotelJList);
+        hotelListScrollPane.setPreferredSize(new Dimension(300, 150));
+        tabHotelListPanel.add(hotelListScrollPane);
+    }
+
+    public void updateHotelList(ArrayList<Hotel> hotels) {
+        hotelListModel.clear();
+        for (Hotel hotel : hotels) {
+            hotelListModel.addElement(hotel);
+        }
+    }
+
     public void setActionListener(ActionListener listener) {
         createHotelButton.addActionListener(listener);
     }
 
-    public int getSliderValue() {
-        return slider.getValue(); // Placeholder
-    }
-
     public void setDocumentListener(DocumentListener listener) {
         hotelNameField.getDocument().addDocumentListener(listener);
+    }
+
+    public int getSliderValue() {
+        return slider.getValue(); // Placeholder
     }
 
     public void setHotelName(String hotelName) {
