@@ -12,17 +12,25 @@ public class Hotel {
     private String name;
     private ArrayList<Room> rooms;
     private double basePrice = 1299.0;
+    private ArrayList<Date> dates = new ArrayList<Date>();
+    private double[] datePriceModifiers = new double[31]; // Array for storing the price modifiers 
 
     /**
      * Constructs a Hotel object with the given name and number of rooms.
      * 
      * @param name    the name of the hotel
-     * @param nRooms  the number of rooms in the hotel
+     * @param rooms  the number of rooms in the hotel
+     * @param deluxeRooms the number of deluxe rooms in the hotel
+     * @param execRooms the number of suite rooms in the hotel
      */
-    public Hotel(String name, int nRooms) {
+    public Hotel(String name, int rooms, int deluxeRooms, int execRooms) {
         this.name = name;
         this.rooms = new ArrayList<Room>();
-        addRooms(nRooms);
+        addRooms(rooms, deluxeRooms, execRooms);
+    
+        for (int i = 0; i < datePriceModifiers.length; i++) {
+            datePriceModifiers[i] = 1.0;
+        }
     }
 
     /**
@@ -89,11 +97,19 @@ public class Hotel {
     /**
      * Adds the specified number of rooms to the hotel.
      * 
-     * @param nRooms the number of rooms to add
+     * @param rooms the number of rooms to add
+     * @param deluxeRooms the number of deluxe rooms to add
+     * @param execRooms the number of suite rooms to add
      */
-    public void addRooms(int nRooms) {
-        for (int i = 0; i < nRooms; i++)
+    public void addRooms(int rooms, int deluxeRooms, int execRooms) {
+        for (int i = 0; i < rooms; i++)
             this.rooms.add(new Room("RM" + (i + 1), basePrice));
+
+        for (int i = rooms; i < rooms + deluxeRooms; i++)
+            this.rooms.add(new DeluxeRoom("RM" + (i + 1) + "-DL", basePrice));
+
+        for (int i = rooms + deluxeRooms; i < rooms + deluxeRooms + execRooms; i++)
+            this.rooms.add(new ExecutiveRoom("RM" + (i + 1) + "-EX", basePrice));
     }
 
     /**
@@ -274,19 +290,20 @@ public class Hotel {
      */
     public void addRoomsPrompt(Hotel hotel) {
         System.out.print("Enter number of rooms to add: ");
-        int numRooms = ScannerUtil.readInt();
+        int rooms, deluxeRooms, execRooms; 
+        
+        rooms = ScannerUtil.readInt();    
 
-        if (numRooms < 1) {
+        if (rooms < 1) {
             System.out.println("Invalid number of rooms!\n");
             return;
         } 
-
-        if (numRooms + hotel.getRooms().size() > 50) {
+        if (rooms + hotel.getRooms().size() > 50) {
             System.out.println("Cannot exceed 50 rooms!\n");
             return;
         }
 
-        System.out.println("Confirm adding " + numRooms + 
+        System.out.println("Confirm adding " + rooms + 
                            " room(s) to \"" + hotel.getName() + "\"");
         System.out.print("Confirm [Yes/No]: ");
         boolean confirmed = ScannerUtil.readBoolean();
@@ -296,7 +313,7 @@ public class Hotel {
             return;
         }
 
-        hotel.addRooms(numRooms);
+        // hotel.addRooms(rooms, deluxeRooms, execRooms);
         System.out.println("Total Room(s) is " + hotel.getRooms().size() + ".\n");
     }
 
@@ -375,6 +392,48 @@ public class Hotel {
         System.out.println("Removal Success!\n");
     }
 
+    public ArrayList<Date> getDates() {
+        return dates;
+    }
+
+    public double fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
+        double totalPrice = 0.0;
+
+        for (int i = 1; i <= 31; i++) {
+            double nightPrice = 0.0;
+
+            if (i >= checkInDate && i < checkOutDate) {
+                // Get the date modifier for the current day
+                double dateModifier = getDateModifier(i);
+                System.out.println("Date Modifier: " + dateModifier);
+                // Calculate the price for the night including the date modifier
+                nightPrice = pricePerNight * getDiscountCode(discountCode) * dateModifier;
+
+                // Add the Date object to the list with the calculated price
+                dates.add(new Date(i, nightPrice));
+                totalPrice += nightPrice;
+            } else {
+                // Add the Date object with zero price for days outside the reservation
+                dates.add(new Date(i, 0));
+            }
+        }
+        return totalPrice;
+    }
+
+    
+    public double getDiscountCode(String discountCode) {
+        switch (discountCode) {
+            case "I_WORK_HERE":
+                return 0.9; // 10% discount
+            case "STAY4_GET1":
+                return 1.0; // No discount multiplier here; handled differently in applyDiscount
+            case "PAYDAY":
+                return 0.93; // 7% discount
+            default:
+                return 1.0; // No discount
+        }
+    }
+
     /**
      * Updates the price of the hotel room.
      *
@@ -382,25 +441,72 @@ public class Hotel {
      */
     public void updateRoomPrice(Hotel hotel) {
         if (hotel.reservationStatus() == true) {
-            System.out.println("Cannot update price with reservation(s).\n");
+            System.out.println("Cannot update price nor set date modifier with reservation(s).\n");
             return;
         }
 
-        System.out.print("Enter the new room price: ");
-        double newPrice = ScannerUtil.readDouble();
+        System.out.print("Would you like to update the base room price or set a modifier?: \n");
+        System.out.println("[1] Update base price of rooms");
+        System.out.println("[2] Set a date modifier");
+        int choice = ScannerUtil.readInt();
 
-        System.out.println("Confirm change of room price to " + newPrice);
-        System.out.print("Confirm [Yes/No]: ");
-        boolean confirmed = ScannerUtil.readBoolean();
+        switch (choice){
+            case 1:
+                System.out.print("Enter the new room price: ");
+                double newPrice = ScannerUtil.readDouble();
 
-        if (!confirmed) {
-            System.out.println("\nRoom price change cancelled.\n");
+                System.out.println("Confirm change of room price to " + newPrice);
+                System.out.print("Confirm [Yes/No]: ");
+                boolean confirmed = ScannerUtil.readBoolean();
+
+                if (!confirmed) {
+                    System.out.println("\nRoom price change cancelled.\n");
+                    return;
+                }
+
+                hotel.setNewPrice(newPrice); // Update the base price
+                hotel.changeRoomPrice(newPrice); // Update the price of all rooms
+                System.out.println("Room price updated to " + newPrice + ".\n");
+            break;
+            case 2:
+                System.out.print("Enter the day of the month (1-31): ");
+                int day = ScannerUtil.readInt();
+                if (day < 1 || day > 31) {
+                    System.out.println("Invalid day. Please enter a value between 1 and 31.");
+                    return;
+                }
+                
+                System.out.print("Enter the price modifier for day " + day + " in percentage.");
+                double priceModifier = ScannerUtil.readDouble();
+                
+                if (priceModifier <= 0 || priceModifier > 150 || priceModifier < 50) {
+                    System.out.println("Invalid price modifier.");
+                    return;
+                }
+
+                setDatePriceModifier(day, priceModifier);
+                System.out.println("Price modifier for day " + day + " updated to " + priceModifier + ".");
+            break;
+            default:
+                System.out.println("Invalid choice.\n");
+        }
+    }
+
+    public void setDatePriceModifier(int day, double priceModifier) {
+        if (day < 1 || day > 31) {
+            System.out.println("Invalid day! Please enter a day between 1 and 31.");
             return;
         }
+        datePriceModifiers[day - 1] = priceModifier / 100; // sets day in the array to its price modifier 
+    }
 
-        hotel.setNewPrice(newPrice); // Update the base price
-        hotel.changeRoomPrice(newPrice); // Update the price of all rooms
-        System.out.println("Room price updated to " + newPrice + ".\n");
+    public double getDateModifier(int day) {
+        if (day < 1 || day > 31) {
+            System.out.println("Invalid day! Please enter a day between 1 and 31.");
+            return 1.0; // Default modifier if day is invalid
+        }
+            // Return the date price modifier for the specified day
+            return datePriceModifiers[day - 1]; 
     }
 
     /**
@@ -457,6 +563,12 @@ public class Hotel {
      *
      * @param hotel The hotel object for which to display the information.
      */
+    /**
+     * Displays the high-level information of a hotel, including the hotel name, total number of rooms,
+     * and estimated earnings for the month.
+     *
+     * @param hotel The hotel object for which to display the information.
+     */
     public void viewHighLevelInfo(Hotel hotel) {
         System.out.println("Hotel Name: " + hotel.getName());
         System.out.println("Total Number of Rooms: " + hotel.getRooms().size());
@@ -466,13 +578,18 @@ public class Hotel {
                 .mapToDouble(reservation -> {
                     int checkInDate = reservation.getCheckInDate();
                     int checkOutDate = reservation.getCheckOutDate();
+                    Room room = reservation.getRoom();
+                    String discountCode = reservation.getDiscountCode();
 
-                    int diffInDays = checkOutDate - checkInDate;
-                    return (diffInDays) * reservation.getRoom().getPricePerNight(); // including the check-in day
+                    // Use the room's fillDates method to calculate the total price
+                    double pricePerNight = room.getPricePerNight();
+
+                    // Calculate the total price for this reservation
+                    return fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
                 })
                 .sum();
 
-        System.out.println("Estimated Earnings for the Month: " + estimatedEarnings);
+        System.out.println("Estimated Earnings for the Month: " + String.format("%.2f", estimatedEarnings));
     }
 
     /**
@@ -537,80 +654,6 @@ public class Hotel {
         room.showReservations(maxDay, room);
     }
 
-    // private double[] datePriceModifiers; // Array for storing the price modifiers 
-
-    // public void promptDatePriceModifier(Hotel hotel) {
-    //     if (hotel.reservationStatus() == true) {
-    //         System.out.println("Cannot modify price with reservation(s).\n");
-    //         return;
-    //     }
-        
-    //     System.out.print("Enter the day of the month (1-31): ");
-    //     int day = ScannerUtil.readInt();
-    //     if (day < 1 || day > 31) {
-    //         System.out.println("Invalid day. Please enter a value between 1 and 31.");
-    //         return;
-    //     }
-        
-    //     System.out.print("Enter the price modifier for day " + day + " in percentage.");
-    //     double priceModifier = ScannerUtil.readDouble();
-    //     double priceModifierPrice = priceModifier/100;
-        
-    //     if (priceModifier <= 0 || priceModifier > 150 || priceModifier < 50) {
-    //         System.out.println("Invalid price modifier.");
-    //         return;
-    //     }
-
-    //     setDatePriceModifier(day, priceModifierPrice);
-    //     System.out.println("Price modifier for day " + day + " updated to " + priceModifier + ".");
-    // }
-
-    // public double calculateDatePriceModifier(int checkInDay, int checkOutDay) {
-    //     double modifier = 0.0;
-    //     for (int day = checkInDay; day < checkOutDay; day++) { // loops through each day of the reservation 
-    //         modifier = datePriceModifiers[day - 1]; 
-    //     }
-
-    //     return modifier;
-    // }
-
-    // public void setDatePriceModifier(int day, double priceModifier) {
-    //     if (day < 1 || day > 31) {
-    //         System.out.println("Invalid day! Please enter a day between 1 and 31.");
-    //         return;
-    //     }
-    //     datePriceModifiers[day - 1] = priceModifier; // sets day in the array to its price modifier 
-    // }
-
-    // public double applyDiscount(int checkInDay, int checkOutDay, String discountCode, Room room) {
-    //     double pricePerNight = room.getPricePerNight();
-    //     double discount = 1;
-    //     switch (discountCode) {
-    //         case "I_WORK_HERE":
-    //             discount = 0.9; // 10% discount
-    //             System.out.println("Discount code applied: I_WORK_HERE");
-    //             break;
-    //         case "STAY4_GET1":
-    //             if (checkOutDay - checkInDay >= 5) {
-    //                 discount = pricePerNight * datePriceModifiers[checkInDay - 1]; // first day free
-    //                 System.out.println("Discount code applied: STAY4_GET1");
-    //             }
-    //             break;
-    //         case "PAYDAY":
-    //             if ((checkInDay <= 15 && checkOutDay > 15) || (checkInDay <= 30 && checkOutDay > 30)) {
-    //                 discount = 0.93; // 7% discount
-    //                 System.out.println("Discount code applied: PAYDAY");
-    //             }
-    //             break;
-    //         default:
-    //             System.out.println("Invalid discount code or no discount code entered.");
-    //             break;
-    //     }
-    
-    //     return discount;
-    // }
-
-
     /**
      * Displays the reservation information for a given guest name.
      * 
@@ -636,14 +679,16 @@ public class Hotel {
         int checkInDate = reservation.getCheckInDate();
         int checkOutDate = reservation.getCheckOutDate();
 
-        // double initialPrice = hotel.calculateFinalPrice(checkInDate, checkOutDate);
-        // double finalPrice = applyDiscount(initialPrice, checkInDate, checkOutDate);
+        Room room = reservation.getRoom();
+        String discountCode = reservation.getDiscountCode();
+        double totalPrice = fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
+
 
         System.out.println("Guest Name: " + reservation.getGuestName());
         System.out.println("Room Name: " + reservation.getRoom().getName());
         System.out.println("Check-in Date: 1-" + (checkInDate < 10 ? "0" + checkInDate : checkInDate));
         System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
-        // System.out.println("Total Price: " + String.format("%.2f", finalPrice)); // NOT UPDATED TO CONSIDER DISCOUNT CODES, TO DO SOON
-        // System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight());
+        System.out.println("Total Price: " + String.format("%.2f", totalPrice)); // NOT UPDATED TO CONSIDER DISCOUNT CODES, TO DO SOON
+        // System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight()); // MAYBE REMOVE
     }
 }

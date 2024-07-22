@@ -19,7 +19,7 @@ import java.util.Date;
 
 public class GUI extends JFrame {
     private JTextField hotelNameField, guestNameField;
-    private JButton createHotelButton, bookingBtn, manageHotelBtn, clearButton;
+    private JButton createHotelBtn, bookingBtn, manageHotelBtn, clearBtn;
     private JSlider slider1, slider2, slider3; // SLIDER IS TEMPORARY
     private JList<Hotel> hotelJList;
     private DefaultListModel<Hotel> hotelListModel;
@@ -48,7 +48,7 @@ public class GUI extends JFrame {
 
         // HOTEL NAME TEXT FIELD
         JPanel hotelNameAndRoomPanel = new JPanel();
-        hotelNameAndRoomPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        hotelNameAndRoomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JLabel hotelNameLabel = new JLabel("Hotel Name: ");
         hotelNameField = new JTextField(20);
@@ -155,13 +155,13 @@ public class GUI extends JFrame {
         JPanel mainButtons = new JPanel();
         mainButtons.setLayout(new FlowLayout(FlowLayout.RIGHT));
         // Create Hotel Button
-        createHotelButton = new JButton("Create Hotel");
-        createHotelButton.setActionCommand("ADD_HOTEL"); // For Controller
-        mainButtons.add(createHotelButton);
+        createHotelBtn = new JButton("Create Hotel");
+        createHotelBtn.setActionCommand("ADD_HOTEL"); // For Controller
+        mainButtons.add(createHotelBtn);
         // Clear Text Field Button
-        clearButton = new JButton("Clear");
-        clearButton.setActionCommand("CLEAR_HOTEL"); // For Controller
-        mainButtons.add(clearButton);
+        clearBtn = new JButton("Clear");
+        clearBtn.setActionCommand("CLEAR_HOTEL"); // For Controller
+        mainButtons.add(clearBtn);
 
         leftPanelUpper.add(sliderRooms);
         leftPanelUpper.add(mainButtons);
@@ -179,7 +179,7 @@ public class GUI extends JFrame {
         bookingBtn = new JButton("Book a Room (Pick from Hotel List)");
         bookingBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         bookingBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, bookingBtn.getPreferredSize().height));
-        bookingBtn.setEnabled(false);
+        // bookingBtn.setEnabled(false);
         bookingBtn.setActionCommand("BOOK_ROOM"); // For Controller
         rightPanelUpper.add(bookingBtn);
 
@@ -192,26 +192,19 @@ public class GUI extends JFrame {
 
         // GUEST NAME TEXT FIELD
         JPanel guestNamePanel = new JPanel();
-        guestNamePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        guestNamePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JLabel guestLabel = new JLabel("Guest Name: ");
         guestNameField = new JTextField(20);
         guestNamePanel.add(guestLabel);
         guestNamePanel.add(guestNameField);
 
-        // Set fixed size for the label to prevent resizing
-        Dimension labelSize4 = new Dimension(150, 50);
-        guestNamePanel.setMinimumSize(labelSize4);
-        guestNamePanel.setPreferredSize(labelSize4);
-        guestNamePanel.setMaximumSize(labelSize4); 
-
-
-
         // CHECK-IN DATE
         JPanel checkInPanel = new JPanel();
-        checkInPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        checkInPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 1));
 
-        JLabel checkInLabel = new JLabel("Check-In Date: ");
+        
+        JLabel checkInLabel = new JLabel("  Check-In Date: ");
         
         NumberFormat format = NumberFormat.getInstance(); // Step 1: Create a NumberFormat instance
         format.setGroupingUsed(false); // Disable comma grouping
@@ -234,37 +227,52 @@ public class GUI extends JFrame {
         JFormattedTextField checkInField = new JFormattedTextField(numberFormatter);
         checkInField.setColumns(5); // Set the column size
 
-        // Set fixed size for the label to prevent resizing
-        Dimension labelSize5 = new Dimension(150, 50);
-        checkInPanel.setMinimumSize(labelSize5);
-        checkInPanel.setPreferredSize(labelSize5);
-        checkInPanel.setMaximumSize(labelSize5); 
 
         // CHECK-OUT DATE
         JPanel checkOutPanel = new JPanel();
-        checkOutPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Corrected from checkInPanel to checkOutPanel
-
+        checkOutPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 1));
         JLabel checkOutLabel = new JLabel("Check-Out Date: ");
-        checkOutPanel.add(checkOutLabel);
 
+        format = NumberFormat.getInstance();
+        format.setGroupingUsed(false);
 
+        numberFormatter = new NumberFormatter(format) { // Step 2: Set up a NumberFormatter
+            @Override
+            public Object stringToValue(String string) throws ParseException {
+                if (string == null || string.trim().isEmpty()) {
+                    return null;
+                }
+                return super.stringToValue(string);
+            }
+        };
+        numberFormatter.setValueClass(Integer.class);
+        numberFormatter.setMinimum(1);
+        numberFormatter.setMaximum(31);
+        numberFormatter.setAllowsInvalid(false);
 
+        JFormattedTextField checkOutField = new JFormattedTextField(numberFormatter);
+        checkOutField.setColumns(5);
+        
 
-        Dimension labelSize6 = new Dimension(150, 50);
-        // checkInPanel.setMinimumSize(labelSize6);
-        // checkInPanel.setPreferredSize(labelSize6);
-        // checkInPanel.setMaximumSize(labelSize6); 
+        // BOOK BUTTON
+        JButton bookBtn = new JButton("BOOK");
+        bookBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bookBtn.setActionCommand("BOOK_ROOM"); // For Controller
+
+        setupBookingButtonActionListener(bookingFrame);
 
         checkInPanel.add(checkInLabel);
         checkInPanel.add(checkInField);
 
         checkOutPanel.add(checkOutLabel);
-        // checkOutPanel.add(checkOutField);
+        checkOutPanel.add(checkOutField);
 
 
         bookingPanel.add(guestNamePanel);
         bookingPanel.add(checkInPanel);       
         bookingPanel.add(checkOutPanel);
+        bookingPanel.add(bookBtn);
+        bookingPanel.add(Box.createVerticalGlue());
 
 
         bookingFrame.add(bookingPanel);
@@ -312,8 +320,8 @@ public class GUI extends JFrame {
     }
 
     public void setActionListener(ActionListener listener) {
-        createHotelButton.addActionListener(listener);
-        clearButton.addActionListener(listener);
+        createHotelBtn.addActionListener(listener);
+        clearBtn.addActionListener(listener);
     }
 
     public void setDocumentListener(DocumentListener listener) {
@@ -326,8 +334,8 @@ public class GUI extends JFrame {
             public void focusGained(FocusEvent e) {
                 // Code to execute when component gains focus
                 hotelNameField.setText("");
-                createHotelButton.setEnabled(true);
-                clearButton.setEnabled(true);
+                createHotelBtn.setEnabled(true);
+                clearBtn.setEnabled(true);
             }
 
             @Override
@@ -335,8 +343,8 @@ public class GUI extends JFrame {
                 // Code to execute when component loses focus
                 if (hotelNameField.getText().isEmpty()) {
                     hotelNameField.setText("Enter Hotel Name...");
-                    createHotelButton.setEnabled(false);
-                    clearButton.setEnabled(false);
+                    createHotelBtn.setEnabled(false);
+                    clearBtn.setEnabled(false);
                 }
             }
         });
@@ -355,8 +363,20 @@ public class GUI extends JFrame {
         });
     }
 
-    public int getSliderValue() {
-        return slider1.getValue(); // Placeholder
+    public void setCreateBtnEnabled(boolean enabled) {
+        createHotelBtn.setEnabled(enabled);
+    }
+
+    public int getRoomsSliderValue() {
+        return slider1.getValue();
+    }
+
+    public int getDeluxeRoomsSliderValue() {
+        return slider2.getValue();
+    }
+
+    public int getExecRoomsSliderValue() {
+        return slider3.getValue();
     }
 
     public void setHotelName(String hotelName) {

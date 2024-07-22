@@ -19,11 +19,13 @@ public class Controller implements ActionListener, DocumentListener {
     private Reservation reservation;
     private GUI gui;
     private HotelController hotelController;
+    private RoomController roomController;
 
     public Controller(HotelList hotelList, GUI gui) {
         this.hotelList = hotelList;
         this.gui = gui;
         this.hotelController = new HotelController(hotelList, gui);
+        this.roomController = new RoomController(hotel, room, gui);
 
         // updateView();
 
@@ -37,6 +39,7 @@ public class Controller implements ActionListener, DocumentListener {
 
     public void updateClearTextFields() {
         gui.clearTextFields();
+        gui.setCreateBtnEnabled(false);
     }
 
     public void updateRoomBooking() {
@@ -50,13 +53,18 @@ public class Controller implements ActionListener, DocumentListener {
         switch (command) {
             case "ADD_HOTEL":
                 String hotelName = gui.getHotelName().trim();
-                int rooms = gui.getSliderValue();
+                int rooms, deluxeRooms, execRooms; 
+                
+                rooms = gui.getRoomsSliderValue();
+                deluxeRooms = gui.getDeluxeRoomsSliderValue();
+                execRooms = gui.getExecRoomsSliderValue();
+                
                 if (hotelName.isEmpty()) {
                     JOptionPane.showMessageDialog(gui, "Please enter a hotel name.", 
                                                   "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                hotelController.addHotel(hotelName, rooms);
+                hotelController.addHotel(hotelName, rooms, deluxeRooms, execRooms); // From Model
                 updateHotelList();
                 break;
             
@@ -65,6 +73,7 @@ public class Controller implements ActionListener, DocumentListener {
                 break;    
 
             case "BOOK_ROOM":
+                
                 updateRoomBooking();
                 break;
         }
@@ -79,17 +88,34 @@ public class Controller implements ActionListener, DocumentListener {
             this.gui = gui;
         }
     
-        public void addHotel(String hotelName, int rooms) {
-            // Implementation for adding a hotel
+        public void addHotel(String hotelName, int rooms, int deluxeRooms, int execRooms) {
+            int totalRooms;
             if (hotelList.sameHotelName(hotelName)) {
                 JOptionPane.showMessageDialog(gui, "Hotel with the same name already exists", 
                                               "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                hotelList.addHotel(hotelName, rooms);
-                JOptionPane.showMessageDialog(gui, "Hotel " + hotelName + " (" + rooms + " rooms)" 
+                totalRooms = rooms + deluxeRooms + execRooms;
+                hotelList.addHotel(hotelName, rooms, deluxeRooms, execRooms);
+                JOptionPane.showMessageDialog(gui, "Hotel " + hotelName + " (" + totalRooms + " rooms)" 
                                               + " created successfully!",
                                               "Success", JOptionPane.INFORMATION_MESSAGE);
             }
+        }
+    }
+
+    public class RoomController {
+        private Hotel hotel;
+        private Room room;
+        private GUI gui;
+    
+        public RoomController(Hotel hotel, Room room, GUI gui) {
+            this.hotel = hotel;
+            this.room = room;
+            this.gui = gui;
+        }
+    
+        public void bookRoom() {
+            // Implementation for booking a room
         }
     }
 

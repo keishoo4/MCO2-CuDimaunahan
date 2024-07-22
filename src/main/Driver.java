@@ -10,10 +10,12 @@ import controller.Controller;
 import utils.ScannerUtil;
 
 public class Driver {
+    private Room room;
     public static void main(String[] args) {
         HotelList   hotelList  = new HotelList();
         GUI         gui       = new GUI();
         Controller  controller = new Controller(hotelList, gui);
+        Room room;
 
         gui.setVisible(true);
 
@@ -31,7 +33,8 @@ public class Driver {
 
             switch (choice) {
                 case 1:
-                    createHotel(hotelList);
+                    // createHotel(hotelList);
+                    addHotels(hotelList);
                     break;
                 case 2:
                     mainHotelSelection(hotelList);
@@ -52,25 +55,83 @@ public class Driver {
         }
     }
 
-    private static void createHotel(HotelList hotelList) {
+    // private static void createHotel(HotelList hotelList) {
+    //     System.out.print("Enter hotel name: ");
+    //     String hotelName = ScannerUtil.readString();
+
+    //     if (hotelList.sameHotelName(hotelName)) {
+    //         System.out.println("Hotel with this name already exists!\n");
+    //         return;
+    //     }
+
+    //     System.out.print("Enter number of rooms (1-50): ");
+    //     int roomCount = ScannerUtil.readInt();
+
+    //     if (roomCount < 1 || roomCount > 50) {
+    //         System.out.println("Invalid number of rooms! Must be between 1 and 50.\n");
+    //         return;
+    //     }
+
+    //     hotelList.addHotel(hotelName, roomCount);
+    //     System.out.println("\nHotel \"" + hotelName + "\" created successfully!\n");
+    // }
+
+    public static void addHotels(HotelList hotelList) {
+        String hotelName;
+        int baseRooms, deluxeRooms, execRooms, totalRooms, 
+            maxDeluxe, maxExec, remainingRooms;
+        
         System.out.print("Enter hotel name: ");
-        String hotelName = ScannerUtil.readString();
-
+        hotelName = ScannerUtil.readString();
+    
         if (hotelList.sameHotelName(hotelName)) {
-            System.out.println("Hotel with this name already exists!\n");
+            System.out.println("Hotel with this name already exists!");
+            return;
+        }
+    
+        System.out.print("Enter number of base rooms (1-50): ");
+        baseRooms = ScannerUtil.readInt();
+    
+        if (baseRooms < 1 || baseRooms > 50) {
+            System.out.println("Invalid number of base rooms! Must be between 1 and 50.");
+            return;
+        }
+    
+        maxDeluxe = (int) Math.floor(baseRooms * 0.6); // 3/5 ratio
+        maxExec = (int) Math.floor(baseRooms * 0.4);   // 2/5 ratio
+    
+        System.out.print("Enter number of deluxe rooms (0-" + maxDeluxe + "): ");
+        deluxeRooms = ScannerUtil.readInt();
+    
+        if (deluxeRooms < 0 || deluxeRooms > maxDeluxe) {
+            System.out.println("Invalid number of deluxe rooms!");
+            return;
+        }
+    
+        remainingRooms = 50 - baseRooms - deluxeRooms;
+        maxExec = Math.min(maxExec, remainingRooms);
+    
+        System.out.print("Enter number of executive rooms (0-" + maxExec + "): ");
+        execRooms = ScannerUtil.readInt();
+    
+        if (execRooms < 0 || execRooms > maxExec) {
+            System.out.println("Invalid number of executive rooms!");
+            return;
+        }
+    
+        totalRooms = baseRooms + deluxeRooms + execRooms;
+    
+        if (totalRooms > 50) {
+            System.out.println("Total number of rooms exceeds the maximum of 50!");
             return;
         }
 
-        System.out.print("Enter number of rooms (1-50): ");
-        int roomCount = ScannerUtil.readInt();
-
-        if (roomCount < 1 || roomCount > 50) {
-            System.out.println("Invalid number of rooms! Must be between 1 and 50.\n");
-            return;
-        }
-
-        hotelList.addHotel(hotelName, roomCount);
-        System.out.println("\nHotel \"" + hotelName + "\" created successfully!\n");
+        hotelList.addHotel(hotelName, baseRooms, deluxeRooms, execRooms);
+        System.out.println("Hotel " + hotelName + " (" + totalRooms + " rooms) created successfully!");
+        // Summary of each in println
+        System.out.println("     Base Rooms - [" + baseRooms + "]");
+        System.out.println("   Deluxe Rooms - [" + deluxeRooms + "]");
+        System.out.println("Executive Rooms - [" + execRooms + "]");
     }
 
     public static void simulateBooking(HotelList hotelList) {        
@@ -173,18 +234,21 @@ public class Driver {
 
                 System.out.print("Enter discount code (or press Enter to skip): ");
                 String discountCode = ScannerUtil.readString();
-                if (discountCode.equals("I_WORK_HERE") || discountCode.equals("STAY4_GET1") || discountCode.equals("PAYDAY")){
-                    System.out.println("Discount code applied!\n");
+                if (discountCode.equals("I_WORK_HERE")) {
+                    System.out.println("Discount code I_WORK_HERE applied!\n");
+                } else if (discountCode.equals("STAY4_GET1") && checkOutDate - checkInDate >= 4){
+                    System.out.println("Discount code STAY4_GET1 applied!\n");
+                } else if (discountCode.equals("PAYDAY") && 
+                ((checkInDate <= 15 && 15 < checkOutDate) || (checkInDate <= 30 && 30 < checkOutDate))) {
+                    System.out.println("Discount code PAYDAY applied!\n");
+                } else if (discountCode.equals("")) {
+                    System.out.println("No discount code applied.\n");
                 } else{
                     System.out.println("Invalid discount code!\n");
                 }
 
-                room.fillDates(room.getPricePerNight(),checkInDate, checkOutDate, discountCode);
-
-                // double finalPrice = hotel.calculateFinalPrice(checkInDate, checkOutDate);
-                // finalPrice = hotel.applyDiscount(finalPrice, checkInDate, checkOutDate, discountCode, room);
-
-                room.bookInputInfo(room, reservations, guestName, checkInDate, checkOutDate);
+                hotel.fillDates(room.getPricePerNight(),checkInDate, checkOutDate, discountCode);
+                room.bookInputInfo(room, reservations, guestName, checkInDate, checkOutDate, discountCode);
 
                 // Instantiate arraylist for date
         
@@ -222,11 +286,10 @@ public class Driver {
         System.out.println("[1] Change Hotel Name  - " + hotel.getName());
         System.out.println("[2] Add Room           - " + hotel.getRooms().size() + " room(s)");
         System.out.println("[3] Remove Room          [CAUTION]");
-        System.out.println("[4] Update Room Price  - " + hotel.getPrice());
+        System.out.println("[4] Update Room Price and Date Modifier  - " + hotel.getPrice());
         System.out.println("[5] Remove Reservation - " + hotel.getAllReservations() + " reservation(s)");
         System.out.println("[6] Remove Hotel         [CAUTION]");
-        System.out.println("[7] Set date price modifier");
-        System.out.println("[8] Back to Main Menu");
+        System.out.println("[7] Back to Main Menu");
         System.out.print("Enter choice: ");
         int choice = ScannerUtil.readInt();
         System.out.println();
@@ -251,9 +314,6 @@ public class Driver {
                 hotelList.removeHotel(hotel);
                 break;
             case 7:
-                Date.promptDatePriceModifier(hotel);
-                break;
-            case 8:
                 return;
             default:
                 System.out.println("Invalid choice!");

@@ -22,12 +22,13 @@ public class Reservation {
      * @param checkOutDate  the check-out date of the reservation
      * @param room          the room reserved for the guest
      */
-    public Reservation(String guestName, int checkInDate, int checkOutDate, Room room) {
+    public Reservation(String guestName, int checkInDate, int checkOutDate, Room room, String discountCode) {
         this.guestName = guestName;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.room = room;
         this.totalPrice = calculateTotalPrice();
+        this.discountCode = discountCode;
     }
 
     /**
