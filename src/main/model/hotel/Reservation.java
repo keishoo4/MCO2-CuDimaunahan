@@ -1,7 +1,5 @@
 package model.hotel;
 
-import utils.ScannerUtil;
-
 /**
  * The Reservation class represents a reservation made by a guest.
  */

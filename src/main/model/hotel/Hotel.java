@@ -65,6 +65,10 @@ public class Hotel {
         return rooms;
     }
 
+    public ArrayList<Date> getDates() {
+        return dates;
+    }
+
     /**
      * Sets the name of the hotel.
      * 
@@ -392,10 +396,6 @@ public class Hotel {
         System.out.println("Removal Success!\n");
     }
 
-    public ArrayList<Date> getDates() {
-        return dates;
-    }
-
     public double fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
         double totalPrice = 0.0;
 
@@ -690,5 +690,16 @@ public class Hotel {
         System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
         System.out.println("Total Price: " + String.format("%.2f", totalPrice)); // NOT UPDATED TO CONSIDER DISCOUNT CODES, TO DO SOON
         // System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight()); // MAYBE REMOVE
+    }
+
+    public void bookRoomType(Hotel hotel, Room room) {
+        System.out.println("[1] Base Room - " + room.getPricePerNight());
+        // Instances of DeluxeRoom or ExecutiveRoom
+        if (room instanceof DeluxeRoom) {
+            System.out.println("[2] Deluxe Room - " + room.getPricePerNight());
+        } 
+        else if (room instanceof ExecutiveRoom) {
+            System.out.println("[3] Executive Room - " + room.getPricePerNight());
+        }
     }
 }

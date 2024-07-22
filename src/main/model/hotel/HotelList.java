@@ -129,7 +129,7 @@ public class HotelList {
         // Summary of each in println
         System.out.println("     Base Rooms - [" + baseRooms + "]");
         System.out.println("   Deluxe Rooms - [" + deluxeRooms + "]");
-        System.out.println("Executive Rooms - [" + execRooms + "]");
+        System.out.println("Executive Rooms - [" + execRooms + "]\n");
     }
 
     /**

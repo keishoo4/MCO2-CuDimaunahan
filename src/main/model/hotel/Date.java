@@ -1,5 +1,4 @@
 package model.hotel;
-import utils.ScannerUtil;
 
 public class Date {
     private int day;

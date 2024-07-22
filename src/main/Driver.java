@@ -10,7 +10,6 @@ import controller.Controller;
 import utils.ScannerUtil;
 
 public class Driver {
-    private Room room;
     public static void main(String[] args) {
         HotelList   hotelList  = new HotelList();
         GUI         gui       = new GUI();
@@ -230,6 +229,20 @@ public class Driver {
                         System.out.println("Invalid reservation! Try a new date or room.\n");
                         return;
                     }
+                }
+
+                // CHOOSING ROOMS STARTS HERE
+                System.out.println("What kind of room would you like to book?");
+                hotel.bookRoomType(hotel, room);
+                int roomChoice = ScannerUtil.readInt();
+                if (roomChoice == 1) {
+                    System.out.println("Standard room booked!\n");
+                } else if (roomChoice == 2){
+                    System.out.println("Deluxe room booked!\n");
+                } else if (roomChoice == 3) {
+                    System.out.println("Executive room booked!\n");
+                } else{
+                    System.out.println("Invalid room type!\n");
                 }
 
                 System.out.print("Enter discount code (or press Enter to skip): ");

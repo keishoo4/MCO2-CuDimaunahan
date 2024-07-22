@@ -1,7 +1,6 @@
 package model.hotel;
 
 import java.util.ArrayList;
-import utils.ScannerUtil;
 
 /**
  * The Room class represents a room in a hotel.
@@ -11,7 +10,6 @@ public class Room {
     private double pricePerNight;
     private ArrayList<Reservation> reservations;
     private boolean isBooked = false;
-    private ArrayList<Date> dates = new ArrayList<Date>();
 
     /**
      * Constructs a Room object with the specified name and price per night.
@@ -165,9 +163,7 @@ public class Room {
         }        
     }
 
-    public ArrayList<Date> getDates() {
-        return dates;
-    }
+
 
     // public double fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
     //     double totalPrice = 0.0;
@@ -221,9 +217,6 @@ public class Room {
         reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room, discountCode));
         room.setBookStatus(true); // Most important part
     }
-
-
-    private static double[] datePriceModifiers; // Array for storing the price modifiers 
 
     // public void promptDatePriceModifier(Hotel hotel) {
     //     if (hotel.reservationStatus() == true) {

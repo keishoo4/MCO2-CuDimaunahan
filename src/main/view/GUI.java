@@ -4,18 +4,17 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import java.awt.*;
-
 import javax.swing.event.*;
 import javax.swing.text.DefaultFormatter;
 import javax.swing.text.NumberFormatter;
-
-import model.hotel.Hotel;
 
 import java.awt.event.*;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+
+import model.hotel.Hotel;
 
 public class GUI extends JFrame {
     private JTextField hotelNameField, guestNameField;
@@ -166,21 +165,53 @@ public class GUI extends JFrame {
         leftPanelUpper.add(sliderRooms);
         leftPanelUpper.add(mainButtons);
 
+        // TABBED PANE - LOWER LEFT
+        JTabbedPane tabbedPane = new JTabbedPane();
+        JPanel tabHotelListPanel = new JPanel();
+
+        displayHotels(tabHotelListPanel);
+        displayBookingPanel(tabHotelListPanel);
+
+        tabbedPane.addTab("Hotel List", tabHotelListPanel);
+        // END OF TABBED  PANE
+
+        // MANAGE HOTELS - LOWER RIGHT
+        JPanel rightPanelLower = new JPanel();
+
+        manageHotelBtn = new JButton("Manage Hotels");
+        manageHotelBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rightPanelLower.add(manageHotelBtn);
+
+        mainPanel.add(leftPanelUpper);
+        // mainPanel.add(rightPanelUpper);
+        mainPanel.add(tabbedPane);
+        mainPanel.add(rightPanelLower);
+    }
+
+    public void displayHotels(JPanel tabHotelListPanel) {
+        hotelListModel = new DefaultListModel<>();
+        hotelJList     = new JList<>(hotelListModel);
+
+        JScrollPane hotelListScrollPane = new JScrollPane(hotelJList);
+        hotelListScrollPane.setPreferredSize(new Dimension(300, 150));
+        tabHotelListPanel.add(hotelListScrollPane);
+    }
+
+    public void displayBookingPanel(JPanel tabHotelListPanel) {
         // SIMULATE BOOKING - UPPER RIGHT
         JPanel rightPanelUpper = new JPanel();
         rightPanelUpper.setLayout(new BoxLayout(rightPanelUpper, BoxLayout.Y_AXIS));
 
         JLabel simulateBookingLabel = new JLabel("Simulate Booking");
         simulateBookingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rightPanelUpper.add(simulateBookingLabel);
-
-        rightPanelUpper.add(Box.createVerticalStrut(10));
 
         bookingBtn = new JButton("Book a Room (Pick from Hotel List)");
         bookingBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         bookingBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, bookingBtn.getPreferredSize().height));
-        // bookingBtn.setEnabled(false);
         bookingBtn.setActionCommand("BOOK_ROOM"); // For Controller
+
+        rightPanelUpper.add(simulateBookingLabel);
+        rightPanelUpper.add(Box.createVerticalStrut(10));
         rightPanelUpper.add(bookingBtn);
 
         /* NEW WINDOW POP-UP FOR BOOKING */
@@ -196,15 +227,20 @@ public class GUI extends JFrame {
 
         JLabel guestLabel = new JLabel("Guest Name: ");
         guestNameField = new JTextField(20);
-        guestNamePanel.add(guestLabel);
-        guestNamePanel.add(guestNameField);
+
+        // LIST OF TYPES OF ROOMS
+        JPanel roomTypePanel = new JPanel();
+        roomTypePanel.setLayout(new BoxLayout(roomTypePanel, BoxLayout.Y_AXIS));
+        JComboBox<String> comboBox = new JComboBox<>(new String[] {"Base Room", "Deluxe Room", "Executive Room"});
+        comboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        comboBox.setMaximumSize(new Dimension(comboBox.getPreferredSize().width + 20, comboBox.getPreferredSize().height));
 
         // CHECK-IN DATE
         JPanel checkInPanel = new JPanel();
         checkInPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 1));
 
         
-        JLabel checkInLabel = new JLabel("  Check-In Date: ");
+        JLabel checkInLabel = new JLabel("   Check-In Date: ");
         
         NumberFormat format = NumberFormat.getInstance(); // Step 1: Create a NumberFormat instance
         format.setGroupingUsed(false); // Disable comma grouping
@@ -260,56 +296,27 @@ public class GUI extends JFrame {
         bookBtn.setActionCommand("BOOK_ROOM"); // For Controller
 
         setupBookingButtonActionListener(bookingFrame);
-
+        
+        guestNamePanel.add(guestLabel);
+        guestNamePanel.add(guestNameField);
+        roomTypePanel.add(comboBox);
+        roomTypePanel.add(Box.createVerticalStrut(10));
         checkInPanel.add(checkInLabel);
         checkInPanel.add(checkInField);
 
         checkOutPanel.add(checkOutLabel);
         checkOutPanel.add(checkOutField);
 
-
         bookingPanel.add(guestNamePanel);
+        bookingPanel.add(roomTypePanel);
         bookingPanel.add(checkInPanel);       
         bookingPanel.add(checkOutPanel);
         bookingPanel.add(bookBtn);
         bookingPanel.add(Box.createVerticalGlue());
 
-
         bookingFrame.add(bookingPanel);
 
-
-
-
-
-        // TABBED PANE - LOWER LEFT
-        JTabbedPane tabbedPane = new JTabbedPane();
-        JPanel tabHotelListPanel = new JPanel();
-
-        displayHotels(tabHotelListPanel);
-
-        tabbedPane.addTab("Hotel List", tabHotelListPanel);
-        /***********************************************************/
-
-        // MANAGE HOTELS - LOWER RIGHT
-        JPanel rightPanelLower = new JPanel();
-
-        manageHotelBtn = new JButton("Manage Hotels");
-        manageHotelBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rightPanelLower.add(manageHotelBtn);
-
-        mainPanel.add(leftPanelUpper);
-        mainPanel.add(rightPanelUpper);
-        mainPanel.add(tabbedPane);
-        mainPanel.add(rightPanelLower);
-    }
-
-    public void displayHotels(JPanel tabHotelListPanel) {
-        hotelListModel = new DefaultListModel<>();
-        hotelJList     = new JList<>(hotelListModel);
-
-        JScrollPane hotelListScrollPane = new JScrollPane(hotelJList);
-        hotelListScrollPane.setPreferredSize(new Dimension(300, 150));
-        tabHotelListPanel.add(hotelListScrollPane);
+        tabHotelListPanel.add(rightPanelUpper);
     }
 
     public void updateHotelList(ArrayList<Hotel> hotels) {
