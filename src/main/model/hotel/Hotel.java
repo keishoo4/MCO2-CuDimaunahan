@@ -644,6 +644,6 @@ public class Hotel {
         System.out.println("Check-in Date: 1-" + (checkInDate < 10 ? "0" + checkInDate : checkInDate));
         System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
         // System.out.println("Total Price: " + String.format("%.2f", finalPrice)); // NOT UPDATED TO CONSIDER DISCOUNT CODES, TO DO SOON
-        System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight());
+        // System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight());
     }
 }

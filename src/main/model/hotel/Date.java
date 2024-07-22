@@ -57,7 +57,7 @@ public class Date {
         
         System.out.print("Enter the price modifier for day " + day + " in percentage.");
         double priceModifier = ScannerUtil.readDouble();
-        double priceModifierPrice = priceModifier/100;
+        double priceModifierPrice = priceModifier / 100;
         
         if (priceModifier <= 0 || priceModifier > 150 || priceModifier < 50) {
             System.out.println("Invalid price modifier.");
@@ -82,7 +82,7 @@ public class Date {
             System.out.println("Invalid day! Please enter a day between 1 and 31.");
             return;
         }
-        datePriceModifiers[day - 1] = priceModifier; // sets day in the array to its price modifier 
+        datePriceModifiers[day - 1] = priceModifier/100; // sets day in the array to its price modifier 
     }
 
     public double getDateModifier(int day) {
@@ -95,5 +95,9 @@ public class Date {
             return datePriceModifiers[day - 1]; 
     }
 
-    
+    public void setDatePrice(double datePrice, int day, String discountCode, Room room) {
+        double discountMultiplier = room.getDiscountCode(discountCode);
+        double dateModifier = getDateModifier(day);
+        this.datePrice = datePrice * discountMultiplier * dateModifier;
+    }
 }

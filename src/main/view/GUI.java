@@ -6,6 +6,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 
 import javax.swing.event.*;
+import javax.swing.text.DefaultFormatter;
 import javax.swing.text.NumberFormatter;
 
 import model.hotel.Hotel;
@@ -14,6 +15,7 @@ import java.awt.event.*;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class GUI extends JFrame {
     private JTextField hotelNameField, guestNameField;
@@ -209,12 +211,11 @@ public class GUI extends JFrame {
         checkInPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         JLabel checkInLabel = new JLabel("Check-In Date: ");
-        // Step 1: Create a NumberFormat instance
-        NumberFormat format = NumberFormat.getInstance();
+        
+        NumberFormat format = NumberFormat.getInstance(); // Step 1: Create a NumberFormat instance
         format.setGroupingUsed(false); // Disable comma grouping
 
-        // Step 2: Set up a NumberFormatter
-        NumberFormatter numberFormatter = new NumberFormatter(format) {
+        NumberFormatter numberFormatter = new NumberFormatter(format) { // Step 2: Set up a NumberFormatter
             @Override
             public Object stringToValue(String string) throws ParseException {
                 if (string == null || string.trim().isEmpty()) {
@@ -224,7 +225,7 @@ public class GUI extends JFrame {
             }
         };
         numberFormatter.setValueClass(Integer.class);
-        numberFormatter.setMinimum(0); // Minimum value
+        numberFormatter.setMinimum(1); // Minimum value
         numberFormatter.setMaximum(31); // Maximum value
         numberFormatter.setAllowsInvalid(false); // Don't allow invalid values
 
@@ -238,12 +239,31 @@ public class GUI extends JFrame {
         checkInPanel.setPreferredSize(labelSize5);
         checkInPanel.setMaximumSize(labelSize5); 
 
+        // CHECK-OUT DATE
+        JPanel checkOutPanel = new JPanel();
+        checkOutPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Corrected from checkInPanel to checkOutPanel
+
+        JLabel checkOutLabel = new JLabel("Check-Out Date: ");
+        checkOutPanel.add(checkOutLabel);
+
+
+
+
+        Dimension labelSize6 = new Dimension(150, 50);
+        // checkInPanel.setMinimumSize(labelSize6);
+        // checkInPanel.setPreferredSize(labelSize6);
+        // checkInPanel.setMaximumSize(labelSize6); 
 
         checkInPanel.add(checkInLabel);
         checkInPanel.add(checkInField);
 
+        checkOutPanel.add(checkOutLabel);
+        // checkOutPanel.add(checkOutField);
+
+
         bookingPanel.add(guestNamePanel);
         bookingPanel.add(checkInPanel);       
+        bookingPanel.add(checkOutPanel);
 
 
         bookingFrame.add(bookingPanel);

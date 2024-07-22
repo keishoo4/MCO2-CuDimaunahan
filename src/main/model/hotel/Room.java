@@ -168,26 +168,26 @@ public class Room {
         return dates;
     }
 
-    // public void fillDates(double pricePerNight, int checkInDate, int checkOutDate) {
-    //     for (int i=1; i<=31; i++) {
-    //         if (i >= checkInDate && i <= checkOutDate)
-    //             dates.add(new Date(i, pricePerNight));
-    //         else
-    //             dates.add(new Date(i, 0));
-    //     }
-    // }
-
     public void fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
         for (int i=1; i<=31; i++) {
-            if (i >= checkInDate && i <= checkOutDate){
-                Date date = new Date(i, pricePerNight);
-                date.setDatePrice(pricePerNight, i, discountCode);
-                dates.add(new Date(i, pricePerNight));
-            }
+            if (i >= checkInDate && i <= checkOutDate)
+                dates.add(new Date(i, pricePerNight * getDiscountCode(discountCode)));
             else
                 dates.add(new Date(i, 0));
         }
     }
+
+    // public void fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
+    //     for (int i=1; i<=31; i++) {
+    //         if (i >= checkInDate && i <= checkOutDate) {
+    //             Date date = new Date(i, pricePerNight);
+    //             date.setDatePrice(pricePerNight, discountMultiplier, discountCode, room);
+    //             dates.add(new Date(i, pricePerNight));
+    //         }
+    //         else
+    //             dates.add(new Date(i, 0));
+    //     }
+    // }
 
     public double getDiscountCode(String discountCode) {
         switch (discountCode) {

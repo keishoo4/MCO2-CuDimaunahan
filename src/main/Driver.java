@@ -173,12 +173,12 @@ public class Driver {
 
                 System.out.print("Enter discount code (or press Enter to skip): ");
                 String discountCode = ScannerUtil.readString();
-                if (discountCode != "I_WORK_HERE" && discountCode != "STAY4_GET1" && discountCode != "PAYDAY"){
+                if (discountCode.equals("I_WORK_HERE") && discountCode.equals("STAY4_GET1") && discountCode.equals("PAYDAY")){
                     System.out.println("Invalid discount code!\n");
                     return;
                 }
 
-                room.fillDates(room.getPricePerNight(),checkInDate, checkOutDate);
+                room.fillDates(room.getPricePerNight(),checkInDate, checkOutDate, discountCode);
 
                 // double finalPrice = hotel.calculateFinalPrice(checkInDate, checkOutDate);
                 // finalPrice = hotel.applyDiscount(finalPrice, checkInDate, checkOutDate, discountCode, room);
