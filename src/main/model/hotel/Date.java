@@ -12,7 +12,7 @@ public class Date {
         // Initialize array with default values if needed
         for (int i = 0; i < datePriceModifiers.length; i++) {
         datePriceModifiers[i] = 1.0; // Default modifier
-    }
+        }
     }
 
     public int getDay() {

@@ -176,14 +176,15 @@ public class GUI extends JFrame {
 
         rightPanelUpper.add(Box.createVerticalStrut(10));
 
-        bookingBtn = new JButton("Book a Room");
+        bookingBtn = new JButton("Book a Room (Pick from Hotel List)");
         bookingBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         bookingBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, bookingBtn.getPreferredSize().height));
+        bookingBtn.setEnabled(false);
         bookingBtn.setActionCommand("BOOK_ROOM"); // For Controller
         rightPanelUpper.add(bookingBtn);
 
         /* NEW WINDOW POP-UP FOR BOOKING */
-        JFrame bookingFrame = new JFrame("Book a Room");
+        JFrame bookingFrame = new JFrame("Book Room");
         setupBookingButtonActionListener(bookingFrame);
 
         JPanel bookingPanel = new JPanel();

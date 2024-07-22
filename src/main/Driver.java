@@ -173,9 +173,10 @@ public class Driver {
 
                 System.out.print("Enter discount code (or press Enter to skip): ");
                 String discountCode = ScannerUtil.readString();
-                if (discountCode.equals("I_WORK_HERE") && discountCode.equals("STAY4_GET1") && discountCode.equals("PAYDAY")){
+                if (discountCode.equals("I_WORK_HERE") || discountCode.equals("STAY4_GET1") || discountCode.equals("PAYDAY")){
+                    System.out.println("Discount code applied!\n");
+                } else{
                     System.out.println("Invalid discount code!\n");
-                    return;
                 }
 
                 room.fillDates(room.getPricePerNight(),checkInDate, checkOutDate, discountCode);
