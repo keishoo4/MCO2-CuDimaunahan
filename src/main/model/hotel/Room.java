@@ -106,20 +106,16 @@ public class Room {
      * @return true if the reservation is valid, false otherwise
      */
     public boolean isReservationValid(int newCheckIn, int newCheckOut) {
-        int allReservations = reservations.size();
-        int i;
-
-        for (i = 0; i < allReservations; i++) {
-            if (newCheckIn > reservations.get(allReservations - 1).getCheckInDate()) {
-                if (newCheckIn >= reservations.get(allReservations - 1).getCheckOutDate()) {
-                    return true;
-                } else
-                    return false;
+        for (Reservation reservation : reservations) {
+            // Check if new reservation overlaps with any existing reservation
+            if (newCheckIn < reservation.getCheckOutDate() && newCheckOut > reservation.getCheckInDate()) {
+                return false; // Overlapping reservation
             }
-            --allReservations;
         }
-        return false;
+        return true; // No overlap
     }
+
+
 
     /**
      * Sets the name of the room.

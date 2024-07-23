@@ -17,13 +17,16 @@ import java.util.Date;
 import model.hotel.Hotel;
 
 public class GUI extends JFrame {
+    private JPanel hotelInfoPanel;
     private JTextField hotelNameField, guestNameField;
     private JButton createHotelBtn, bookingBtn, manageHotelBtn, clearBtn;
     private JSlider slider1, slider2, slider3; // SLIDER IS TEMPORARY
     private JList<Hotel> hotelJList;
+    private JTabbedPane tabbedPane;
     private DefaultListModel<Hotel> hotelListModel;
 
     private int selectedHotelIndex = -1;
+    private String selectedHotelName = "NULL";
 
     private final int MAX_TOTAL_ROOMS = 50;
 
@@ -168,14 +171,47 @@ public class GUI extends JFrame {
         leftPanelUpper.add(mainButtons);
 
         // TABBED PANE - LOWER LEFT
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
         JPanel tabHotelListPanel = new JPanel();
 
         displayHotels(tabHotelListPanel);
         displayBookingPanel(tabHotelListPanel);
 
         tabbedPane.addTab("Hotel List", tabHotelListPanel);
+
+        hotelJList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && hotelJList.getSelectedValue() != null) {
+                    String selectedHotelName = hotelJList.getSelectedValue().toString();
+                    boolean tabExists = false;
+                    for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+                        if (tabbedPane.getTitleAt(i).equals(selectedHotelName)) {
+                            tabExists = true;
+                            break;
+                        }
+                    }
+                    if (!tabExists) {
+                        JPanel tabHotelPanel = new JPanel();
+                        // Use the addClosableTab method to add the tab with a close button
+                        addClosableTab(selectedHotelName, tabHotelPanel);
+
+                        setDisplayHotelHighLevelInfo();
+                        tabHotelPanel.add(hotelInfoPanel);
+                        
+                        tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1); // Optional: Switch to the newly added tab
+                    }
+                }
+            }
+        });
+
+
+
+
         // END OF TABBED  PANE
+
+
+
 
         // MANAGE HOTELS - LOWER RIGHT
         JPanel rightPanelLower = new JPanel();
@@ -189,6 +225,69 @@ public class GUI extends JFrame {
         mainPanel.add(tabbedPane);
         mainPanel.add(rightPanelLower);
     }
+
+    private void addClosableTab(String title, Component component) {
+        JPanel tabComponent = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        tabComponent.setOpaque(false);
+        
+        JLabel titleLabel = new JLabel(title + " ");
+        tabComponent.add(titleLabel);
+        
+        JButton closeButton = new JButton("x"); // Create the close button
+        closeButton.setMargin(new Insets(2, 0, 0, 0));
+        closeButton.addActionListener(e -> {
+            // Find the index of the component to remove
+            int index = tabbedPane.indexOfComponent(component);
+            if (index != -1) {
+                tabbedPane.removeTabAt(index);
+            }
+        });
+        tabComponent.add(closeButton);
+        
+        // Add the custom component as the tab header
+        tabbedPane.addTab(title, component);
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(component), tabComponent);
+    }
+
+    public void setDisplayHotelHighLevelInfo() {
+        // Display hotel name, total base rooms, total deluxe rooms, 
+        // total executive rooms, and estimated earnings
+        hotelInfoPanel = new JPanel();
+        hotelInfoPanel.setLayout(new BoxLayout(hotelInfoPanel, BoxLayout.Y_AXIS));
+
+        JLabel hotelNameLabel = new JLabel("Hotel Name: " + getSelectedHotelName());
+        JLabel totalBaseRoomsLabel = new JLabel("Total Base Rooms: ");
+        JLabel totalDeluxeRoomsLabel = new JLabel("Total Deluxe Rooms: ");
+        JLabel totalExecutiveRoomsLabel = new JLabel("Total Executive Rooms: ");
+
+
+        JPanel hotelNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel totalBaseRoomsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel totalDeluxeRoomsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel totalExecutiveRoomsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        
+        hotelNamePanel.add(hotelNameLabel);
+        totalBaseRoomsPanel.add(totalBaseRoomsLabel);
+        totalDeluxeRoomsPanel.add(totalDeluxeRoomsLabel);
+        totalExecutiveRoomsPanel.add(totalExecutiveRoomsLabel);
+
+        hotelInfoPanel.add(hotelNamePanel);
+        hotelInfoPanel.add(totalBaseRoomsPanel);
+        hotelInfoPanel.add(totalDeluxeRoomsPanel);
+        hotelInfoPanel.add(totalExecutiveRoomsPanel);
+
+        hotelInfoPanel.add(Box.createVerticalGlue());
+    }
+
+
+
+    public String getSelectedHotelName() {
+        return selectedHotelName;
+    }
+    public void setSelectedHotelName(String selectedHotelName) {
+        this.selectedHotelName = selectedHotelName;
+    }
+
 
     private void setupHotelListClickMouseListener() {
         hotelJList.addMouseListener(new MouseAdapter() {

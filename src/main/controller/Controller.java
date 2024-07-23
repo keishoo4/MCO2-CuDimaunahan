@@ -45,6 +45,10 @@ public class Controller implements ActionListener, DocumentListener {
 
     }
 
+    public void updateHotelView() {
+
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
@@ -73,7 +77,8 @@ public class Controller implements ActionListener, DocumentListener {
                 break;    
 
             case "SELECT_HOTEL":
-                gui.setCreateBtnEnabled(true);
+                // hotelController.
+                updateHotelView();
                 break;
 
             case "MANAGE_HOTELS":
@@ -92,6 +97,8 @@ public class Controller implements ActionListener, DocumentListener {
         private HotelList hotelList;
         private Hotel hotel;
         private GUI gui;
+
+        private int selectedHotelIndex;
     
         public HotelController(HotelList hotelList, GUI gui) {
             this.hotelList = hotelList;
@@ -113,12 +120,12 @@ public class Controller implements ActionListener, DocumentListener {
         }
 
         public void bookRoomForSelectedHotel() {
-            int hotelIndex = gui.getSelectedHotelIndex();
-            if (hotelIndex < 0 || hotelIndex >= hotelList.getHotels().size()) {
+            selectedHotelIndex = gui.getSelectedHotelIndex();
+            if (selectedHotelIndex < 0 || selectedHotelIndex >= hotelList.getHotels().size()) {
                 JOptionPane.showMessageDialog(gui, "Invalid hotel selection.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Hotel selectedHotel = hotelList.getHotels().get(hotelIndex);
+            Hotel selectedHotel = hotelList.getHotels().get(selectedHotelIndex);
             RoomController roomController = new RoomController(selectedHotel, gui);
             roomController.bookRoom();
         }

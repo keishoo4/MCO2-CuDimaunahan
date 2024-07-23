@@ -1,9 +1,11 @@
 import java.util.ArrayList;
+
 import model.hotel.HotelList;
 import model.hotel.Reservation;
 import model.hotel.Hotel;
 import model.hotel.Room;
-import model.hotel.Date;
+import model.hotel.DeluxeRoom;
+import model.hotel.ExecutiveRoom;
 import view.GUI;
 import controller.Controller;
 
@@ -13,8 +15,7 @@ public class Driver {
     public static void main(String[] args) {
         HotelList   hotelList  = new HotelList();
         GUI         gui       = new GUI();
-        Controller  controller = new Controller(hotelList, gui);
-        Room room;
+            new Controller(hotelList, gui);
 
         gui.setVisible(true);
 
@@ -53,27 +54,6 @@ public class Driver {
             }
         }
     }
-
-    // private static void createHotel(HotelList hotelList) {
-    //     System.out.print("Enter hotel name: ");
-    //     String hotelName = ScannerUtil.readString();
-
-    //     if (hotelList.sameHotelName(hotelName)) {
-    //         System.out.println("Hotel with this name already exists!\n");
-    //         return;
-    //     }
-
-    //     System.out.print("Enter number of rooms (1-50): ");
-    //     int roomCount = ScannerUtil.readInt();
-
-    //     if (roomCount < 1 || roomCount > 50) {
-    //         System.out.println("Invalid number of rooms! Must be between 1 and 50.\n");
-    //         return;
-    //     }
-
-    //     hotelList.addHotel(hotelName, roomCount);
-    //     System.out.println("\nHotel \"" + hotelName + "\" created successfully!\n");
-    // }
 
     public static void addHotels(HotelList hotelList) {
         String hotelName;
@@ -133,153 +113,209 @@ public class Driver {
         System.out.println("Executive Rooms - [" + execRooms + "]");
     }
 
-    public static void simulateBooking(HotelList hotelList) {
-        int hotelNum;
-        int lastRoom, roomToUse, roomReserved,
-            reservationNum, checkInDate, checkOutDate,
-            i;
-        String guestName;
-        Hotel hotel;
-        Room room;
-        ArrayList<Reservation> reservations;
+public static void simulateBooking(HotelList hotelList) {
+    Hotel hotel;
+    Room              room = null;
+    DeluxeRoom  deluxeRoom = null;
+    ExecutiveRoom execRoom = null;
+    ArrayList<Reservation> reservations;
+    String guestName;
 
-        hotelNum = 1;
-        while (hotelNum != 0) {
-            hotelList.displayAllHotels();
-            System.out.println("[0] Back to Main Menu");
-            System.out.print("Enter hotel number to reserve to: ");
-            hotelNum = ScannerUtil.readInt();
-            System.out.println();
+    int hotelNum, roomToUse, reservationNum, 
+        successRoom, i,
+        lastRoom, lastDeluxeRoom, lastExecRoom,
+        checkInDate, checkOutDate;
 
-            if (hotelNum != 0) {
-                if (hotelNum < 1 || hotelNum > hotelList.getHotels().size()) {
-                    System.out.println("Invalid hotel number!\n");
+    hotelNum = 1;
+    while (hotelNum != 0) {
+        hotelList.displayAllHotels();
+        System.out.println("[0] Back to Main Menu");
+        System.out.print("Enter hotel number to reserve to: ");
+        hotelNum = ScannerUtil.readInt();
+        System.out.println();
+
+        if (hotelNum != 0) {
+            if (hotelNum < 1 || hotelNum > hotelList.getHotels().size()) {
+                System.out.println("Invalid hotel number!\n");
+                return;
+            }
+
+            hotel = hotelList.getHotels().get(hotelNum - 1);
+
+            successRoom = 0;
+            roomToUse = 0;
+            lastRoom = hotel.getRooms().size()-1;
+            lastDeluxeRoom = hotel.getDeluxeRooms().size()-1;
+            lastExecRoom = hotel.getExecRooms().size()-1;
+            i = 0;
+ 
+            for (i=0; i<=lastRoom; i++) {
+                if (!hotel.getRooms().get(i).getBookStatus()) { // If the room does not have a booking
+                    roomToUse = hotel.latestRoomNoReservation();
+                    successRoom = 1;
+                    break;
+                }
+            }
+            for (i=0; i<=lastDeluxeRoom; i++) {
+                if (!hotel.getDeluxeRooms().get(i).getBookStatus()) { // If the room does not have a booking
+                    roomToUse = hotel.latestDeluxeRoomNoReservation();
+                    successRoom = 1;
+                    break;
+                }
+            }
+            for (i=0; i<=lastExecRoom; i++) {
+                if (!hotel.getExecRooms().get(i).getBookStatus()) { // If the room does not have a booking
+                    roomToUse = hotel.latestExecutiveRoomNoReservation();
+                    successRoom = 1;
+                    break;
+                }
+            }            
+
+            if (successRoom == 0) {
+                System.out.println("All rooms are occupied with a booking!");
+                roomToUse = hotel.chooseAnotherRoom()-1;
+
+                if (roomToUse == 0) 
+                    return;
+                if (roomToUse > lastRoom) {
+                    System.out.println("Invalid room number. Please try again.\n");
                     return;
                 }
+            }
 
-                hotel    = hotelList.getHotels().get(hotelNum-1);
-                lastRoom = hotel.getRooms().size() - 1; // Last room of the hotel (index)
+            // CHOOSING ROOMS STARTS HERE
+            System.out.println("What kind of room would you like to book?");
+            hotel.displayRoomTypes();
+            int roomChoice = ScannerUtil.readInt();
 
-                roomReserved = 0;
-                roomToUse = 0;
-                i = 0;
+            if (roomChoice == 1) {
+                System.out.println("Standard room selected!\n");
+                roomToUse = hotel.latestRoomNoReservation();
+            } 
+            else if (roomChoice == 2) {
+                System.out.println("Deluxe room selected!\n");
+                roomToUse = hotel.latestDeluxeRoomNoReservation();
+            } 
+            else if (roomChoice == 3) {
+                System.out.println("Executive room selected!\n");
+                roomToUse = hotel.latestExecutiveRoomNoReservation();
+            } 
+            else {
+                System.out.println("Invalid room type!\n");
+                return;
+            }
 
-                // CHOOSING ROOMS STARTS HERE
-                System.out.println("What kind of room would you like to book?");
-                while (i < lastRoom){
-                    int roomChoice = ScannerUtil.readInt();
-                    if (roomChoice == 1) {
-                        System.out.println("Standard room booked!\n");
-                        roomToUse = hotel.latestRoomNoReservation(); 
-                        roomReserved = 1;
-                    } else if (roomChoice == 2) {
-                        System.out.println("Deluxe room booked!\n");
-                        roomToUse = hotel.latestDeluxeRoomNoReservation();
-                        roomReserved = 1;
-                    } else if (roomChoice == 3) {
-                        System.out.println("Executive room booked!\n");
-                        roomToUse = hotel.latestExecutiveRoomNoReservation();
-                        roomReserved = 1;
-                    } else {
-                        System.out.println("Invalid room type!\n");
-                        return;
-                    }
-                    if (roomToUse == -1) {
-                        System.out.println("No available rooms of the selected type.\n");
-                        return;
-                    }
-                }
+            if (roomToUse == -1) {
+                System.out.println("No available rooms of the selected type.\n");
+                return;
+            }
 
-                if (roomReserved == 0){
-                    System.out.println("All rooms are occupied with a booking!");
-                    // roomToUse = chooseAnotherRoom(sc, hotel) - 1;
-
-                    System.out.println("Choose a different date \nor go to a different hotel.\n");
-                    hotel.showRooms("All");
-                    System.out.println("[0] Back to Hotel Selection");
-                    System.out.print("Enter room number: ");
-                    roomToUse = ScannerUtil.readInt();
-                    System.out.println();
-
-                    if (roomToUse == 0) 
-                        return;
-                    if (roomToUse > lastRoom) {
-                        System.out.println("Invalid room number. Please try again.\n");
-                        return;
-                    }
-                }
-
-                room = hotel.getRooms().get(roomToUse);
-                hotel.bookRoomType(hotel, room);
+            // START OF ROOM USAGE
+            if (roomChoice == 1) {
+                room = hotel.getRooms().get(roomToUse);        
                 reservations = room.getReservations();
-                
-                System.out.println("[0] Exit Reservation");
-                System.out.print("Enter guest name: ");
-                guestName = ScannerUtil.readString();
+            }
+            else if (roomChoice == 2) {
+                deluxeRoom = hotel.getDeluxeRooms().get(roomToUse);
+                reservations = deluxeRoom.getReservations();
+            }
+            else {
+                execRoom = hotel.getExecRooms().get(roomToUse);
+                reservations = execRoom.getReservations();
+            }
 
-                if (guestName.equals("0")) {
+
+            System.out.println("[0] Exit Reservation");
+            System.out.print("Enter guest name: ");
+            guestName = ScannerUtil.readString();
+
+            if (guestName.equals("0")) {
+                System.out.println("Reservation cancelled.\n");
+                return;
+            }
+            if (hotel.sameGuestName(guestName)) {
+                System.out.println("Guest name already exists. Please try again.\n");
+                return;
+            }
+
+            checkInDate = 0;
+            checkOutDate = 0;
+            while (checkOutDate == 0) {
+                System.out.println("   [0] Exit Reservation");
+                System.out.println("   STRICT FORMATTING: 1-DD");
+                checkInDate = hotel.checkIn();
+
+                if (checkInDate == 0) {
                     System.out.println("Reservation cancelled.\n");
                     return;
                 }
 
-                if (hotel.getRooms().get(0).getBookStatus() == true && 
-                    hotel.sameGuestName(guestName)) {
-                    System.out.println("Guest name already exists. Please try again.\n");
+                checkOutDate = hotel.checkOut(checkInDate);
+            }
+
+            if (roomChoice == 1) {
+                if (!room.isReservationValid(checkInDate, checkOutDate)) {
+                    System.out.println("Invalid reservation! Try a new date or room.\n");
                     return;
                 }
-
-                checkInDate = 0;
-                checkOutDate = 0;
-                while (checkOutDate == 0) {
-                    System.out.println("   [0] Exit Reservation");
-                    System.out.println("   STRICT FORMATTING: 1-DD");
-                    checkInDate = hotel.checkIn();
-
-                    if (checkInDate == 0) {
-                        System.out.println("Reservation cancelled.\n");
-                        return;
-                    }
-
-                    checkOutDate = hotel.checkOut(checkInDate);
+            }
+            else if (roomChoice == 2) {
+                if (!deluxeRoom.isReservationValid(checkInDate, checkOutDate)) {
+                    System.out.println("Invalid reservation! Try a new date or room.\n");
+                    return;
                 }
-
-                if (room.getBookStatus() == true) { // if reservation is already made
-                    if (!(room.isReservationValid(checkInDate, checkOutDate))) {
-                        System.out.println("Invalid reservation! Try a new date or room.\n");
-                        return;
-                    }
+            }
+            else {
+                if (!execRoom.isReservationValid(checkInDate, checkOutDate)) {
+                    System.out.println("Invalid reservation! Try a new date or room.\n");
+                    return;
                 }
+            }
+            System.out.print("Enter discount code (or press Enter to skip): ");
+            String discountCode = ScannerUtil.readString();
+            if (discountCode.equals("I_WORK_HERE")) {
+                System.out.println("Discount code I_WORK_HERE applied!\n");
+            } 
+            else if (discountCode.equals("STAY4_GET1") && checkOutDate - checkInDate >= 4) {
+                System.out.println("Discount code STAY4_GET1 applied!\n");
+            }
+            else if (discountCode.equals("PAYDAY") && 
+                    ((checkInDate <= 15 && 15 < checkOutDate) || (checkInDate <= 30 && 30 < checkOutDate))) {
+                System.out.println("Discount code PAYDAY applied!\n");
+            } 
+            else if (discountCode.equals("")) {
+                System.out.println("No discount code applied.\n");
+            } 
+            else {
+                System.out.println("Invalid discount code!\n");
+            }
 
-                System.out.print("Enter discount code (or press Enter to skip): ");
-                String discountCode = ScannerUtil.readString();
-                if (discountCode.equals("I_WORK_HERE")) {
-                    System.out.println("Discount code I_WORK_HERE applied!\n");
-                } else if (discountCode.equals("STAY4_GET1") && checkOutDate - checkInDate >= 4){
-                    System.out.println("Discount code STAY4_GET1 applied!\n");
-                } else if (discountCode.equals("PAYDAY") && 
-                ((checkInDate <= 15 && 15 < checkOutDate) || (checkInDate <= 30 && 30 < checkOutDate))) {
-                    System.out.println("Discount code PAYDAY applied!\n");
-                } else if (discountCode.equals("")) {
-                    System.out.println("No discount code applied.\n");
-                } else{
-                    System.out.println("Invalid discount code!\n");
-                }
-
+            if (roomChoice == 1) {
                 hotel.fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
                 room.bookInputInfo(room, reservations, guestName, checkInDate, checkOutDate, discountCode);
-
-                // Instantiate arraylist for date
-
                 reservationNum = room.getReservations().size();
                 System.out.println("Reservation No.: " + reservationNum);
                 System.out.println(room.getName() + " booked successfully!\n");
             }
+            else if (roomChoice == 2) {
+                hotel.fillDates(deluxeRoom.getPricePerNight(), checkInDate, checkOutDate, discountCode);
+                deluxeRoom.bookInputInfo(deluxeRoom, reservations, guestName, checkInDate, checkOutDate, discountCode);
+                reservationNum = deluxeRoom.getReservations().size();
+                System.out.println("Reservation No.: " + reservationNum);
+                System.out.println(deluxeRoom.getName() + " booked successfully!\n");
+            }
+            else {
+                hotel.fillDates(execRoom.getPricePerNight(), checkInDate, checkOutDate, discountCode);
+                execRoom.bookInputInfo(execRoom, reservations, guestName, checkInDate, checkOutDate, discountCode);
+                reservationNum = execRoom.getReservations().size();
+                System.out.println("Reservation No.: " + reservationNum);
+                System.out.println(execRoom.getName() + " booked successfully!\n");
+            }
         }
+    }
 }
 
-    // private static void viewHotel(HotelList hotelList) {
-
-    public static void modifyHotel(HotelList hotelList) {
+    private static void modifyHotel(HotelList hotelList) {
         int hotelNum = 1;
         while (hotelNum != 0) {
             hotelList.displayAllHotels();
@@ -287,6 +323,10 @@ public class Driver {
             System.out.print("Enter hotel number to manage: ");
             hotelNum = ScannerUtil.readInt();
             System.out.println();
+
+            if (hotelNum == 0){
+                return;
+            }
 
             Hotel hotel = hotelList.getHotels().get(hotelNum - 1);
             if (hotelNum != 0) {
