@@ -23,6 +23,8 @@ public class GUI extends JFrame {
     private JList<Hotel> hotelJList;
     private DefaultListModel<Hotel> hotelListModel;
 
+    private int selectedHotelIndex = -1;
+
     private final int MAX_TOTAL_ROOMS = 50;
 
 
@@ -188,6 +190,25 @@ public class GUI extends JFrame {
         mainPanel.add(rightPanelLower);
     }
 
+    private void setupHotelListClickMouseListener() {
+        hotelJList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                selectedHotelIndex = hotelJList.locationToIndex(e.getPoint());
+                if (selectedHotelIndex >= 0) {
+                    Object item = hotelListModel.getElementAt(selectedHotelIndex);
+                    // Perform your action with the selected item here
+                    System.out.println("Clicked on: " + item + " at index " + selectedHotelIndex); // DEBUGGING
+                }
+            }
+        });
+    }
+
+    public int getSelectedHotelIndex() {
+        return this.selectedHotelIndex;
+    }
+        
+
     public void displayHotels(JPanel tabHotelListPanel) {
         hotelListModel = new DefaultListModel<>();
         hotelJList     = new JList<>(hotelListModel);
@@ -195,6 +216,10 @@ public class GUI extends JFrame {
         JScrollPane hotelListScrollPane = new JScrollPane(hotelJList);
         hotelListScrollPane.setPreferredSize(new Dimension(300, 150));
         tabHotelListPanel.add(hotelListScrollPane);
+
+        setupHotelListClickMouseListener();
+        getSelectedHotelIndex();
+
     }
 
     public void displayBookingPanel(JPanel tabHotelListPanel) {
@@ -371,7 +396,7 @@ public class GUI extends JFrame {
     }
 
     public void setCreateBtnEnabled(boolean enabled) {
-        createHotelBtn.setEnabled(enabled);
+        this.createHotelBtn.setEnabled(enabled);
     }
 
     public int getRoomsSliderValue() {

@@ -25,8 +25,6 @@ public class Controller implements ActionListener, DocumentListener {
         this.hotelList = hotelList;
         this.gui = gui;
         this.hotelController = new HotelController(hotelList, gui);
-        this.roomController = new RoomController(hotel, room, gui);
-
         // updateView();
 
         gui.setActionListener(this);
@@ -35,6 +33,7 @@ public class Controller implements ActionListener, DocumentListener {
 
     public void updateHotelList() {
         gui.updateHotelList(hotelList.getHotels());
+        gui.setCreateBtnEnabled(false);
     }
 
     public void updateClearTextFields() {
@@ -65,6 +64,7 @@ public class Controller implements ActionListener, DocumentListener {
                     return;
                 }
                 hotelController.addHotel(hotelName, rooms, deluxeRooms, execRooms); // From Model
+                
                 updateHotelList();
                 break;
             
@@ -72,15 +72,25 @@ public class Controller implements ActionListener, DocumentListener {
                 updateClearTextFields();
                 break;    
 
+            case "SELECT_HOTEL":
+                gui.setCreateBtnEnabled(true);
+                break;
+
+            case "MANAGE_HOTELS":
+                updateHotelList();
+                break;
             case "BOOK_ROOM":
-                
+                hotelController.bookRoomForSelectedHotel();
                 updateRoomBooking();
                 break;
+
+                
         }
     }
 
     public class HotelController {
         private HotelList hotelList;
+        private Hotel hotel;
         private GUI gui;
     
         public HotelController(HotelList hotelList, GUI gui) {
@@ -101,21 +111,38 @@ public class Controller implements ActionListener, DocumentListener {
                                               "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         }
+
+        public void bookRoomForSelectedHotel() {
+            int hotelIndex = gui.getSelectedHotelIndex();
+            if (hotelIndex < 0 || hotelIndex >= hotelList.getHotels().size()) {
+                JOptionPane.showMessageDialog(gui, "Invalid hotel selection.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Hotel selectedHotel = hotelList.getHotels().get(hotelIndex);
+            RoomController roomController = new RoomController(selectedHotel, gui);
+            roomController.bookRoom();
+        }
+
     }
 
     public class RoomController {
         private Hotel hotel;
-        private Room room;
         private GUI gui;
     
-        public RoomController(Hotel hotel, Room room, GUI gui) {
+        public RoomController(Hotel hotel, GUI gui) {
             this.hotel = hotel;
-            this.room = room;
             this.gui = gui;
         }
     
         public void bookRoom() {
-            // Implementation for booking a room
+            // // Example implementation, adjust based on your Room model
+            // if (hotel.getAvailableRooms() > 0) {
+            //     hotel.bookRoom(); // Assume this method updates the room's availability
+            //     JOptionPane.showMessageDialog(gui, "Room booked successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            // } 
+            // else {
+            //     JOptionPane.showMessageDialog(gui, "No available rooms.", "Error", JOptionPane.ERROR_MESSAGE);
+            // }
         }
     }
 

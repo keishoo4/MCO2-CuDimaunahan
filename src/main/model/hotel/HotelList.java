@@ -70,6 +70,34 @@ public class HotelList {
     }
 
     /**
+     * Changes the name of the hotel.
+     *
+     * @param hotelList   the HotelList object containing the list of hotels
+     */
+    public void changeHotelName(HotelList hotelList, Hotel hotel) {
+        System.out.print("Enter new hotel name: ");
+        String newHotelName = ScannerUtil.readString();
+
+        if (hotelList.sameHotelName(newHotelName)) {
+            System.out.println("Hotel with this name already exists");
+            return;
+        }
+
+        System.out.println("Confirm change of hotel name from \"" + hotel.getName() +
+                "\" to \"" + newHotelName + "\"");
+        System.out.print("Confirm [Yes/No]: ");
+        boolean confirmed = ScannerUtil.readBoolean();
+
+        if (!confirmed) {
+            System.out.println("\nHotel name change cancelled.\n");
+            return;
+        }
+
+        hotel.setName(newHotelName);
+        System.out.println("Hotel name changed to \"" + newHotelName + "\"");
+    }
+
+    /**
      * Adds a new hotel to the hotel list.
      *
      * @param hotelList the HotelList object to add the hotel to

@@ -133,16 +133,15 @@ public class Driver {
         System.out.println("Executive Rooms - [" + execRooms + "]");
     }
 
-    public static void simulateBooking(HotelList hotelList) {        
+    public static void simulateBooking(HotelList hotelList) {
         int hotelNum;
         int lastRoom, roomToUse, roomReserved,
-            reservationNum, checkInDate, checkOutDate, 
+            reservationNum, checkInDate, checkOutDate,
             i;
         String guestName;
         Hotel hotel;
         Room room;
         ArrayList<Reservation> reservations;
-
 
         hotelNum = 1;
         while (hotelNum != 0) {
@@ -157,23 +156,41 @@ public class Driver {
                     System.out.println("Invalid hotel number!\n");
                     return;
                 }
-                
+
                 hotel    = hotelList.getHotels().get(hotelNum-1);
                 lastRoom = hotel.getRooms().size() - 1; // Last room of the hotel (index)
 
                 roomReserved = 0;
                 roomToUse = 0;
                 i = 0;
-                while (i <= lastRoom) {
-                    if (!hotel.getRooms().get(i).getBookStatus()) { // If the room does not have a booking
-                        roomToUse = hotel.LatestRoomNoReservation();
+
+                // CHOOSING ROOMS STARTS HERE
+                System.out.println("What kind of room would you like to book?");
+                while (i < lastRoom){
+                    int roomChoice = ScannerUtil.readInt();
+                    if (roomChoice == 1) {
+                        System.out.println("Standard room booked!\n");
+                        roomToUse = hotel.latestRoomNoReservation(); 
                         roomReserved = 1;
-                        break;
+                    } else if (roomChoice == 2) {
+                        System.out.println("Deluxe room booked!\n");
+                        roomToUse = hotel.latestDeluxeRoomNoReservation();
+                        roomReserved = 1;
+                    } else if (roomChoice == 3) {
+                        System.out.println("Executive room booked!\n");
+                        roomToUse = hotel.latestExecutiveRoomNoReservation();
+                        roomReserved = 1;
+                    } else {
+                        System.out.println("Invalid room type!\n");
+                        return;
                     }
-                    ++i;
+                    if (roomToUse == -1) {
+                        System.out.println("No available rooms of the selected type.\n");
+                        return;
+                    }
                 }
 
-                if (roomReserved == 0) {
+                if (roomReserved == 0){
                     System.out.println("All rooms are occupied with a booking!");
                     // roomToUse = chooseAnotherRoom(sc, hotel) - 1;
 
@@ -193,16 +210,18 @@ public class Driver {
                 }
 
                 room = hotel.getRooms().get(roomToUse);
+                hotel.bookRoomType(hotel, room);
                 reservations = room.getReservations();
+                
                 System.out.println("[0] Exit Reservation");
                 System.out.print("Enter guest name: ");
-                guestName = ScannerUtil.readString();                
+                guestName = ScannerUtil.readString();
 
                 if (guestName.equals("0")) {
                     System.out.println("Reservation cancelled.\n");
                     return;
                 }
-        
+
                 if (hotel.getRooms().get(0).getBookStatus() == true && 
                     hotel.sameGuestName(guestName)) {
                     System.out.println("Guest name already exists. Please try again.\n");
@@ -214,13 +233,13 @@ public class Driver {
                 while (checkOutDate == 0) {
                     System.out.println("   [0] Exit Reservation");
                     System.out.println("   STRICT FORMATTING: 1-DD");
-                    checkInDate  = hotel.checkIn();
-        
+                    checkInDate = hotel.checkIn();
+
                     if (checkInDate == 0) {
                         System.out.println("Reservation cancelled.\n");
                         return;
                     }
-        
+
                     checkOutDate = hotel.checkOut(checkInDate);
                 }
 
@@ -229,20 +248,6 @@ public class Driver {
                         System.out.println("Invalid reservation! Try a new date or room.\n");
                         return;
                     }
-                }
-
-                // CHOOSING ROOMS STARTS HERE
-                System.out.println("What kind of room would you like to book?");
-                hotel.bookRoomType(hotel, room);
-                int roomChoice = ScannerUtil.readInt();
-                if (roomChoice == 1) {
-                    System.out.println("Standard room booked!\n");
-                } else if (roomChoice == 2){
-                    System.out.println("Deluxe room booked!\n");
-                } else if (roomChoice == 3) {
-                    System.out.println("Executive room booked!\n");
-                } else{
-                    System.out.println("Invalid room type!\n");
                 }
 
                 System.out.print("Enter discount code (or press Enter to skip): ");
@@ -260,17 +265,17 @@ public class Driver {
                     System.out.println("Invalid discount code!\n");
                 }
 
-                hotel.fillDates(room.getPricePerNight(),checkInDate, checkOutDate, discountCode);
+                hotel.fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
                 room.bookInputInfo(room, reservations, guestName, checkInDate, checkOutDate, discountCode);
 
                 // Instantiate arraylist for date
-        
+
                 reservationNum = room.getReservations().size();
                 System.out.println("Reservation No.: " + reservationNum);
-                System.out.println(room.getName() + " booked successfully!\n");                
+                System.out.println(room.getName() + " booked successfully!\n");
             }
-        }    
-    }
+        }
+}
 
     // private static void viewHotel(HotelList hotelList) {
 
@@ -283,14 +288,14 @@ public class Driver {
             hotelNum = ScannerUtil.readInt();
             System.out.println();
 
+            Hotel hotel = hotelList.getHotels().get(hotelNum - 1);
             if (hotelNum != 0) {
                 if (hotelNum < 1 || hotelNum > hotelList.getHotels().size()) {
                     System.out.println("Invalid hotel number!");
                     return;
                 }
 
-                manageHotelConfig(hotelList, hotelList.getHotels().get(hotelNum - 1),
-                                  hotelList.getHotels().get(hotelNum - 1).getRooms());
+                manageHotelConfig(hotelList, hotel, hotel.getRooms());
             }
         }
     }
@@ -309,7 +314,7 @@ public class Driver {
 
         switch (choice) {
             case 1:
-                hotel.changeHotelName(hotelList);
+                hotelList.changeHotelName(hotelList, hotel);
                 break;
             case 2:
                 hotel.addRoomsPrompt(hotel);

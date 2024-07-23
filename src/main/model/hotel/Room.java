@@ -163,45 +163,6 @@ public class Room {
         }        
     }
 
-
-
-    // public double fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
-    //     double totalPrice = 0.0;
-
-    //     for (int i = 1; i <= 31; i++) {
-    //         double nightPrice = 0.0;
-
-    //         if (i >= checkInDate && i < checkOutDate) {
-    //             // Get the date modifier for the current day
-    //             double dateModifier = getDateModifier(i);
-                
-    //             // Calculate the price for the night including the date modifier
-    //             nightPrice = pricePerNight * getDiscountCode(discountCode) * dateModifier;
-
-    //             // Add the Date object to the list with the calculated price
-    //             dates.add(new Date(i, nightPrice));
-    //             totalPrice += nightPrice;
-    //         } else {
-    //             // Add the Date object with zero price for days outside the reservation
-    //             dates.add(new Date(i, 0));
-    //         }
-    //     }
-    //     return totalPrice;
-    // }
-
-    // public double getDiscountCode(String discountCode) {
-    //     switch (discountCode) {
-    //         case "I_WORK_HERE":
-    //             return 0.9; // 10% discount
-    //         case "STAY4_GET1":
-    //             return 1.0; // No discount multiplier here; handled differently in applyDiscount
-    //         case "PAYDAY":
-    //             return 0.93; // 7% discount
-    //         default:
-    //             return 1.0; // No discount
-    //     }
-    // }
-
     /**
      * Adds a new reservation to the given list of reservations and updates the book status of the specified room.
      *
@@ -217,54 +178,4 @@ public class Room {
         reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room, discountCode));
         room.setBookStatus(true); // Most important part
     }
-
-    // public void promptDatePriceModifier(Hotel hotel) {
-    //     if (hotel.reservationStatus() == true) {
-    //         System.out.println("Cannot modify price with reservation(s).\n");
-    //         return;
-    //     }
-        
-    //     System.out.print("Enter the day of the month (1-31): ");
-    //     int day = ScannerUtil.readInt();
-    //     if (day < 1 || day > 31) {
-    //         System.out.println("Invalid day. Please enter a value between 1 and 31.");
-    //         return;
-    //     }
-        
-    //     System.out.print("Enter the price modifier for day " + day + " in percentage.");
-    //     double priceModifier = ScannerUtil.readDouble();
-        
-    //     if (priceModifier <= 0 || priceModifier > 150 || priceModifier < 50) {
-    //         System.out.println("Invalid price modifier.");
-    //         return;
-    //     }
-
-    //     setDatePriceModifier(day, priceModifier/100);
-    //     System.out.println("Price modifier for day " + day + " updated to " + priceModifier + ".");
-    // }
-
-    // public static void setDatePriceModifier(int day, double priceModifier) {
-    //     if (day < 1 || day > 31) {
-    //         System.out.println("Invalid day! Please enter a day between 1 and 31.");
-    //         return;
-    //     }
-    //     datePriceModifiers[day - 1] = priceModifier/100; // sets day in the array to its price modifier 
-    // }
-
-    // public double getDateModifier(int day) {
-    //     // Ensure day is within the valid range
-    //     if (day < 1 || day > 31) {
-    //         System.out.println("Invalid day! Please enter a day between 1 and 31.");
-    //         return 1.0; // Default modifier if day is invalid
-    //     }
-    //         // Return the date price modifier for the specified day
-    //         return datePriceModifiers[day - 1]; 
-    // }
-
-
-    // public void setDatePrice(double datePrice, int day, String discountCode, Room room) {
-    //     double discountMultiplier = room.getDiscountCode(discountCode);
-    //     double dateModifier = getDateModifier(day);
-    //     this.datePrice = datePrice * discountMultiplier * dateModifier;
-    // }
 }

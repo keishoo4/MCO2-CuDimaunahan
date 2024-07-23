@@ -1,26 +1,18 @@
-import model.hotel.Room;
-import model.hotel.Hotel;
+// import model.hotel.Room;
 
-public class Driver2 {
-    // public void bookRoomType(Room room) {
-    //     System.out.println("[1] Base Room - " + room.getPricePerNight());
-    //     // Instances of DeluxeRoom or ExecutiveRoom
-    //     if (room instanceof DeluxeRoom) {
-    //         System.out.println("[2] Deluxe Room - " + room.getPricePerNight());
-    //     } 
-    //     else if (room instanceof ExecutiveRoom) {
-    //         System.out.println("[3] Executive Room - " + room.getPricePerNight());
-    //     }
-    // }
+// import java.util.ArrayList;
+// import model.hotel.Hotel;
 
-    public static void main(String[] args) {
-        Hotel hotel = new Hotel("Hilton", 50, 30, 20);
-        Room baseRoom = new Room("RM1", 100);
-        Room deluxeRoom = new DeluxeRoom("RM2-DE", 200);
-        Room executiveRoom = new ExecutiveRoom("RM2-EX", 300);
+// public class Driver2 {
 
-        hotel.bookRoomType(hotel, baseRoom);        // Should print [1] Base Room - 100
-        hotel.bookRoomType(hotel, deluxeRoom);      // Should print [1] Base Room - 200 and [2] Deluxe Room - 200
-        hotel.bookRoomType(hotel, executiveRoom);   // Should print [1] Base Room - 300 and [3] Executive Room - 300
-    }
-}
+//     public static void main(String[] args) {
+//         Hotel hotel = new Hotel("Hilton", 50, 30, 20);
+//         Room baseRoom = new Room("RM1", 100);
+//         Room deluxeRoom = new DeluxeRoom("RM2-DE", 200);
+//         Room executiveRoom = new ExecutiveRoom("RM2-EX", 300);
+
+//         hotel.bookRoomType(hotel, baseRoom);        // Should print [1] Base Room - 100
+//         hotel.bookRoomType(hotel, deluxeRoom);      // Should print [1] Base Room - 200 and [2] Deluxe Room - 200
+//         hotel.bookRoomType(hotel, executiveRoom);   // Should print [1] Base Room - 300 and [3] Executive Room - 300
+//     }
+// }

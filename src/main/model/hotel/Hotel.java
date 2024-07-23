@@ -1,3 +1,5 @@
+// TODO Add new ArrayList for various rooms
+
 package model.hotel;
 
 import java.util.ArrayList;
@@ -11,9 +13,11 @@ import utils.ScannerUtil;
 public class Hotel {
     private String name;
     private ArrayList<Room> rooms;
+    private ArrayList<DeluxeRoom> deluxeRooms;
+    private ArrayList<ExecutiveRoom> execRooms;
     private double basePrice = 1299.0;
-    private ArrayList<Date> dates = new ArrayList<Date>();
-    private double[] datePriceModifiers = new double[31]; // Array for storing the price modifiers 
+    private ArrayList<Date> dates;
+    private double[] datePriceModifiers; // Array for storing the price modifiers 
 
     /**
      * Constructs a Hotel object with the given name and number of rooms.
@@ -26,10 +30,14 @@ public class Hotel {
     public Hotel(String name, int rooms, int deluxeRooms, int execRooms) {
         this.name = name;
         this.rooms = new ArrayList<Room>();
+        this.deluxeRooms = new ArrayList<DeluxeRoom>();
+        this.execRooms = new ArrayList<ExecutiveRoom>();
+        this.dates = new ArrayList<Date>();
+        this.datePriceModifiers = new double[31];
         addRooms(rooms, deluxeRooms, execRooms);
     
-        for (int i = 0; i < datePriceModifiers.length; i++) {
-            datePriceModifiers[i] = 1.0;
+        for (int i = 0; i < this.datePriceModifiers.length; i++) {
+            this.datePriceModifiers[i] = 1.0;
         }
     }
 
@@ -44,7 +52,9 @@ public class Hotel {
 
     @Override
     public String toString() {
-        return name + " - " + rooms.size() + " rooms";
+        return name + " - " + 
+               (rooms.size() + deluxeRooms.size() + execRooms.size())  
+               + " rooms";
     }
 
     /**
@@ -63,6 +73,24 @@ public class Hotel {
      */
     public ArrayList<Room> getRooms() {
         return rooms;
+    }
+
+    /**
+     * Returns the list of deluxe rooms in the hotel.
+     * 
+     * @return the list of deluxe rooms in the hotel
+     */
+    public ArrayList<DeluxeRoom> getDeluxeRooms() {
+        return deluxeRooms;
+    }
+
+    /**
+     * Returns the list of executive rooms in the hotel.
+     * 
+     * @return the list of executive rooms in the hotel
+     */
+    public ArrayList<ExecutiveRoom> getExecRooms() {
+        return execRooms;
     }
 
     public ArrayList<Date> getDates() {
@@ -106,14 +134,15 @@ public class Hotel {
      * @param execRooms the number of suite rooms to add
      */
     public void addRooms(int rooms, int deluxeRooms, int execRooms) {
-        for (int i = 0; i < rooms; i++)
+        int i;
+        for (i=0; i<rooms; i++)
             this.rooms.add(new Room("RM" + (i + 1), basePrice));
 
-        for (int i = rooms; i < rooms + deluxeRooms; i++)
-            this.rooms.add(new DeluxeRoom("RM" + (i + 1) + "-DL", basePrice));
+        for (i=rooms; i<rooms+deluxeRooms; i++)
+            this.deluxeRooms.add(new DeluxeRoom("RM" + (i + 1) + "-DL", basePrice));
 
-        for (int i = rooms + deluxeRooms; i < rooms + deluxeRooms + execRooms; i++)
-            this.rooms.add(new ExecutiveRoom("RM" + (i + 1) + "-EX", basePrice));
+        for (i=rooms+deluxeRooms; i<rooms+deluxeRooms+execRooms; i++)
+            this.execRooms.add(new ExecutiveRoom("RM" + (i + 1) + "-EX", basePrice));
     }
 
     /**
@@ -121,10 +150,51 @@ public class Hotel {
      * 
      * @return the index of the latest room without a reservation, or -1 if all rooms are reserved
      */
-    public int LatestRoomNoReservation() {
+    public int latestRoomNoReservation() {
         for (Room room : rooms) {
             if (!room.getBookStatus())
                 return rooms.indexOf(room);
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the index of the latest deluxe room without a reservation.
+     * 
+     * @return the index of the latest deluxe room without a reservation, or -1 if all rooms are reserved
+     */
+    public int latestDeluxeRoomNoReservation() {
+        for (Room room : rooms) {
+            if (room instanceof DeluxeRoom && !room.getBookStatus()) {
+                return rooms.indexOf(room);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the index of the latest exexutive room without a reservation.
+     * 
+     * @return the index of the latest executive room without a reservation, or -1 if all rooms are reserved
+     */
+    public int latestExecutiveRoomNoReservation() {
+        for (Room room : rooms) {
+            if (room instanceof ExecutiveRoom && !room.getBookStatus()) {
+                return rooms.indexOf(room);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the index of the latest room without a reservation.
+     * 
+     * @return the index of the latest room without a reservation, or -1 if all rooms are reserved
+     */
+    public int LatestDeluxeRoomNoReservation() {
+        for (DeluxeRoom deluxeRoom : deluxeRooms) {
+            if (!deluxeRoom.getBookStatus())
+                return deluxeRooms.indexOf(deluxeRoom);
         }
         return -1;
     }
@@ -216,6 +286,15 @@ public class Hotel {
             if (room.getBookStatus() == true)
                 return true;
         }
+        for (DeluxeRoom deluxeRooms : getDeluxeRooms()) {
+            if (deluxeRooms.getBookStatus() == true)
+                return true;
+        }
+        for (ExecutiveRoom execRooms : getExecRooms()) {
+            if (execRooms.getBookStatus() == true)
+                return true;
+        }
+
         return false;
     }
 
@@ -228,6 +307,10 @@ public class Hotel {
         int totalReservations = 0;
         for (Room room : rooms)
             totalReservations += room.getReservations().size();
+        for (DeluxeRoom deluxeRooms : deluxeRooms)
+            totalReservations += deluxeRooms.getReservations().size();
+        for (ExecutiveRoom execRooms : execRooms)
+            totalReservations += execRooms.getReservations().size();
 
         return totalReservations;
     }
@@ -246,6 +329,14 @@ public class Hotel {
                 System.out.print("[" + (++count) + "] " + room.getName());
                 room.printReservations("none");
             }
+            for (DeluxeRoom deluxeRoom : deluxeRooms) {
+                System.out.print("[" + (++count) + "] " + deluxeRoom.getName());
+                deluxeRoom.printReservations("none");
+            }
+            for (ExecutiveRoom execRoom : execRooms) {
+                System.out.print("[" + (++count) + "] " + execRoom.getName());
+                execRoom.printReservations("none");
+            }
         }
 
         if (availability.equals("Reserved")) {
@@ -256,36 +347,46 @@ public class Hotel {
                     System.out.print(" - " + room.getName() + "\n");
                 }
             }
+            for (DeluxeRoom deluxeRoom : deluxeRooms) {
+                if (deluxeRoom.getBookStatus()) {
+                    System.out.print(" - " + deluxeRoom.getName() + "\n");
+                }
+            }
+            for (ExecutiveRoom execRoom : execRooms) {
+                if (execRoom.getBookStatus()) {
+                    System.out.print(" - " + execRoom.getName() + "\n");
+                }
+            }
         }
     }
 
-    /**
-     * Changes the name of the hotel.
-     *
-     * @param hotelList   the HotelList object containing the list of hotels
-     */
-    public void changeHotelName(HotelList hotelList) {
-        System.out.print("Enter new hotel name: ");
-        String newHotelName = ScannerUtil.readString();
+    // /**
+    //  * Changes the name of the hotel.
+    //  *
+    //  * @param hotelList   the HotelList object containing the list of hotels
+    //  */
+    // public void changeHotelName(HotelList hotelList) {
+    //     System.out.print("Enter new hotel name: ");
+    //     String newHotelName = ScannerUtil.readString();
 
-        if (hotelList.sameHotelName(newHotelName)) {
-            System.out.println("Hotel with this name already exists");
-            return;
-        }
+    //     if (hotelList.sameHotelName(newHotelName)) {
+    //         System.out.println("Hotel with this name already exists");
+    //         return;
+    //     }
 
-        System.out.println("Confirm change of hotel name from \"" + this.name +
-                "\" to \"" + newHotelName + "\"");
-        System.out.print("Confirm [Yes/No]: ");
-        boolean confirmed = ScannerUtil.readBoolean();
+    //     System.out.println("Confirm change of hotel name from \"" + this.name +
+    //             "\" to \"" + newHotelName + "\"");
+    //     System.out.print("Confirm [Yes/No]: ");
+    //     boolean confirmed = ScannerUtil.readBoolean();
 
-        if (!confirmed) {
-            System.out.println("\nHotel name change cancelled.\n");
-            return;
-        }
+    //     if (!confirmed) {
+    //         System.out.println("\nHotel name change cancelled.\n");
+    //         return;
+    //     }
 
-        this.name = newHotelName;
-        System.out.println("Hotel name changed to \"" + newHotelName + "\"");
-    }
+    //     this.name = newHotelName;
+    //     System.out.println("Hotel name changed to \"" + newHotelName + "\"");
+    // }
 
     /**
      * Adds rooms to the hotel.
@@ -464,8 +565,8 @@ public class Hotel {
                     return;
                 }
 
-                hotel.setNewPrice(newPrice); // Update the base price
-                hotel.changeRoomPrice(newPrice); // Update the price of all rooms
+                setNewPrice(newPrice); // Update the base price
+                changeRoomPrice(newPrice); // Update the price of all rooms
                 System.out.println("Room price updated to " + newPrice + ".\n");
             break;
             case 2:
