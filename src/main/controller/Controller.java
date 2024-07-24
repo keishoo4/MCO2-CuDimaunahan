@@ -1,3 +1,5 @@
+// TODO: Getters and setters model to view to see if it can get the room and room type
+
 package controller;
 
 import javax.swing.*;
@@ -46,7 +48,7 @@ public class Controller implements ActionListener, DocumentListener {
     }
 
     public void updateHotelView() {
-
+        gui.setSelectedHotelName(hotel.getName());
     }
 
     @Override
@@ -77,7 +79,7 @@ public class Controller implements ActionListener, DocumentListener {
                 break;    
 
             case "SELECT_HOTEL":
-                // hotelController.
+
                 updateHotelView();
                 break;
 
@@ -129,7 +131,6 @@ public class Controller implements ActionListener, DocumentListener {
             RoomController roomController = new RoomController(selectedHotel, gui);
             roomController.bookRoom();
         }
-
     }
 
     public class RoomController {

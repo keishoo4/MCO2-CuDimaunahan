@@ -179,6 +179,8 @@ public class GUI extends JFrame {
 
         tabbedPane.addTab("Hotel List", tabHotelListPanel);
 
+
+        // TODO ADD TO CONTROLLER MAYBE???
         hotelJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

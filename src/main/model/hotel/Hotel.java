@@ -1,9 +1,8 @@
-// TODO Add new ArrayList for various rooms
+// TODO Fix methods that use rooms (incomplete pa ung iba)
 
 package model.hotel;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import utils.ScannerUtil;
 
@@ -274,7 +273,7 @@ public class Hotel {
      * 
      * @return the number of deluxe rooms that can be removed
      */
-    public int removableDeluxeRooms(){
+    public int removableDeluxeRooms() {
         int count = 0;
         for (DeluxeRoom deluxeRoom : deluxeRooms) {
             if (!deluxeRoom.getBookStatus())
@@ -460,11 +459,11 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved rooms
      */
-    public int totalRoomsReserved(Hotel hotel) {
+    public int totalRoomsReserved() {
         int totalRooms = 0;
-        totalRooms += totalStandardRoomsReserved(this);
-        totalRooms += totalDeluxeRoomsReserved(this);
-        totalRooms += totalExecutiveRoomsReserved(this);
+        totalRooms += totalStandardRoomsReserved();
+        totalRooms += totalDeluxeRoomsReserved();
+        totalRooms += totalExecutiveRoomsReserved();
         return totalRooms;
     }
 
@@ -474,9 +473,9 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved standard rooms
      */
-    public int totalStandardRoomsReserved(Hotel hotel){
+    public int totalStandardRoomsReserved(){
         int totalStandardRooms = 0;
-        for (Room room : this.getRooms()) {
+        for (Room room : getRooms()) {
             if (room.getBookStatus())
                 totalStandardRooms++;
         }
@@ -489,9 +488,9 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved deluxe rooms
      */
-    public int totalDeluxeRoomsReserved(Hotel hotel){
+    public int totalDeluxeRoomsReserved(){
         int totalDeluxeRooms = 0;
-        for (DeluxeRoom room : hotel.getDeluxeRooms()) {
+        for (DeluxeRoom room : getDeluxeRooms()) {
             if (room.getBookStatus())
                 totalDeluxeRooms++;
         }
@@ -504,9 +503,9 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of executive reserved rooms
      */
-    public int totalExecutiveRoomsReserved(Hotel hotel){
+    public int totalExecutiveRoomsReserved(){
         int totalExecRooms = 0;
-        for (ExecutiveRoom room : hotel.getExecRooms()) {
+        for (ExecutiveRoom room : getExecRooms()) {
             if (room.getBookStatus())
                 totalExecRooms++;
         }
@@ -542,7 +541,7 @@ public class Hotel {
             return;
         }
 
-        if (numRooms > (lastRoom - totalRoomsReserved(this))) {
+        if (numRooms > (lastRoom - totalRoomsReserved())) {
             System.out.println("Picked room numbers for removal exceed current unoccupied rooms.\n");
             return;
         }
@@ -596,7 +595,6 @@ public class Hotel {
         }
         return totalPrice;
     }
-
     
     public double getDiscountCode(String discountCode) {
         switch (discountCode) {
@@ -871,14 +869,16 @@ public class Hotel {
     }
 
     public void displayRoomTypes() {
-        System.out.println("[1] Base Room - " + (rooms.size() - totalStandardRoomsReserved(this)) 
-                           + " rooms available");
+        System.out.println("[1] Base Room      - " + (rooms.size()-totalStandardRoomsReserved()) 
+                           + " rooms unbooked");
 
         if (deluxeRooms.size() > 0) {
-            System.out.println("[2] Deluxe Room - " + (deluxeRooms.size() - totalDeluxeRoomsReserved(this)) + " rooms available");
+            System.out.println("[2] Deluxe Room    - " + (deluxeRooms.size()-totalDeluxeRoomsReserved()) 
+                               + " rooms unbooked");
         } 
         if (execRooms.size() > 0) {
-            System.out.println("[3] Executive Room - "  + (execRooms.size() - totalExecutiveRoomsReserved(this)) + " rooms available");
+            System.out.println("[3] Executive Room - "  + (execRooms.size()-totalExecutiveRoomsReserved()) 
+                               + " rooms unbooked");
         }
     }
 }
