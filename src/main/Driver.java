@@ -364,7 +364,7 @@ public static void simulateBooking(HotelList hotelList) {
         System.out.println("[1] Change Hotel Name  - " + hotel.getName());
         System.out.println("[2] Add Room           - " + + (hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size()) + " room(s)");
         System.out.println("[3] Remove Room          [CAUTION]");
-        System.out.println("[4] Update Room Price and Date Modifier  - " + hotel.getPrice());
+        System.out.println("[4] Update Room Price and Date Modifier  - " + hotel.getRoomPrice());
         System.out.println("[5] Remove Reservation - " + hotel.getAllReservations() + " reservation(s)");
         System.out.println("[6] Remove Hotel         [CAUTION]");
         System.out.println("[7] Back to Main Menu");
