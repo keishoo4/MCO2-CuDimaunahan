@@ -362,7 +362,7 @@ public static void simulateBooking(HotelList hotelList) {
     
     private static void manageHotelConfig(HotelList hotelList, Hotel hotel, ArrayList<Room> rooms) {
         System.out.println("[1] Change Hotel Name  - " + hotel.getName());
-        System.out.println("[2] Add Room           - " + hotel.getRooms().size() + " room(s)");
+        System.out.println("[2] Add Room           - " + + (hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size()) + " room(s)");
         System.out.println("[3] Remove Room          [CAUTION]");
         System.out.println("[4] Update Room Price and Date Modifier  - " + hotel.getRoomPrice());
         System.out.println("[5] Remove Reservation - " + hotel.getAllReservations() + " reservation(s)");

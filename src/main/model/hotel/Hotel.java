@@ -425,22 +425,70 @@ public class Hotel {
      * @param hotel the Hotel object to modify
      */
     public void addRoomsPrompt(Hotel hotel) {
-        System.out.print("Enter number of rooms to add: ");
-        int rooms, deluxeRooms, execRooms; 
-        
-        rooms = ScannerUtil.readInt();    
+        int baseRooms, deluxeRooms = 0, execRooms = 0, remainingRooms, totalRooms;
 
-        if (rooms < 1) {
-            System.out.println("Invalid number of rooms!\n");
+        int initialTotalRooms = hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+
+        if (initialTotalRooms >= 50) {
+            System.out.println("Hotel already has 50 or more rooms! Cannot add more rooms.");
             return;
-        } 
-        if (rooms + hotel.getRooms().size() > 50) {
+        }
+
+        System.out.print("Enter number of base rooms to add: ");
+        baseRooms = ScannerUtil.readInt();
+
+        if (baseRooms < 1) {
+            System.out.println("Invalid number of base rooms!\n");
+            return;
+        }
+        if (initialTotalRooms + baseRooms > 50) {
             System.out.println("Cannot exceed 50 rooms!\n");
             return;
         }
 
-        System.out.println("Confirm adding " + rooms + 
-                           " room(s) to \"" + hotel.getName() + "\"");
+        remainingRooms = 50 - initialTotalRooms - baseRooms;
+        totalRooms = baseRooms + initialTotalRooms;
+
+        if (remainingRooms > 0) {
+            int maxDeluxe = Math.min((int) Math.floor(baseRooms * 0.6), remainingRooms);
+            System.out.print("Enter number of deluxe rooms to add (0-" + maxDeluxe + "): ");
+            deluxeRooms = ScannerUtil.readInt();
+
+            if (deluxeRooms < 0 || deluxeRooms > maxDeluxe) {
+                System.out.println("Invalid number of deluxe rooms!\n");
+                return;
+            }
+
+            totalRooms += deluxeRooms;
+            remainingRooms -= deluxeRooms;
+
+            if (totalRooms >= 50) {
+                System.out.println("Cannot exceed 50 rooms!\n");
+                return;
+            }
+        }
+
+        if (remainingRooms > 0) {
+            int maxExec = Math.min((int) Math.floor(baseRooms * 0.4), remainingRooms);
+            System.out.print("Enter number of executive rooms to add (0-" + maxExec + "): ");
+            execRooms = ScannerUtil.readInt();
+
+            if (execRooms < 0 || execRooms > maxExec) {
+                System.out.println("Invalid number of executive rooms!\n");
+                return;
+            }
+
+            totalRooms += execRooms;
+
+            if (totalRooms > 50) {
+                System.out.println("Cannot exceed 50 rooms!\n");
+                return;
+            }
+        }
+
+        System.out.println("Confirm adding " + baseRooms + " base room(s), " +
+                        deluxeRooms + " deluxe room(s), and " + execRooms + 
+                        " executive room(s) to \"" + hotel.getName() + "\"");
         System.out.print("Confirm [Yes/No]: ");
         boolean confirmed = ScannerUtil.readBoolean();
 
@@ -449,12 +497,12 @@ public class Hotel {
             return;
         }
 
-        // hotel.addRooms(rooms, deluxeRooms, execRooms);
-        System.out.println("Total Room(s) is " + hotel.getRooms().size() + ".\n");
+        hotel.addRooms(baseRooms, deluxeRooms, execRooms);
+        System.out.println("Total Room(s) is " + (initialTotalRooms + baseRooms + deluxeRooms + execRooms) + ".\n");
     }
 
     /**
-     * Calculates the total number of rooms reserved for all room tyoes in the hotel.
+     * Calculates the total number of rooms reserved for all room types in the hotel.
      *
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved rooms
