@@ -176,7 +176,6 @@ public class GUI extends JFrame {
         JPanel tabHotelListPanel = new JPanel();
 
         displayHotels(tabHotelListPanel);
-        displayBookingPanel(tabHotelListPanel);
 
         tabbedPane.addTab("Hotel List", tabHotelListPanel);
 
@@ -200,6 +199,7 @@ public class GUI extends JFrame {
                         addClosableTab(selectedHotelName, tabHotelPanel);
 
                         tabHotelPanel.add(hotelInfoPanel);
+                        displayBookingPanel(hotelInfoPanel);
                         
                         tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1); // Optional: Switch to the newly added tab
                     }
@@ -242,7 +242,7 @@ public class GUI extends JFrame {
                 tabbedPane.removeTabAt(index);
             }
         });
-        tabComponent.add(closeButton);
+        tabComponent.add(closeButton); 
         
         // Add the custom component as the tab header
         tabbedPane.addTab(title, component);
@@ -363,7 +363,7 @@ public class GUI extends JFrame {
 
     }
 
-    public void displayBookingPanel(JPanel tabHotelListPanel) {
+    public void displayBookingPanel(JPanel hotelInfoPanel) {
         // SIMULATE BOOKING - UPPER RIGHT
         JPanel rightPanelUpper = new JPanel();
         rightPanelUpper.setLayout(new BoxLayout(rightPanelUpper, BoxLayout.Y_AXIS));
@@ -481,7 +481,7 @@ public class GUI extends JFrame {
 
         bookingFrame.add(bookingPanel);
 
-        tabHotelListPanel.add(rightPanelUpper);
+        hotelInfoPanel.add(rightPanelUpper);
     }
 
     public void updateHotelList(ArrayList<Hotel> hotels) {
