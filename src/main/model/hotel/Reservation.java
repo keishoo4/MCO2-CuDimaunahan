@@ -25,7 +25,6 @@ public class Reservation {
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.room = room;
-        this.totalPrice = calculateTotalPrice();
         this.discountCode = discountCode;
     }
 
@@ -66,30 +65,12 @@ public class Reservation {
     }
 
     /**
-     * Returns the total price of the reservation.
-     *
-     * @return the total price
-     */
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    /**
      * Sets the name of the guest making the reservation.
      *
      * @param guestName the guest name to set
      */
     public void setGuestName(String guestName) {
         this.guestName = guestName;
-    }
-
-    /**
-     * Calculates the total price of the reservation based on the room's price per night.
-     *
-     * @return the total price of the reservation
-     */
-    private double calculateTotalPrice() {
-        return room.getPricePerNight();
     }
 
     public String getDiscountCode() {

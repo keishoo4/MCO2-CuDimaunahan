@@ -14,7 +14,7 @@ import model.hotel.Room;
 import model.hotel.Reservation;
 import view.GUI;
 
-public class Controller implements ActionListener, DocumentListener {
+public class Controller implements ActionListener, DocumentListener, ListSelectionListener {
     private HotelList hotelList;
     private Hotel hotel;
     private Room room;
@@ -31,6 +31,7 @@ public class Controller implements ActionListener, DocumentListener {
 
         gui.setActionListener(this);
         gui.setDocumentListener(this);
+        gui.setListActionListener(this);
     }
 
     public void updateHotelList() {
@@ -40,7 +41,6 @@ public class Controller implements ActionListener, DocumentListener {
 
     public void updateClearTextFields() {
         gui.clearTextFields();
-        gui.setCreateBtnEnabled(false);
     }
 
     public void updateRoomBooking() {
@@ -78,6 +78,10 @@ public class Controller implements ActionListener, DocumentListener {
                 updateClearTextFields();
                 break;    
 
+            case "BOOK_ROOM_FRAME":
+                gui.setupBookingFrame(gui.getBookingFrame());
+                break;
+
             case "SELECT_HOTEL":
 
                 updateHotelView();
@@ -90,10 +94,30 @@ public class Controller implements ActionListener, DocumentListener {
                 hotelController.bookRoomForSelectedHotel();
                 updateRoomBooking();
                 break;
-
-                
+   
         }
     }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        int selectedHotelIndex;
+        if (!e.getValueIsAdjusting()) {
+            selectedHotelIndex = gui.getHotelJList().getSelectedIndex();
+            if (selectedHotelIndex >= 0) {
+                Hotel hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
+                gui.setSelectedHotelName(hotel.getName());
+                gui.setSelectedHotelRoomSize(hotel.getRooms().size());
+                gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
+                gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
+                gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
+
+
+                gui.setDisplayHotelHighLevelInfo();
+            }
+        }
+
+    }
+
 
     public class HotelController {
         private HotelList hotelList;
@@ -156,9 +180,9 @@ public class Controller implements ActionListener, DocumentListener {
 
 
     
-    public ArrayList<Hotel> getHotels() {
-        return hotelList.getHotels();
-    }
+    // public ArrayList<Hotel> getHotels() {
+    //     return hotelList.getHotels();
+    // }
 
     @Override
     public void insertUpdate(DocumentEvent e) {

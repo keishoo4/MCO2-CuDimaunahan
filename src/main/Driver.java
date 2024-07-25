@@ -69,7 +69,11 @@ public class Driver {
             System.out.println("Hotel with this name already exists!");
             return;
         }
-    
+        
+
+        baseRooms = 0;
+        deluxeRooms = 0;
+        execRooms = 0;
         System.out.print("Enter number of base rooms (1-50): ");
         baseRooms = ScannerUtil.readInt();
     
@@ -83,7 +87,8 @@ public class Driver {
     
         System.out.print("Enter number of deluxe rooms (0-" + maxDeluxe + "): ");
         deluxeRooms = ScannerUtil.readInt();
-    
+        
+
         if (deluxeRooms < 0 || deluxeRooms > maxDeluxe) {
             System.out.println("Invalid number of deluxe rooms!");
             return;
@@ -100,6 +105,7 @@ public class Driver {
             return;
         }
     
+        
         totalRooms = baseRooms + deluxeRooms + execRooms;
     
         if (totalRooms > 50) {
@@ -355,7 +361,7 @@ public static void simulateBooking(HotelList hotelList) {
         System.out.println("[1] Change Hotel Name  - " + hotel.getName());
         System.out.println("[2] Add Room           - " + hotel.getRooms().size() + " room(s)");
         System.out.println("[3] Remove Room          [CAUTION]");
-        System.out.println("[4] Update Room Price and Date Modifier  - " + hotel.getPrice());
+        System.out.println("[4] Update Room Price and Date Modifier  - " + hotel.getRoomPrice());
         System.out.println("[5] Remove Reservation - " + hotel.getAllReservations() + " reservation(s)");
         System.out.println("[6] Remove Hotel         [CAUTION]");
         System.out.println("[7] Back to Main Menu");

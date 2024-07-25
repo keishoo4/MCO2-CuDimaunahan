@@ -62,7 +62,7 @@ public class Hotel {
      * 
      * @return the base price of the hotel
      */
-    public double getPrice() {
+    public double getRoomPrice() {
         return basePrice;
     }
 
@@ -746,9 +746,14 @@ public class Hotel {
      * @param hotel The hotel object for which to display the information.
      */
     public void viewHighLevelInfo(Hotel hotel) {
+        double estimatedEarnings = calculateEstimatedEarnings(hotel);
+
         System.out.println("Hotel Name: " + hotel.getName());
         System.out.println("Total Number of Rooms: " + hotel.getRooms().size());
+        System.out.println("Estimated Earnings for the Month: " + String.format("%.2f", estimatedEarnings));
+    }
 
+    public double calculateEstimatedEarnings(Hotel hotel) {
         double estimatedEarnings = hotel.getRooms().stream()
                 .flatMap(room -> room.getReservations().stream())
                 .mapToDouble(reservation -> {
@@ -756,16 +761,14 @@ public class Hotel {
                     int checkOutDate = reservation.getCheckOutDate();
                     Room room = reservation.getRoom();
                     String discountCode = reservation.getDiscountCode();
-
+    
                     // Use the room's fillDates method to calculate the total price
                     double pricePerNight = room.getPricePerNight();
-
+    
                     // Calculate the total price for this reservation
                     return fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
-                })
-                .sum();
-
-        System.out.println("Estimated Earnings for the Month: " + String.format("%.2f", estimatedEarnings));
+                }).sum();
+        return estimatedEarnings;
     }
 
     /**
