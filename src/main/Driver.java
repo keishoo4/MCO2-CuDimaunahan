@@ -69,8 +69,7 @@ public class Driver {
             System.out.println("Hotel with this name already exists!");
             return;
         }
-        
-
+    
         baseRooms = 0;
         deluxeRooms = 0;
         execRooms = 0;
@@ -81,32 +80,36 @@ public class Driver {
             System.out.println("Invalid number of base rooms! Must be between 1 and 50.");
             return;
         }
-    
-        maxDeluxe = (int) Math.floor(baseRooms * 0.6); // 3/5 ratio
-        maxExec = (int) Math.floor(baseRooms * 0.4);   // 2/5 ratio
-    
-        System.out.print("Enter number of deluxe rooms (0-" + maxDeluxe + "): ");
-        deluxeRooms = ScannerUtil.readInt();
-        
 
-        if (deluxeRooms < 0 || deluxeRooms > maxDeluxe) {
-            System.out.println("Invalid number of deluxe rooms!");
-            return;
+        remainingRooms = 50- baseRooms;
+        totalRooms = baseRooms;
+
+        if (totalRooms < 50) {
+            maxDeluxe = Math.min((int) Math.floor(baseRooms * 0.6), remainingRooms);
+            System.out.print("Enter number of deluxe rooms (0-" + maxDeluxe + "): ");
+            deluxeRooms = ScannerUtil.readInt();
+    
+            if (deluxeRooms < 0 || deluxeRooms > maxDeluxe) {
+                System.out.println("Invalid number of deluxe rooms!");
+                return;
+            }
+    
+            remainingRooms -= deluxeRooms;
+            totalRooms += deluxeRooms;
         }
     
-        remainingRooms = 50 - baseRooms - deluxeRooms;
-        maxExec = Math.min(maxExec, remainingRooms);
+        if (totalRooms < 50 && remainingRooms > 0) {
+            maxExec = Math.min((int) Math.floor(baseRooms * 0.4), remainingRooms);
+            System.out.print("Enter number of executive rooms (0-" + maxExec + "): ");
+            execRooms = ScannerUtil.readInt();
     
-        System.out.print("Enter number of executive rooms (0-" + maxExec + "): ");
-        execRooms = ScannerUtil.readInt();
+            if (execRooms < 0 || execRooms > maxExec) {
+                System.out.println("Invalid number of executive rooms!");
+                return;
+            }
     
-        if (execRooms < 0 || execRooms > maxExec) {
-            System.out.println("Invalid number of executive rooms!");
-            return;
+            totalRooms += execRooms;
         }
-    
-        
-        totalRooms = baseRooms + deluxeRooms + execRooms;
     
         if (totalRooms > 50) {
             System.out.println("Total number of rooms exceeds the maximum of 50!");
