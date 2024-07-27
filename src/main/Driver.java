@@ -312,21 +312,21 @@ public static void simulateBooking(HotelList hotelList) {
 
             if (roomChoice == 1) {
                 hotel.fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
-                room.bookInputInfo(room, reservations, guestName, checkInDate, checkOutDate, discountCode);
+                hotel.bookRoomInputInfo(room, reservations, guestName, checkInDate, checkOutDate, discountCode);
                 reservationNum = room.getReservations().size();
                 System.out.println("Reservation No.: " + reservationNum);
                 System.out.println(room.getName() + " booked successfully!\n");
             }
             else if (roomChoice == 2) {
                 hotel.fillDates(deluxeRoom.getPricePerNight(), checkInDate, checkOutDate, discountCode);
-                deluxeRoom.bookInputInfo(deluxeRoom, reservations, guestName, checkInDate, checkOutDate, discountCode);
+                hotel.bookDeluxeRoomInputInfo(deluxeRoom, reservations, guestName, checkInDate, checkOutDate, discountCode);
                 reservationNum = deluxeRoom.getReservations().size();
                 System.out.println("Reservation No.: " + reservationNum);
                 System.out.println(deluxeRoom.getName() + " booked successfully!\n");
             }
             else {
                 hotel.fillDates(execRoom.getPricePerNight(), checkInDate, checkOutDate, discountCode);
-                execRoom.bookInputInfo(execRoom, reservations, guestName, checkInDate, checkOutDate, discountCode);
+                hotel.bookExecRoomInputInfo(execRoom, reservations, guestName, checkInDate, checkOutDate, discountCode);
                 reservationNum = execRoom.getReservations().size();
                 System.out.println("Reservation No.: " + reservationNum);
                 System.out.println(execRoom.getName() + " booked successfully!\n");

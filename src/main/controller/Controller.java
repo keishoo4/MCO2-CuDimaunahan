@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import model.hotel.HotelList;
 import model.hotel.Hotel;
 import model.hotel.Room;
+import model.hotel.DeluxeRoom;
+import model.hotel.ExecutiveRoom;
 import model.hotel.Reservation;
 import view.GUI;
 
@@ -108,17 +110,14 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
                 gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
                 gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
 
-
                 gui.setDisplayInfoAndBooking();
             }
         }
-
     }
 
 
     public class HotelController {
         private HotelList hotelList;
-        private Hotel hotel;
         private GUI gui;
 
         private int selectedHotelIndex;
@@ -145,12 +144,16 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
 
         public void bookRoomForSelectedHotel() {
             Hotel selectedHotel;
-            String checkIn, checkOut, guestName;
+            Room room;
+            DeluxeRoom deluxeRoom;
+            ExecutiveRoom execRoom;
+            String checkIn, checkOut, guestName, discountCode;
             int roomToUse, deluxeRoomToUse, execRoomToUse;
 
             guestName = gui.getGuestName();
             checkIn = gui.getCheckInDate();
             checkOut = gui.getCheckOutDate();
+            discountCode = gui.getDiscountCode();
 
             if (guestName.equals(STRING_EMPTY)) {
                 JOptionPane.showMessageDialog(gui, "Please enter guest name.", 
@@ -176,17 +179,46 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
                 return;
             }
 
-            selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+            selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
             roomToUse       = selectedHotel.latestRoomNoReservation();
+            room            = selectedHotel.getRooms().get(roomToUse);
+            deluxeRoomToUse = selectedHotel.latestDeluxeRoomNoReservation();
+            deluxeRoom      = selectedHotel.getDeluxeRooms().get(deluxeRoomToUse);
+            execRoomToUse   = selectedHotel.latestExecRoomNoReservation();
+            execRoom        = selectedHotel.getExecRooms().get(execRoomToUse);
+
             deluxeRoomToUse = selectedHotel.latestDeluxeRoomNoReservation();
             execRoomToUse   = selectedHotel.latestExecRoomNoReservation();
             // Get the check-in and check-out dates from the GUI, run the booking logic from model
-            RoomController roomController = new RoomController(gui);
-            roomController.bookRoom();
+            bookRoom(selectedHotel, guestName, Integer.parseInt(checkIn), Integer.parseInt(checkOut), 
+                     room, deluxeRoom, execRoom, discountCode);
 
             JOptionPane.showMessageDialog(gui, "Room booked successfully!", 
                                           "Success", JOptionPane.INFORMATION_MESSAGE);
         }
+
+        public void bookRoom(Hotel hotel, String guestName, int checkInDate, int checkOutDate, 
+                             Room room, DeluxeRoom deluxeRoom, ExecutiveRoom execRoom,
+                             String discountCode) {
+            String roomType;
+
+            roomType = gui.getSelectedRoomType();
+            if (roomType.equals("Base Room")) {
+                hotel.bookRoomInputInfo(room, room.getReservations(), guestName, 
+                                        checkInDate, checkOutDate, discountCode);
+            }
+            if (roomType.equals("Deluxe Room")) {
+                hotel.bookRoomInputInfo(deluxeRoom, deluxeRoom.getReservations(), guestName, 
+                                        checkInDate, checkOutDate, discountCode);
+            }
+            if (roomType.equals("Executive Room")) {
+                hotel.bookRoomInputInfo(execRoom, execRoom.getReservations(), guestName, 
+                                        checkInDate, checkOutDate, discountCode);
+            }
+        }
+
+
     }
 
     public class RoomController {
@@ -195,21 +227,7 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
         public RoomController(GUI gui) {
             this.gui = gui;
         }
-    
-        public void bookRoom() {
-            String roomType;
 
-            roomType = gui.getSelectedRoomType();
-            if (roomType.equals("Base Room")) {
-                
-            }
-            if (roomType.equals("Deluxe Room")) {
-
-            }
-            if (roomType.equals("Executive Room")) {
-
-            }
-        }
     }
 
 

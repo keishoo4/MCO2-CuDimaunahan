@@ -632,6 +632,35 @@ public class Hotel {
         System.out.println("Removal Success!\n");
     }
 
+    /**
+     * Adds a new reservation to the given list of reservations and updates the book status of the specified room.
+     *
+     * @param room The room to be booked.
+     * @param roomToUse The index of the room to be booked.
+     * @param reservations The list of reservations.
+     * @param guestName The name of the guest making the reservation.
+     * @param checkInDate The check-in date of the reservation.
+     * @param checkOutDate The check-out date of the reservation.
+     */
+    public void bookRoomInputInfo(Room room, ArrayList<Reservation> reservations, 
+                              String guestName, int checkInDate, int checkOutDate, String discountCode) {
+        reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room, discountCode));
+        room.setBookStatus(true);
+    }
+
+    // Do bookDeluxeRoomInputInfo and bookExecutiveRoomInputInfo
+    public void bookDeluxeRoomInputInfo(DeluxeRoom room, ArrayList<Reservation> reservations, 
+                              String guestName, int checkInDate, int checkOutDate, String discountCode) {
+        reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room, discountCode));
+        room.setBookStatus(true);
+    }
+
+    public void bookExecRoomInputInfo(ExecutiveRoom room, ArrayList<Reservation> reservations, 
+                              String guestName, int checkInDate, int checkOutDate, String discountCode) {
+        reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room, discountCode));
+        room.setBookStatus(true);
+    }
+
     public double fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
         double totalPrice = 0.0;
 

@@ -32,7 +32,9 @@ public class GUI extends JFrame {
     private JComboBox<String> comboBox;
     private JTabbedPane tabbedPane;
     private DefaultListModel<Hotel> hotelListModel;
-    NumberFormatter numberFormatter;
+
+    private Font font;
+    private NumberFormatter numberFormatter;
 
     private int selectedHotelIndex = -1;
     private String selectedHotelName = "NULL"; // Placeholder
@@ -279,20 +281,12 @@ public class GUI extends JFrame {
                         simulateBookingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
                         JButton bookingBtn = createBookingButton(selectedHotelName);
-                        // JButton bookingBtn = new JButton("Book a Room");
-                        // // bookingBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-                        // // bookingBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, bookingBtn.getPreferredSize().height));
-                        // // bookingBtn.setActionCommand("BOOK_ROOM_FRAME"); // For Controller
-
-                        // // bookingBtn.addActionListener(e -> displayBookingFrame(selectedHotelName));
 
                         tabHotelLowerPanel.add(simulateBookingLabel);
                         tabHotelLowerPanel.add(Box.createVerticalStrut(10));
                         tabHotelLowerPanel.add(bookingBtn);
                         
-                        // displayBookingFrame(selectedHotelName);
-                        
-                        tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1); // Optional: Switch to the newly added tab
+                        tabbedPane.setSelectedIndex(tabbedPane.getTabCount()-1); // Switch to the newly added tab
                     }
                 }
             }
@@ -443,6 +437,9 @@ public class GUI extends JFrame {
     public String getCheckOutDate() {
         return checkOutField.getText();
     }
+    public String getDiscountCode() {
+        return discountCodeField.getText();
+    }
     public String getSelectedRoomType() {
         return comboBox.getSelectedItem().toString();
     }
@@ -476,7 +473,16 @@ public class GUI extends JFrame {
 
         JScrollPane hotelListScrollPane = new JScrollPane(hotelJList);
         hotelListScrollPane.setPreferredSize(new Dimension(300, 150));
+
+        JLabel hotelListLabel = new JLabel("Double Click Hotel to Book a Room");
+        font = hotelListLabel.getFont();
+        hotelListLabel.setFont(font.deriveFont(font.getStyle() + Font.ITALIC));
+        hotelListLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        
         tabHotelListPanel.add(hotelListScrollPane);
+        tabHotelListPanel.add(hotelListLabel);
+
 
         setupHotelListClickMouseListener();
         getSelectedHotelIndex();
