@@ -177,7 +177,7 @@ public static void simulateBooking(HotelList hotelList) {
             }
             for (i=0; i<=lastExecRoom-1; i++) {
                 if (!hotel.getExecRooms().get(i).getBookStatus()) { // If the room does not have a booking
-                    roomToUse = hotel.latestExecutiveRoomNoReservation();
+                    roomToUse = hotel.latestExecRoomNoReservation();
                     successRoom = 1;
                     break;
                 }
@@ -212,7 +212,7 @@ public static void simulateBooking(HotelList hotelList) {
                 } 
                 else if (roomChoice == 3) {
                     System.out.println("Executive room selected!\n");
-                    roomToUse = hotel.latestExecutiveRoomNoReservation();
+                    roomToUse = hotel.latestExecRoomNoReservation();
                 } 
                 else {
                     System.out.println("Invalid room type!\n");

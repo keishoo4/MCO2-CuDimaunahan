@@ -1,4 +1,4 @@
-// TODO: Getters and setters model to view to see if it can get the room and room type
+// TODO: Update HotelView after booking (For estimated earnings)
 
 package controller;
 
@@ -36,15 +36,15 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
 
     public void updateHotelList() {
         gui.updateHotelList(hotelList.getHotels());
-        gui.setCreateBtnEnabled(false);
+
     }
 
-    public void updateClearTextFields() {
-        gui.clearTextFields();
+    public void updateCreateHotel() {
+        gui.clearCreateHotel();
     }
 
     public void updateRoomBooking() {
-
+        gui.clearBookingInfo();
     }
 
     public void updateHotelView() {
@@ -75,12 +75,8 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
                 break;
             
             case "CLEAR_HOTEL":
-                updateClearTextFields();
+                updateCreateHotel();
                 break;    
-
-            case "BOOK_ROOM_FRAME":
-                gui.setupBookingFrame(gui.getBookingFrame());
-                break;
 
             case "SELECT_HOTEL":
 
@@ -90,7 +86,8 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
             case "MANAGE_HOTELS":
                 updateHotelList();
                 break;
-            case "BOOK_ROOM":
+
+            case "FINALIZE_BOOKING":
                 hotelController.bookRoomForSelectedHotel();
                 updateRoomBooking();
                 break;
@@ -112,7 +109,7 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
                 gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
 
 
-                gui.setDisplayHotelHighLevelInfo();
+                gui.setDisplayInfoAndBooking();
             }
         }
 
@@ -125,6 +122,7 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
         private GUI gui;
 
         private int selectedHotelIndex;
+        private final String STRING_EMPTY = "";
     
         public HotelController(HotelList hotelList, GUI gui) {
             this.hotelList = hotelList;
@@ -146,35 +144,71 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
         }
 
         public void bookRoomForSelectedHotel() {
-            selectedHotelIndex = gui.getSelectedHotelIndex();
-            if (selectedHotelIndex < 0 || selectedHotelIndex >= hotelList.getHotels().size()) {
-                JOptionPane.showMessageDialog(gui, "Invalid hotel selection.", "Error", JOptionPane.ERROR_MESSAGE);
+            Hotel selectedHotel;
+            String checkIn, checkOut, guestName;
+            int roomToUse, deluxeRoomToUse, execRoomToUse;
+
+            guestName = gui.getGuestName();
+            checkIn = gui.getCheckInDate();
+            checkOut = gui.getCheckOutDate();
+
+            if (guestName.equals(STRING_EMPTY)) {
+                JOptionPane.showMessageDialog(gui, "Please enter guest name.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Hotel selectedHotel = hotelList.getHotels().get(selectedHotelIndex);
-            RoomController roomController = new RoomController(selectedHotel, gui);
+
+            else if (checkIn.equals(STRING_EMPTY) || checkOut.equals(STRING_EMPTY)) {
+                JOptionPane.showMessageDialog(gui, "Please enter check-in AND check-out dates.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (checkIn.equals(checkOut)) {
+                JOptionPane.showMessageDialog(gui, "Check-in and check-out dates cannot be the same.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (Integer.parseInt(checkOut) < Integer.parseInt(checkIn)) {
+                JOptionPane.showMessageDialog(gui, "Check-out date cannot be before check-in date.", 
+                                              "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+            roomToUse       = selectedHotel.latestRoomNoReservation();
+            deluxeRoomToUse = selectedHotel.latestDeluxeRoomNoReservation();
+            execRoomToUse   = selectedHotel.latestExecRoomNoReservation();
+            // Get the check-in and check-out dates from the GUI, run the booking logic from model
+            RoomController roomController = new RoomController(gui);
             roomController.bookRoom();
+
+            JOptionPane.showMessageDialog(gui, "Room booked successfully!", 
+                                          "Success", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
     public class RoomController {
-        private Hotel hotel;
         private GUI gui;
     
-        public RoomController(Hotel hotel, GUI gui) {
-            this.hotel = hotel;
+        public RoomController(GUI gui) {
             this.gui = gui;
         }
     
         public void bookRoom() {
-            // // Example implementation, adjust based on your Room model
-            // if (hotel.getAvailableRooms() > 0) {
-            //     hotel.bookRoom(); // Assume this method updates the room's availability
-            //     JOptionPane.showMessageDialog(gui, "Room booked successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            // } 
-            // else {
-            //     JOptionPane.showMessageDialog(gui, "No available rooms.", "Error", JOptionPane.ERROR_MESSAGE);
-            // }
+            String roomType;
+
+            roomType = gui.getSelectedRoomType();
+            if (roomType.equals("Base Room")) {
+                
+            }
+            if (roomType.equals("Deluxe Room")) {
+
+            }
+            if (roomType.equals("Executive Room")) {
+
+            }
         }
     }
 

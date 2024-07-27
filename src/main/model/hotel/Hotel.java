@@ -201,7 +201,7 @@ public class Hotel {
      * 
      * @return the index of the latest executive room without a reservation, or -1 if all rooms are reserved
      */
-    public int latestExecutiveRoomNoReservation() {
+    public int latestExecRoomNoReservation() {
         for (ExecutiveRoom execRoom : execRooms) {
             if (!execRoom.getBookStatus()) {
                 return execRooms.indexOf(execRoom);
@@ -566,14 +566,14 @@ public class Hotel {
      * @param hotel the Hotel object to modify
      */
     public void removeRooms(Hotel hotel) {
-        int lastRoom = rooms.size();
+        int lastRoom = hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+        int removableRooms = hotel.removableRooms() + hotel.removableDeluxeRooms() + hotel.removeableExecutiveRooms();
 
         if (lastRoom == 1) {
             System.out.println("A hotel cannot have zero rooms.\n");
             return;
         }
 
-        int removableRooms = removableRooms();
         if (removableRooms == 0) {
             System.out.println("All rooms have reservations.\nCannot remove any rooms.\n");
             return;
@@ -604,17 +604,29 @@ public class Hotel {
         }
 
         int i = 0;
-        while (numRooms > 0) {
-            if (!rooms.get(lastRoom - i - 1).getBookStatus()) {
-                rooms.remove(lastRoom - i - 1);
+        while (numRooms > 0 && lastRoom > 1) {
+            if (!rooms.isEmpty() && !rooms.get(rooms.size() - 1).getBookStatus()) {
+                rooms.remove(rooms.size() - 1);
+                --numRooms;
+            } else if (!deluxeRooms.isEmpty() && !deluxeRooms.get(deluxeRooms.size() - 1).getBookStatus()) {
+                deluxeRooms.remove(deluxeRooms.size() - 1);
+                --numRooms;
+            } else if (!execRooms.isEmpty() && !execRooms.get(execRooms.size() - 1).getBookStatus()) {
+                execRooms.remove(execRooms.size() - 1);
                 --numRooms;
             }
-            ++i;
+            lastRoom = rooms.size() + deluxeRooms.size() + execRooms.size();
         }
 
         System.out.println("Shifting Room Numbers...");
         for (i = 0; i < rooms.size(); i++) {
             rooms.get(i).setName("RM" + (i + 1));
+        }
+        for (DeluxeRoom deluxeRoom : deluxeRooms){
+            deluxeRoom.setName("RM" + (i + 1));
+        }
+        for (ExecutiveRoom executiveRoom : execRooms){
+            executiveRoom.setName("RM" + (i + 1));
         }
 
         System.out.println("Removal Success!\n");
