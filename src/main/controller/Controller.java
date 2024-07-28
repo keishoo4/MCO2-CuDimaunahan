@@ -38,8 +38,7 @@ public class Controller implements ActionListener, DocumentListener,
     }
 
     public void updateHotelList() {
-        gui.updateHotelList(hotelList.getHotels());
-
+        hotelController.updateHotelList(hotelList.getHotels());
     }
 
     public void updateCreateHotel() {
@@ -48,6 +47,8 @@ public class Controller implements ActionListener, DocumentListener,
 
     public void updateRoomBooking() {
         gui.clearBookingInfo();
+        // gui.update
+        gui.updateBookingRelated();
     }
 
     public void updateHotelView() {
@@ -66,6 +67,8 @@ public class Controller implements ActionListener, DocumentListener,
                 rooms = gui.getRoomsSliderValue();
                 deluxeRooms = gui.getDeluxeRoomsSliderValue();
                 execRooms = gui.getExecRoomsSliderValue();
+
+                gui.setTotalRooms(rooms + deluxeRooms + execRooms);
                 
                 if (hotelName.isEmpty() || hotelName.equals("") ||
                     hotelName.equals("Enter Hotel Name...")) {
@@ -87,6 +90,11 @@ public class Controller implements ActionListener, DocumentListener,
                 updateHotelView();
                 break;
 
+            case "ROOM_DATE_AVAIL":
+                System.out.println("Room Date Avail DEBUG");
+                
+                break;
+
             case "MANAGE_HOTELS":
                 updateHotelList();
                 break;
@@ -106,17 +114,18 @@ public class Controller implements ActionListener, DocumentListener,
             selectedHotelIndex = gui.getHotelJList().getSelectedIndex();
             if (selectedHotelIndex >= 0) {
                 Hotel hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
+                int totalRooms = hotel.getRooms().size() + 
+                                 hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
                 gui.setSelectedHotelName(hotel.getName());
                 gui.setSelectedHotelRoomSize(hotel.getRooms().size());
                 gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
                 gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
                 gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
 
-                gui.setDisplayInfoAndBooking();
+                gui.setDisplayInfoAndBooking(totalRooms);
             }
         }
     }
-
 
     public class HotelController {
         private HotelList hotelList;
@@ -144,84 +153,104 @@ public class Controller implements ActionListener, DocumentListener,
             }
         }
 
-        public void bookRoomForSelectedHotel() {
-            Hotel selectedHotel;
-            Room room;
-            DeluxeRoom deluxeRoom;
-            ExecutiveRoom execRoom;
-            String checkIn, checkOut, guestName, discountCode;
-            int roomToUse, deluxeRoomToUse, execRoomToUse;
+    public void updateHotelList(ArrayList<Hotel> hotels) {
+        gui.getHotelListModel().clear();
+        for (Hotel hotel : hotels) {
+            gui.getHotelListModel().addElement(hotel);
+        }
+        gui.setCreateBtnEnabled(false);
+    }
+    
+    public void bookRoomForSelectedHotel() {
+        Hotel selectedHotel;
+        Room room;
+        DeluxeRoom deluxeRoom;
+        ExecutiveRoom execRoom;
+        String checkIn, checkOut, guestName, discountCode;
+        int roomToUse, deluxeRoomToUse, execRoomToUse;
 
-            guestName = gui.getGuestName();
-            checkIn = gui.getCheckInDate();
-            checkOut = gui.getCheckOutDate();
-            discountCode = gui.getDiscountCode();
+        guestName = gui.getGuestName();
+        checkIn = gui.getCheckInDate();
+        checkOut = gui.getCheckOutDate();
+        discountCode = gui.getDiscountCode();
 
-            if (guestName.equals(STRING_EMPTY)) {
-                JOptionPane.showMessageDialog(gui, "Please enter guest name.", 
-                                              "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        deluxeRoom = null;
+        execRoom = null;
 
-            else if (checkIn.equals(STRING_EMPTY) || checkOut.equals(STRING_EMPTY)) {
-                JOptionPane.showMessageDialog(gui, "Please enter check-in AND check-out dates.", 
-                                              "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (guestName.equals(STRING_EMPTY)) {
+            JOptionPane.showMessageDialog(gui, "Please enter guest name.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (checkIn.equals(checkOut)) {
-                JOptionPane.showMessageDialog(gui, "Check-in and check-out dates cannot be the same.", 
-                                              "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        else if (checkIn.equals(STRING_EMPTY) || checkOut.equals(STRING_EMPTY)) {
+            JOptionPane.showMessageDialog(gui, "Please enter check-in AND check-out dates.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            if (Integer.parseInt(checkOut) < Integer.parseInt(checkIn)) {
-                JOptionPane.showMessageDialog(gui, "Check-out date cannot be before check-in date.", 
-                                              "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (checkIn.equals(checkOut)) {
+            JOptionPane.showMessageDialog(gui, "Check-in and check-out dates cannot be the same.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        if (Integer.parseInt(checkOut) < Integer.parseInt(checkIn)) {
+            JOptionPane.showMessageDialog(gui, "Check-out date cannot be before check-in date.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            roomToUse       = selectedHotel.latestRoomNoReservation();
-            room            = selectedHotel.getRooms().get(roomToUse);
+        selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        roomToUse       = selectedHotel.latestRoomNoReservation();
+        room            = selectedHotel.getRooms().get(roomToUse);
+
+        if (selectedHotel.getDeluxeRooms().size() > 0) {
             deluxeRoomToUse = selectedHotel.latestDeluxeRoomNoReservation();
             deluxeRoom      = selectedHotel.getDeluxeRooms().get(deluxeRoomToUse);
+        }
+        if (selectedHotel.getExecRooms().size() > 0) {
             execRoomToUse   = selectedHotel.latestExecRoomNoReservation();
             execRoom        = selectedHotel.getExecRooms().get(execRoomToUse);
-
-            deluxeRoomToUse = selectedHotel.latestDeluxeRoomNoReservation();
-            execRoomToUse   = selectedHotel.latestExecRoomNoReservation();
-            // Get the check-in and check-out dates from the GUI, run the booking logic from model
-            bookRoom(selectedHotel, guestName, Integer.parseInt(checkIn), Integer.parseInt(checkOut), 
-                     room, deluxeRoom, execRoom, discountCode);
-
-            JOptionPane.showMessageDialog(gui, "Room booked successfully!", 
-                                          "Success", JOptionPane.INFORMATION_MESSAGE);
         }
+        // Get the check-in and check-out dates from the GUI, run the booking logic from model
+        bookRoom(selectedHotel, guestName, Integer.parseInt(checkIn), Integer.parseInt(checkOut), 
+                    room, deluxeRoom, execRoom, discountCode);
 
-        public void bookRoom(Hotel hotel, String guestName, int checkInDate, int checkOutDate, 
-                             Room room, DeluxeRoom deluxeRoom, ExecutiveRoom execRoom,
-                             String discountCode) {
-            String roomType;
+        gui.setBaseRoomOcc(selectedHotel.totalStandardRoomsReserved());
+        if (selectedHotel.getDeluxeRooms().size() > 0)
+            gui.setDeluxeRoomOcc(selectedHotel.totalDeluxeRoomsReserved());
+        if (selectedHotel.getExecRooms().size() > 0)
+            gui.setExecRoomOcc(selectedHotel.totalExecutiveRoomsReserved());
+        
+            gui.setTotalHotelEarnings(selectedHotel.calculateEstimatedEarnings(selectedHotel));
 
-            roomType = gui.getSelectedRoomType();
-            if (roomType.equals("Base Room")) {
-                hotel.bookRoomInputInfo(room, room.getReservations(), guestName, 
-                                        checkInDate, checkOutDate, discountCode);
-            }
-            if (roomType.equals("Deluxe Room")) {
-                hotel.bookRoomInputInfo(deluxeRoom, deluxeRoom.getReservations(), guestName, 
-                                        checkInDate, checkOutDate, discountCode);
-            }
-            if (roomType.equals("Executive Room")) {
-                hotel.bookRoomInputInfo(execRoom, execRoom.getReservations(), guestName, 
-                                        checkInDate, checkOutDate, discountCode);
-            }
-        }
-
-
+        JOptionPane.showMessageDialog(gui, "Room booked successfully!", 
+                                        "Success", JOptionPane.INFORMATION_MESSAGE);
     }
+
+    public void bookRoom(Hotel hotel, String guestName, int checkInDate, int checkOutDate, 
+                            Room room, DeluxeRoom deluxeRoom, ExecutiveRoom execRoom,
+                            String discountCode) {
+        String roomType;
+
+        roomType = gui.getSelectedRoomType();
+        if (roomType.equals("Base Room")) {
+            hotel.bookRoomInputInfo(room, room.getReservations(), guestName, 
+                                    checkInDate, checkOutDate, discountCode);
+        }
+        if (roomType.equals("Deluxe Room")) {
+            hotel.bookRoomInputInfo(deluxeRoom, deluxeRoom.getReservations(), guestName, 
+                                    checkInDate, checkOutDate, discountCode);
+        }
+        if (roomType.equals("Executive Room")) {
+            hotel.bookRoomInputInfo(execRoom, execRoom.getReservations(), guestName, 
+                                    checkInDate, checkOutDate, discountCode);
+        }
+    }
+
+}
 
     public class RoomController {
         private GUI gui;
