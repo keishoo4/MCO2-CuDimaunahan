@@ -16,7 +16,8 @@ import model.hotel.ExecutiveRoom;
 import model.hotel.Reservation;
 import view.GUI;
 
-public class Controller implements ActionListener, DocumentListener, ListSelectionListener {
+public class Controller implements ActionListener, DocumentListener, 
+                                   ListSelectionListener {
     private HotelList hotelList;
     private Hotel hotel;
     private Room room;
@@ -66,7 +67,8 @@ public class Controller implements ActionListener, DocumentListener, ListSelecti
                 deluxeRooms = gui.getDeluxeRoomsSliderValue();
                 execRooms = gui.getExecRoomsSliderValue();
                 
-                if (hotelName.isEmpty()) {
+                if (hotelName.isEmpty() || hotelName.equals("") ||
+                    hotelName.equals("Enter Hotel Name...")) {
                     JOptionPane.showMessageDialog(gui, "Please enter a hotel name.", 
                                                   "Error", JOptionPane.ERROR_MESSAGE);
                     return;
