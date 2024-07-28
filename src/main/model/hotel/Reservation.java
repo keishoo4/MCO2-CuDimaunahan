@@ -8,7 +8,6 @@ public class Reservation {
     private int checkInDate;
     private int checkOutDate;
     private Room room;
-    private double totalPrice;
     private String discountCode;
 
     /**

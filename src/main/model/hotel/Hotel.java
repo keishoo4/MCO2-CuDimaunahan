@@ -3,7 +3,6 @@
 package model.hotel;
 
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 import utils.ScannerUtil;
 
