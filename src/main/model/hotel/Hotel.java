@@ -649,7 +649,6 @@ public class Hotel {
         room.setBookStatus(true);
     }
 
-    // Do bookDeluxeRoomInputInfo and bookExecutiveRoomInputInfo
     public void bookDeluxeRoomInputInfo(DeluxeRoom room, ArrayList<Reservation> reservations, 
                               String guestName, int checkInDate, int checkOutDate, String discountCode) {
         reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room, discountCode));
@@ -919,12 +918,9 @@ public class Hotel {
             return;
         }
 
-        long bookedRoomsCount = hotel.getRooms().stream()
-                .flatMap(room -> room.getReservations().stream())
-                .filter(reservation -> isDateInRange(date, reservation.getCheckInDate(), reservation.getCheckOutDate()))
-                .count();
+        long bookedRoomsCount = totalStandardRoomsReserved() + totalDeluxeRoomsReserved() + totalExecutiveRoomsReserved();
 
-        long availableRoomsCount = hotel.getRooms().size() - bookedRoomsCount;
+        long availableRoomsCount = (hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size()) - bookedRoomsCount;
 
         System.out.println("Total Number of Available Rooms: " + availableRoomsCount);
         System.out.println("Total Number of Booked Rooms: " + bookedRoomsCount);
@@ -936,23 +932,57 @@ public class Hotel {
      * @param hotel the hotel object containing the rooms
      */
     public void viewRoomInfo(Hotel hotel) {
+        System.out.println("What room type would you like to view?: ");
+        System.out.println("[1] Base Room");
+        System.out.println("[2] Deluxe Room");
+        System.out.println("[3] Executive Room");
+        int roomType = ScannerUtil.readInt();
         System.out.print("Enter room name: ");
         String roomName = ScannerUtil.readString();
-        Room room = hotel.getRooms().stream()
+
+        if (roomType == 1){
+            Room room = hotel.getRooms().stream()
                 .filter(r -> r.getName().equals(roomName))
                 .findFirst()
                 .orElse(null);
-
-        if (room == null) {
-            System.out.println("Room not found.");
-            return;
+                if (room == null) {
+                    System.out.println("Standard room not found.");
+                    return;
+                }
+                System.out.println("Room Name: " + room.getName());
+                System.out.println("Price per Night: " + room.getPricePerNight());
+                System.out.println("Availability for the Month:");
+                int maxDay = 31; // Assuming a fixed 31-day month for "1-DD" format
+                room.showReservations(maxDay, room);
+        } else if (roomType == 2){
+            Room room = hotel.getDeluxeRooms().stream()
+                .filter(r -> r.getName().equals(roomName))
+                .findFirst()
+                .orElse(null);
+                if (room == null) {
+                    System.out.println("Deluxe room not found.");
+                    return;
+                }
+                System.out.println("Room Name: " + room.getName());
+                System.out.println("Price per Night: " + room.getPricePerNight() + (room.getPricePerNight()*0.20));
+                System.out.println("Availability for the Month:");
+                int maxDay = 31; // Assuming a fixed 31-day month for "1-DD" format
+                room.showReservations(maxDay, room);
+        } else if (roomType == 3){
+            Room room = hotel.getExecRooms().stream()
+                .filter(r -> r.getName().equals(roomName))
+                .findFirst()
+                .orElse(null);
+                if (room == null) {
+                    System.out.println("Executive room not found.");
+                    return;
+                }
+                System.out.println("Room Name: " + room.getName());
+                System.out.println("Price per Night: " + room.getPricePerNight() + (room.getPricePerNight()*0.35));
+                System.out.println("Availability for the Month:");
+                int maxDay = 31; // Assuming a fixed 31-day month for "1-DD" format
+                room.showReservations(maxDay, room);
         }
-
-        System.out.println("Room Name: " + room.getName());
-        System.out.println("Price per Night: " + room.getPricePerNight());
-        System.out.println("Availability for the Month:");
-        int maxDay = 31; // Assuming a fixed 31-day month for "1-DD" format
-        room.showReservations(maxDay, room);
     }
 
     /**
@@ -963,34 +993,84 @@ public class Hotel {
     public void viewReservationInfo(Hotel hotel) {
         Reservation reservation;
         
+        System.out.print("Under what room type is the guest staying in?: ");
+        System.out.println("[1] Base Room");
+        System.out.println("[2] Deluxe Room");
+        System.out.println("[3] Executive Room");
+        int roomType = ScannerUtil.readInt();
         System.out.print("Enter guest name: ");
         String guestName = ScannerUtil.readString();
 
+        if (roomType == 1){
         reservation = hotel.getRooms().stream()
                       .flatMap(room -> room.getReservations().stream())
                       .filter(r -> r.getGuestName().equals(guestName))
                       .findFirst()
                       .orElse(null);
+            if (reservation == null) {
+                System.out.println("Reservation not found.");
+                return;
+            }
+            int checkInDate = reservation.getCheckInDate();
+            int checkOutDate = reservation.getCheckOutDate();
 
-        if (reservation == null) {
-            System.out.println("Reservation not found.");
-            return;
-        }
-
-        int checkInDate = reservation.getCheckInDate();
-        int checkOutDate = reservation.getCheckOutDate();
-
-        Room room = reservation.getRoom();
-        String discountCode = reservation.getDiscountCode();
-        double totalPrice = fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
+            Room room = reservation.getRoom();
+            String discountCode = reservation.getDiscountCode();
+            double totalPrice = fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
 
 
-        System.out.println("Guest Name: " + reservation.getGuestName());
-        System.out.println("Room Name: " + reservation.getRoom().getName());
-        System.out.println("Check-in Date: 1-" + (checkInDate < 10 ? "0" + checkInDate : checkInDate));
-        System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
-        System.out.println("Total Price: " + String.format("%.2f", totalPrice));  
-        // System.out.println("Price Breakdown per Night: " + reservation.getRoom().getPricePerNight()); // MAYBE REMOVE
+            System.out.println("Guest Name: " + reservation.getGuestName());
+            System.out.println("Room Name: " + reservation.getRoom().getName());
+            System.out.println("Check-in Date: 1-" + (checkInDate < 10 ? "0" + checkInDate : checkInDate));
+            System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
+            System.out.println("Total Price: " + String.format("%.2f", totalPrice));  
+        } else if (roomType == 2){
+            reservation = hotel.getDeluxeRooms().stream()
+                      .flatMap(room -> room.getReservations().stream())
+                      .filter(r -> r.getGuestName().equals(guestName))
+                      .findFirst()
+                      .orElse(null);
+            if (reservation == null) {
+                System.out.println("Reservation not found.");
+                return;
+            }
+            int checkInDate = reservation.getCheckInDate();
+            int checkOutDate = reservation.getCheckOutDate();
+
+            Room room = reservation.getRoom();
+            String discountCode = reservation.getDiscountCode();
+            double totalPrice = fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
+
+
+            System.out.println("Guest Name: " + reservation.getGuestName());
+            System.out.println("Room Name: " + reservation.getRoom().getName());
+            System.out.println("Check-in Date: 1-" + (checkInDate < 10 ? "0" + checkInDate : checkInDate));
+            System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
+            System.out.println("Total Price: " + String.format("%.2f", totalPrice));  
+        } else if (roomType == 3){
+            reservation = hotel.getExecRooms().stream()
+                      .flatMap(room -> room.getReservations().stream())
+                      .filter(r -> r.getGuestName().equals(guestName))
+                      .findFirst()
+                      .orElse(null);
+            if (reservation == null) {
+                System.out.println("Reservation not found.");
+                return;
+            }   
+            int checkInDate = reservation.getCheckInDate();
+            int checkOutDate = reservation.getCheckOutDate();
+
+            Room room = reservation.getRoom();
+            String discountCode = reservation.getDiscountCode();
+            double totalPrice = fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
+
+
+            System.out.println("Guest Name: " + reservation.getGuestName());
+            System.out.println("Room Name: " + reservation.getRoom().getName());
+            System.out.println("Check-in Date: 1-" + (checkInDate < 10 ? "0" + checkInDate : checkInDate));
+            System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
+            System.out.println("Total Price: " + String.format("%.2f", totalPrice));  
+        } 
     }
 
     public void displayRoomTypes() {
