@@ -3,6 +3,7 @@
 package model.hotel;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import utils.ScannerUtil;
 
@@ -822,12 +823,42 @@ public class Hotel {
                 rooms.get(roomNum).getName() + " removed!\n");
     }
 
-    /**
-     * Displays the high-level information of a hotel, including the hotel name, total number of rooms,
-     * and estimated earnings for the month.
-     *
-     * @param hotel The hotel object for which to display the information.
-     */
+    public double calculateMonthlyEarnings(Hotel hotel) {
+        double totalEarnings = 0.0;
+    
+        for (Room room : hotel.getRooms()) {
+            totalEarnings += calculateRoomEarnings(room);
+        }
+    
+        for (DeluxeRoom deluxeRoom : hotel.getDeluxeRooms()) {
+            totalEarnings += calculateRoomEarnings(deluxeRoom);
+        }
+    
+        for (ExecutiveRoom executiveRoom : hotel.getExecRooms()) {
+            totalEarnings += calculateRoomEarnings(executiveRoom);
+        }
+    
+        return totalEarnings;
+    }
+    
+    private double calculateRoomEarnings(Room room) {
+        double roomEarnings = 0.0;
+    
+        for (Reservation reservation : room.getReservations()) {
+            int checkInDate = reservation.getCheckInDate();
+            int checkOutDate = reservation.getCheckOutDate();
+            double pricePerNight = room.getPricePerNight();
+            String discountCode = reservation.getDiscountCode();
+    
+            int numNights = checkOutDate - checkInDate;
+            double totalPrice = fillDates(pricePerNight, checkInDate, checkOutDate, discountCode) * numNights;
+    
+            roomEarnings += totalPrice;
+        }
+    
+        return roomEarnings;
+    }
+
     /**
      * Displays the high-level information of a hotel, including the hotel name, total number of rooms,
      * and estimated earnings for the month.
@@ -835,14 +866,18 @@ public class Hotel {
      * @param hotel The hotel object for which to display the information.
      */
     public void viewHighLevelInfo(Hotel hotel) {
-        double estimatedEarnings = calculateEstimatedEarnings(hotel);
+        double estimatedEarnings = calculateMonthlyEarnings(hotel);
+        
+        int totalRooms = hotel.getRooms().size() + 
+                        hotel.getDeluxeRooms().size() + 
+                        hotel.getExecRooms().size();
 
         System.out.println("Hotel Name: " + hotel.getName());
-        System.out.println("Total Number of Rooms: " + hotel.getRooms().size());
+        System.out.println("Total Number of Rooms: " + totalRooms);
         System.out.println("Estimated Earnings for the Month: " + String.format("%.2f", estimatedEarnings));
     }
 
-    public double calculateEstimatedEarnings(Hotel hotel) {
+    public double calculateEstimatedEarnings(Hotel hotel) { // ONLY FOR ONE RESERVATION
         double estimatedEarnings = hotel.getRooms().stream()
                 .flatMap(room -> room.getReservations().stream())
                 .mapToDouble(reservation -> {
@@ -851,10 +886,8 @@ public class Hotel {
                     Room room = reservation.getRoom();
                     String discountCode = reservation.getDiscountCode();
     
-                    // Use the room's fillDates method to calculate the total price
                     double pricePerNight = room.getPricePerNight();
     
-                    // Calculate the total price for this reservation
                     return fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
                 }).sum();
         return estimatedEarnings;
