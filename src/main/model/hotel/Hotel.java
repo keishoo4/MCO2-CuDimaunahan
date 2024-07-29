@@ -904,25 +904,52 @@ public class Hotel {
     }
 
     /**
-     * Displays the total number of available and booked rooms in the hotel based on the given date.
+     * Prompts the user to enter the day of reservation and then calls another method to display
      *
      * @param hotel The hotel object containing the list of rooms.
      */
-    public void viewAvailableAndBookedRooms(Hotel hotel) {
+    public void viewAvailableAndBookedRoomsPrompt(Hotel hotel) {
         System.out.print("Enter the day of reservation (eg. 23): ");
         int date = ScannerUtil.readInt();
-
         if (date < 1 || date > 31) {
             System.out.println("Invalid day input. Day must be between 1 and 31.");
             return;
         }
+        viewAvailableAndBookedRooms(hotel, date); // Assuming a single-day reservation
+    }
 
-        long bookedRoomsCount = totalStandardRoomsReserved() + totalDeluxeRoomsReserved() + totalExecutiveRoomsReserved();
-
-        long availableRoomsCount = (hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size()) - bookedRoomsCount;
-
-        System.out.println("Total Number of Available Rooms: " + availableRoomsCount);
-        System.out.println("Total Number of Booked Rooms: " + bookedRoomsCount);
+    /**
+     * Displays the total number of available and booked rooms in the hotel based on the given date.
+     *
+     * @param hotel The hotel object containing the list of rooms.
+     */
+    public void viewAvailableAndBookedRooms(Hotel hotel, int date) {
+        int totalRooms = hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+        int totalBookedRooms = 0;
+    
+        for (Room room : hotel.getRooms()) {
+            totalBookedRooms += room.getReservations().stream()
+                    .filter(r -> r.getCheckInDate() == date || r.getCheckOutDate() == date)
+                    .count();
+        }
+    
+        for (Room room : hotel.getDeluxeRooms()) {
+            totalBookedRooms += room.getReservations().stream()
+                    .filter(r -> r.getCheckInDate() == date || r.getCheckOutDate() == date)
+                    .count();
+        }
+    
+        for (Room room : hotel.getExecRooms()) {
+            totalBookedRooms += room.getReservations().stream()
+                    .filter(r -> r.getCheckInDate() == date || r.getCheckOutDate() == date)
+                    .count();
+        }
+    
+        int totalAvailableRooms = totalRooms - totalBookedRooms;
+    
+        System.out.println("Total Available Rooms: " + totalAvailableRooms);
+        System.out.println("Total Booked Rooms: " + totalBookedRooms);
+        System.out.println("Total Available Rooms: " + totalAvailableRooms);
     }
 
     /**
