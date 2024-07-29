@@ -441,7 +441,7 @@ public static void simulateBooking(HotelList hotelList) {
                     hotel.viewHighLevelInfo(hotel);
                     break;
                 case 2:
-                    hotel.viewAvailableAndBookedRooms(hotel);
+                    hotel.viewAvailableAndBookedRoomsPrompt(hotel);
                     break;
                 case 3:
                     hotel.viewRoomInfo(hotel);

@@ -115,8 +115,6 @@ public class Room {
         return true; // No overlap
     }
 
-
-
     /**
      * Sets the name of the room.
      *
