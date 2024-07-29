@@ -78,6 +78,7 @@ public class Controller implements ActionListener, DocumentListener,
                     return;
                 }
                 hotelController.addHotel(hotelName, rooms, deluxeRooms, execRooms); // From Model
+                gui.setTotalHotels(hotelList.getHotels().size());
                 
                 updateHotelList();
                 break;
@@ -122,7 +123,7 @@ public class Controller implements ActionListener, DocumentListener,
                 gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
                 gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
                 gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
-
+                
                 gui.setDisplayInfoAndBooking(totalRooms, selectedHotelIndex);
             }
         }
@@ -157,16 +158,21 @@ public class Controller implements ActionListener, DocumentListener,
 
     public void updateLowRoomDateAvailList() {
         selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        int date = Integer.parseInt(gui.getRoomDateAvailFieldText(gui.getSelectedHotelIndex()));
+
 
         gui.getRoomDateAvailListModel().clear();
         for (Room room : selectedHotel.getRooms()) {
-            gui.getRoomDateAvailListModel().addElement(room);
+            // if (date >=)
+                gui.getRoomDateAvailListModel().addElement(room);
         }
         for (DeluxeRoom deluxeRoom : selectedHotel.getDeluxeRooms()) {
-            gui.getRoomDateAvailListModel().addElement(deluxeRoom);
+
+                gui.getRoomDateAvailListModel().addElement(deluxeRoom);
         }
         for (ExecutiveRoom execRoom : selectedHotel.getExecRooms()) {
-            gui.getRoomDateAvailListModel().addElement(execRoom);
+
+                gui.getRoomDateAvailListModel().addElement(execRoom);
         }
     }
 

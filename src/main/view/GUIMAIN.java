@@ -285,20 +285,12 @@ public class GUI extends JFrame {
         (new Dimension(discountCodeField.getPreferredSize().width, 
                        discountCodeField.getPreferredSize().height + 3));
 
-        
-        showLowHotelInfo();
-
         // TODO ADD TO CONTROLLER MAYBE???
         hotelJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (totalHotels >= roomDateAvailBtns.size()) {
-                    System.out.println("Low Room Button: " + roomDateAvailBtns.size()); // DEBUGGING
-                    showLowHotelInfo();
-                    System.out.println("Low Room Button: " + roomDateAvailBtns.size()); // DEBUGGING
-                }
+                showLowHotelInfo();
                 if (e.getClickCount() == 2 && hotelJList.getSelectedValue() != null) {
-                    // showLowHotelInfo();
                     String selectedHotelName = hotelJList.getSelectedValue().toString();
                     boolean tabExists = false;
                     for (int i = 0; i < lowerLeftTabbedPane.getTabCount(); i++) {
@@ -344,14 +336,6 @@ public class GUI extends JFrame {
             }
         });
 
-        // Add ChangeListener to print the current tab index
-        lowerLeftTabbedPane.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                selectedHotelIndex = lowerLeftTabbedPane.getSelectedIndex() - 1;
-                System.out.println("Current Tab Index: " + selectedHotelIndex);
-            }
-        });
 
         // END OF TABBED  PANE
 
@@ -423,7 +407,7 @@ public class GUI extends JFrame {
             int index = lowerLeftTabbedPane.indexOfComponent(component);
             if (index != -1) {
                 lowerLeftTabbedPane.removeTabAt(index);
-                // roomDateAvailBtns.remove(index); // DEBUGGING (UNSURE)
+                // roomDateAvailBtns.remove(index);
                 // roomDateAvailFields.remove(index);
             }
         });
@@ -613,10 +597,6 @@ public class GUI extends JFrame {
         this.totalHotelEarnings = totalHotelEarnings;
     }
 
-    public void setTotalHotels(int totalHotels) {
-        this.totalHotels = totalHotels;
-    }
-
     public void setTotalRooms(int totalRooms) {
         this.totalRooms = totalRooms;
     }
@@ -669,9 +649,6 @@ public class GUI extends JFrame {
         return comboBox.getSelectedItem().toString();
     }
 
-    public String getRoomDateAvailFieldText(int index) {
-        return roomDateAvailFields.get(index).getText();
-    }
 
     public JList<Hotel> getHotelJList() {
         return hotelJList;
@@ -824,9 +801,6 @@ public class GUI extends JFrame {
         comboBox.addActionListener(listener);
         for (JButton btn : roomDateAvailBtns) {
             btn.addActionListener(listener);
-        }
-        for (JFormattedTextField field : roomDateAvailFields) {
-            field.addActionListener(listener);
         }
     }
 

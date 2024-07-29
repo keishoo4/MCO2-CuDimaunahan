@@ -1,6 +1,8 @@
 package model.hotel;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * The Room class represents a room in a hotel.
@@ -114,6 +116,42 @@ public class Room {
         }
         return true; // No overlap
     }
+
+    public boolean isFullyBooked() {
+        if (reservations.isEmpty()) {
+            return false;
+        }
+
+        // Sort reservations by check-in date
+        ArrayList<Reservation> sortedReservations = new ArrayList<>(reservations);
+        Collections.sort(sortedReservations, Comparator.comparingInt(Reservation::getCheckInDate));
+
+        int lastCheckout = 0;
+
+        // Check the beginning of the month
+        for (Reservation reservation : sortedReservations) {
+            if (reservation.getCheckInDate() - lastCheckout >= 3) {
+                return false;
+            }
+            lastCheckout = Math.max(lastCheckout, reservation.getCheckOutDate());
+            if (lastCheckout >= 3) {
+                break;  // We've covered the first 3 days, move on to the main loop
+            }
+        }
+
+        // Continue checking the rest of the month
+        for (Reservation reservation : sortedReservations) {
+            int currentCheckin = reservation.getCheckInDate();
+            if (currentCheckin - lastCheckout >= 3) {
+                return false;
+            }
+            lastCheckout = Math.max(lastCheckout, reservation.getCheckOutDate());
+        }
+
+        // Check the gap after the last reservation
+        return lastCheckout >= 29;  // If the last checkout is before day 29, there's a bookable gap at the end
+    }
+
 
     /**
      * Sets the name of the room.
