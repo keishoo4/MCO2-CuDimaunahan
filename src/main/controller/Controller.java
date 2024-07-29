@@ -55,6 +55,7 @@ public class Controller implements ActionListener, DocumentListener,
         gui.setSelectedHotelName(hotel.getName());
     }
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
@@ -92,7 +93,7 @@ public class Controller implements ActionListener, DocumentListener,
 
             case "ROOM_DATE_AVAIL":
                 System.out.println("Room Date Avail DEBUG");
-                
+                hotelController.updateLowRoomDateAvailList();
                 break;
 
             case "MANAGE_HOTELS":
@@ -122,7 +123,7 @@ public class Controller implements ActionListener, DocumentListener,
                 gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
                 gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
 
-                gui.setDisplayInfoAndBooking(totalRooms);
+                gui.setDisplayInfoAndBooking(totalRooms, selectedHotelIndex);
             }
         }
     }
@@ -130,6 +131,7 @@ public class Controller implements ActionListener, DocumentListener,
     public class HotelController {
         private HotelList hotelList;
         private GUI gui;
+        private Hotel selectedHotel;
 
         private int selectedHotelIndex;
         private final String STRING_EMPTY = "";
@@ -153,6 +155,21 @@ public class Controller implements ActionListener, DocumentListener,
             }
         }
 
+    public void updateLowRoomDateAvailList() {
+        selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        gui.getRoomDateAvailListModel().clear();
+        for (Room room : selectedHotel.getRooms()) {
+            gui.getRoomDateAvailListModel().addElement(room);
+        }
+        for (DeluxeRoom deluxeRoom : selectedHotel.getDeluxeRooms()) {
+            gui.getRoomDateAvailListModel().addElement(deluxeRoom);
+        }
+        for (ExecutiveRoom execRoom : selectedHotel.getExecRooms()) {
+            gui.getRoomDateAvailListModel().addElement(execRoom);
+        }
+    }
+
     public void updateHotelList(ArrayList<Hotel> hotels) {
         gui.getHotelListModel().clear();
         for (Hotel hotel : hotels) {
@@ -162,7 +179,6 @@ public class Controller implements ActionListener, DocumentListener,
     }
     
     public void bookRoomForSelectedHotel() {
-        Hotel selectedHotel;
         Room room;
         DeluxeRoom deluxeRoom;
         ExecutiveRoom execRoom;

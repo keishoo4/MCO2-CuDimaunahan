@@ -16,4 +16,9 @@ public class DeluxeRoom extends Room {
     public DeluxeRoom(String name, double basePricePerNight) {
         super(name, basePricePerNight * PRICE_MULTIPLIER);
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

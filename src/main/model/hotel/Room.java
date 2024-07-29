@@ -156,4 +156,9 @@ public class Room {
             System.out.println("1-" + (day < 10 ? "0" + day : day) + ": " + (isBooked ? "Booked" : "Available"));
         }        
     }
+
+    @Override
+    public String toString() {
+        return " " + name;
+    }
 }

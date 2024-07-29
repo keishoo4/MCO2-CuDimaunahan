@@ -16,4 +16,9 @@ public class ExecutiveRoom extends Room {
     public ExecutiveRoom(String name, double basePricePerNight) {
         super(name, basePricePerNight * PRICE_MULTIPLIER);
     }
+
+    @Override
+    public String toString() {
+        return super.toString(); // Assuming DeluxeRoom uses the same name property
+    }
 }
