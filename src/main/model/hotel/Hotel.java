@@ -1,5 +1,3 @@
-// TODO Fix methods that use rooms (incomplete pa ung iba)
-
 package model.hotel;
 
 import java.util.ArrayList;
@@ -427,7 +425,7 @@ public class Hotel {
     public void addRoomsPrompt(Hotel hotel) {
         int baseRooms, deluxeRooms = 0, execRooms = 0, remainingRooms, totalRooms;
 
-        int initialTotalRooms = hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+        int initialTotalRooms = getRooms().size() + getDeluxeRooms().size() + getExecRooms().size();
 
         if (initialTotalRooms >= 50) {
             System.out.println("Hotel already has 50 or more rooms! Cannot add more rooms.");
@@ -488,7 +486,7 @@ public class Hotel {
 
         System.out.println("Confirm adding " + baseRooms + " base room(s), " +
                         deluxeRooms + " deluxe room(s), and " + execRooms + 
-                        " executive room(s) to \"" + hotel.getName() + "\"");
+                        " executive room(s) to \"" + getName() + "\"");
         System.out.print("Confirm [Yes/No]: ");
         boolean confirmed = ScannerUtil.readBoolean();
 
@@ -497,7 +495,7 @@ public class Hotel {
             return;
         }
 
-        hotel.addRooms(baseRooms, deluxeRooms, execRooms);
+        addRooms(baseRooms, deluxeRooms, execRooms);
         System.out.println("Total Room(s) is " + (initialTotalRooms + baseRooms + deluxeRooms + execRooms) + ".\n");
     }
 
@@ -566,8 +564,8 @@ public class Hotel {
      * @param hotel the Hotel object to modify
      */
     public void removeRooms(Hotel hotel) {
-        int lastRoom = hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
-        int removableRooms = hotel.removableRooms() + hotel.removableDeluxeRooms() + hotel.removeableExecutiveRooms();
+        int lastRoom = getRooms().size() + getDeluxeRooms().size() + getExecRooms().size();
+        int removableRooms = removableRooms() + removableDeluxeRooms() + removeableExecutiveRooms();
 
         if (lastRoom == 1) {
             System.out.println("A hotel cannot have zero rooms.\n");
@@ -703,7 +701,7 @@ public class Hotel {
      * @param hotel the Hotel object to modify
      */
     public void updateRoomPrice(Hotel hotel) {
-        if (hotel.reservationStatus() == true) {
+        if (reservationStatus() == true) {
             System.out.println("Cannot update price nor set date modifier with reservation(s).\n");
             return;
         }
@@ -780,7 +778,7 @@ public class Hotel {
      * @param rooms the list of rooms in the hotel
      */
     public void removeReservations(Hotel hotel, ArrayList<Room> rooms) {
-        hotel.showRooms("Reserved");
+        showRooms("Reserved");
         System.out.println("[0] Back to Main Menu");
         System.out.print("Input Room Name: ");
         String roomTracker = ScannerUtil.readString();
@@ -804,7 +802,7 @@ public class Hotel {
         if (resNum == 0)
             return;
 
-        System.out.println("\nConfirm removal of reservation for \"" + hotel.getName() + "\"");
+        System.out.println("\nConfirm removal of reservation for \"" + getName() + "\"");
         System.out.print("Confirm [Yes/No]: ");
         boolean confirmed = ScannerUtil.readBoolean();
 
@@ -824,15 +822,15 @@ public class Hotel {
     public double calculateMonthlyEarnings(Hotel hotel) {
         double totalEarnings = 0.0;
     
-        for (Room room : hotel.getRooms()) {
+        for (Room room : getRooms()) {
             totalEarnings += calculateRoomEarnings(room);
         }
     
-        for (DeluxeRoom deluxeRoom : hotel.getDeluxeRooms()) {
+        for (DeluxeRoom deluxeRoom : getDeluxeRooms()) {
             totalEarnings += calculateRoomEarnings(deluxeRoom);
         }
     
-        for (ExecutiveRoom executiveRoom : hotel.getExecRooms()) {
+        for (ExecutiveRoom executiveRoom : getExecRooms()) {
             totalEarnings += calculateRoomEarnings(executiveRoom);
         }
     
@@ -866,17 +864,17 @@ public class Hotel {
     public void viewHighLevelInfo(Hotel hotel) {
         double estimatedEarnings = calculateMonthlyEarnings(hotel);
         
-        int totalRooms = hotel.getRooms().size() + 
-                        hotel.getDeluxeRooms().size() + 
-                        hotel.getExecRooms().size();
+        int totalRooms = getRooms().size() + 
+                        getDeluxeRooms().size() + 
+                        getExecRooms().size();
 
-        System.out.println("Hotel Name: " + hotel.getName());
+        System.out.println("Hotel Name: " + getName());
         System.out.println("Total Number of Rooms: " + totalRooms);
         System.out.println("Estimated Earnings for the Month: " + String.format("%.2f", estimatedEarnings));
     }
 
     public double calculateEstimatedEarnings(Hotel hotel) { // ONLY FOR ONE RESERVATION
-        double estimatedEarnings = hotel.getRooms().stream()
+        double estimatedEarnings = getRooms().stream()
                 .flatMap(room -> room.getReservations().stream())
                 .mapToDouble(reservation -> {
                     int checkInDate = reservation.getCheckInDate();
@@ -915,7 +913,7 @@ public class Hotel {
             System.out.println("Invalid day input. Day must be between 1 and 31.");
             return;
         }
-        viewAvailableAndBookedRooms(hotel, date); // Assuming a single-day reservation
+        viewAvailableAndBookedRooms(date); // Assuming a single-day reservation
     }
 
     /**
@@ -923,23 +921,23 @@ public class Hotel {
      *
      * @param hotel The hotel object containing the list of rooms.
      */
-    public void viewAvailableAndBookedRooms(Hotel hotel, int date) {
-        int totalRooms = hotel.getRooms().size() + hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+    public void viewAvailableAndBookedRooms(int date) {
+        int totalRooms = getRooms().size() + getDeluxeRooms().size() + getExecRooms().size();
         int totalBookedRooms = 0;
     
-        for (Room room : hotel.getRooms()) {
+        for (Room room : getRooms()) {
             totalBookedRooms += room.getReservations().stream()
                     .filter(r -> r.getCheckInDate() == date || r.getCheckOutDate() == date)
                     .count();
         }
     
-        for (Room room : hotel.getDeluxeRooms()) {
+        for (Room room : getDeluxeRooms()) {
             totalBookedRooms += room.getReservations().stream()
                     .filter(r -> r.getCheckInDate() == date || r.getCheckOutDate() == date)
                     .count();
         }
     
-        for (Room room : hotel.getExecRooms()) {
+        for (Room room : getExecRooms()) {
             totalBookedRooms += room.getReservations().stream()
                     .filter(r -> r.getCheckInDate() == date || r.getCheckOutDate() == date)
                     .count();
@@ -967,7 +965,7 @@ public class Hotel {
         String roomName = ScannerUtil.readString();
 
         if (roomType == 1){
-            Room room = hotel.getRooms().stream()
+            Room room = getRooms().stream()
                 .filter(r -> r.getName().equals(roomName))
                 .findFirst()
                 .orElse(null);
@@ -981,7 +979,7 @@ public class Hotel {
                 int maxDay = 31; // Assuming a fixed 31-day month for "1-DD" format
                 room.showReservations(maxDay, room);
         } else if (roomType == 2){
-            Room room = hotel.getDeluxeRooms().stream()
+            Room room = getDeluxeRooms().stream()
                 .filter(r -> r.getName().equals(roomName))
                 .findFirst()
                 .orElse(null);
@@ -995,7 +993,7 @@ public class Hotel {
                 int maxDay = 31; // Assuming a fixed 31-day month for "1-DD" format
                 room.showReservations(maxDay, room);
         } else if (roomType == 3){
-            Room room = hotel.getExecRooms().stream()
+            Room room = getExecRooms().stream()
                 .filter(r -> r.getName().equals(roomName))
                 .findFirst()
                 .orElse(null);
@@ -1028,7 +1026,7 @@ public class Hotel {
         String guestName = ScannerUtil.readString();
 
         if (roomType == 1){
-        reservation = hotel.getRooms().stream()
+        reservation = getRooms().stream()
                       .flatMap(room -> room.getReservations().stream())
                       .filter(r -> r.getGuestName().equals(guestName))
                       .findFirst()
@@ -1051,7 +1049,7 @@ public class Hotel {
             System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
             System.out.println("Total Price: " + String.format("%.2f", totalPrice));  
         } else if (roomType == 2){
-            reservation = hotel.getDeluxeRooms().stream()
+            reservation = getDeluxeRooms().stream()
                       .flatMap(room -> room.getReservations().stream())
                       .filter(r -> r.getGuestName().equals(guestName))
                       .findFirst()
