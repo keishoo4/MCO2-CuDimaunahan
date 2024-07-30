@@ -218,6 +218,9 @@ public class Room {
         if (isPresentBookingDay(tempDate))
             return " " + name + " - Booked";
 
+        if (isFullyBooked())
+            return " " + name + " - Unavailable";
+
         return " " + name + " - Available";
     }
 }

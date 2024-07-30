@@ -141,7 +141,7 @@ public class Controller implements ActionListener, DocumentListener,
 
     public void updateLowRoomDateAvailList() {
         selectedHotel     = hotelList.getHotels().get(gui.getSelectedHotelIndex());
-        String dateString = gui.getRoomDateAvailFieldText(gui.getSelectedHotelIndex());
+        String dateString = gui.getRoomDateAvailFieldText();
 
         if (dateString.equals(STRING_EMPTY)) {
             JOptionPane.showMessageDialog(gui, "Please enter a date.", 
@@ -150,30 +150,19 @@ public class Controller implements ActionListener, DocumentListener,
         }
 
         int date = Integer.parseInt(dateString);
-    
-        DefaultListModel<Room> roomDateAvailListModel = gui.getRoomDateAvailListModel(gui.getSelectedHotelIndex());
-        ArrayList<Room> roomDateAvailList = new ArrayList<>();
         
-        // Clear the DefaultListModel
-        roomDateAvailListModel.clear();
-        
-        // Populate the ArrayList and DefaultListModel
+        gui.getRoomDateAvailListModel().clear();
         for (Room room : selectedHotel.getRooms()) {
             room.setTempDate(date);
-            roomDateAvailList.add(room);
-            roomDateAvailListModel.addElement(room); // Add Room object directly
+            gui.getRoomDateAvailListModel().addElement(room);
         }
-        
         for (DeluxeRoom deluxeRoom : selectedHotel.getDeluxeRooms()) {
             deluxeRoom.setTempDate(date);
-            roomDateAvailList.add(deluxeRoom);
-            roomDateAvailListModel.addElement(deluxeRoom); // Add DeluxeRoom object directly
+            gui.getRoomDateAvailListModel().addElement(deluxeRoom);
         }
-        
         for (ExecutiveRoom execRoom : selectedHotel.getExecRooms()) {
             execRoom.setTempDate(date);
-            roomDateAvailList.add(execRoom);
-            roomDateAvailListModel.addElement(execRoom); // Add ExecutiveRoom object directly
+            gui.getRoomDateAvailListModel().addElement(execRoom);
         }
     }
 
@@ -340,6 +329,8 @@ public class Controller implements ActionListener, DocumentListener,
             gui.setSelectedHotelIndex(selectedHotelIndex);
             hotel = hotelList.getHotels().get(selectedHotelIndex);
             gui.setCurrentHotelName(hotel.getName());
+
+            gui.getRoomDateAvailListModel().clear(); // Reset List for every different hotel
     
             // Transfer the logic from valueChanged
             hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
@@ -351,10 +342,16 @@ public class Controller implements ActionListener, DocumentListener,
             gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
             gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
             
-            gui.setDisplayInfoAndBooking(totalRooms, selectedHotelIndex);
+            gui.setTotalRooms(totalRooms);
+
+            // gui.setDisplayInfoAndBooking(totalRooms);
             gui.updateBookingRelated();
+            gui.updateLowLevelInfo();
         }
         gui.updateManageHotel();
+
+        gui.revalidate();
+        gui.repaint();
     }
 
     @Override
