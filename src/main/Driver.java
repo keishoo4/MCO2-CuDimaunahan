@@ -313,8 +313,6 @@ public static void simulateBooking(HotelList hotelList) {
             if (roomChoice == 1) {
                 hotel.fillDates(room.getPricePerNight(), checkInDate, checkOutDate, discountCode);
                 hotel.bookRoomInputInfo(room, reservations, guestName, checkInDate, checkOutDate, discountCode);
-                reservationNum = room.getReservations().size();
-                System.out.println("Reservation No.: " + reservationNum);
                 System.out.println(room.getName() + " booked successfully!\n");
             }
             else if (roomChoice == 2) {
@@ -374,19 +372,19 @@ public static void simulateBooking(HotelList hotelList) {
 
         switch (choice) {
             case 1:
-                hotelList.changeHotelName(hotelList, hotel);
+                hotelList.changeHotelName(hotel);
                 break;
             case 2:
-                hotel.addRoomsPrompt(hotel);
+                hotel.addRoomsPrompt();
                 break;
             case 3:
-                hotel.removeRooms(hotel);
+                hotel.removeRooms();
                 break;
             case 4:
-                hotel.updateRoomPrice(hotel);
+                hotel.updateRoomPrice();
                 break;
             case 5:
-                hotel.removeReservations(hotel, rooms);
+                hotel.removeReservations(rooms);
                 break;
             case 6:
                 hotelList.removeHotel(hotel);
@@ -438,16 +436,16 @@ public static void simulateBooking(HotelList hotelList) {
 
             switch (choice) {
                 case 1:
-                    hotel.viewHighLevelInfo(hotel);
+                    hotel.viewHighLevelInfo();
                     break;
                 case 2:
-                    hotel.viewAvailableAndBookedRoomsPrompt(hotel);
+                    hotel.viewAvailableAndBookedRoomsPrompt();
                     break;
                 case 3:
-                    hotel.viewRoomInfo(hotel);
+                    hotel.viewRoomInfo();
                     break;
                 case 4:
-                    hotel.viewReservationInfo(hotel);
+                    hotel.viewReservationInfo();
                     break;
                 case 5:
                     return;

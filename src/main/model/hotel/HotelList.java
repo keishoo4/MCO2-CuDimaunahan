@@ -74,11 +74,11 @@ public class HotelList {
      *
      * @param hotelList   the HotelList object containing the list of hotels
      */
-    public void changeHotelName(HotelList hotelList, Hotel hotel) {
+    public void changeHotelName(Hotel hotel) {
         System.out.print("Enter new hotel name: ");
         String newHotelName = ScannerUtil.readString();
 
-        if (hotelList.sameHotelName(newHotelName)) {
+        if (sameHotelName(newHotelName)) {
             System.out.println("Hotel with this name already exists");
             return;
         }

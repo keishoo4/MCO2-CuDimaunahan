@@ -291,7 +291,7 @@ public void updateLowLevelRoomInfo() {
         if (selectedHotel.getExecRooms().size() > 0)
             gui.setExecRoomOcc(selectedHotel.totalExecRoomsReserved());
         
-            gui.setTotalHotelEarnings(selectedHotel.calculateEstimatedEarnings(selectedHotel));
+            gui.setTotalHotelEarnings(selectedHotel.calculateEstimatedEarnings());
 
         JOptionPane.showMessageDialog(gui, "Room booked successfully!", 
                                         "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -368,7 +368,7 @@ public void updateLowLevelRoomInfo() {
             gui.setSelectedHotelRoomSize(hotel.getRooms().size());
             gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
             gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
-            gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
+            gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings());
             
             gui.updateRoomInfoFieldFormatter(totalRooms);
             gui.setTotalRooms(totalRooms);
