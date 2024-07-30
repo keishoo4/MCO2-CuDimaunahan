@@ -51,7 +51,7 @@ public class Controller implements ActionListener, DocumentListener,
     public void updateRoomBooking() {
         gui.clearBookingInfo();
         gui.updateBookingRelated();
-        gui.updateLowLevelReservationInfo();
+        // gui.updateLowLevelReservationNum();
     }
 
     public void updateHotelView() {
@@ -107,6 +107,12 @@ public class Controller implements ActionListener, DocumentListener,
                 gui.updateLowLevelRoomInfo();
                 break;
 
+            case "RESERVATION_INFO_SHOW":
+                System.out.println("Reservation Info Show DEBUG");
+                hotelController.updateLowLevelReservationInfo();
+                gui.updateLowLevelReservationInfo();
+                break;
+
             case "MANAGE_HOTELS":
                 updateHotelList();
                 break;
@@ -123,11 +129,16 @@ public class Controller implements ActionListener, DocumentListener,
         private HotelList hotelList;
         private GUI gui;
         private Hotel selectedHotel;
+        private Room room;
+        private DeluxeRoom deluxeRoom;
+        private ExecutiveRoom execRoom;
         private ArrayList<Room> baseRooms;
         private ArrayList<DeluxeRoom> deluxeRooms;
         private ArrayList<ExecutiveRoom> execRooms;
+        private ArrayList<Reservation> reservations;
 
         private int selectedHotelIndex;
+        private double roomPrice;
         private final String STRING_EMPTY = "";
     
         public HotelController(HotelList hotelList, GUI gui) {
@@ -149,46 +160,105 @@ public class Controller implements ActionListener, DocumentListener,
             }
         }
 
-public void updateLowLevelRoomInfo() {
-    int roomNum, roomOccupancy;
-    String roomName, roomPrice;
+    public void updateLowLevelReservationInfo() {
+        int reservationNum;
+        String guestName, checkInDate, checkOutDate, discountCode;
+        double bookingPrice;
 
-    selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
-    roomNum = Integer.parseInt(gui.getRoomInfoFieldText()) - 1; // -1 for indexing
+        if (gui.getReservationInfoTextField().equals("")) {
+            JOptionPane.showMessageDialog(gui, "Please enter a reservation number.", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        gui.setReservationTotal(reservations.size());
+        // gui.updateLowLevelReservationNum();
+        reservationNum = Integer.parseInt(gui.getReservationInfoTextField()) - 1;
+        
+        reservation = reservations.get(reservationNum);
+        guestName = reservation.getGuestName();
+        checkInDate = Integer.toString(reservation.getCheckInDate());
+        checkOutDate = Integer.toString(reservation.getCheckOutDate());
+        discountCode = reservation.getDiscountCode();
+        bookingPrice = (hotel.fillDates(roomPrice, Integer.parseInt(checkInDate), 
+                       Integer.parseInt(checkOutDate), 
+                       discountCode));
 
-    roomName = "";
-    roomPrice = "";
 
-    baseRooms = selectedHotel.getRooms();
-    deluxeRooms = selectedHotel.getDeluxeRooms();
-    execRooms = selectedHotel.getExecRooms();
 
-    if (roomNum < baseRooms.size()) {
-        roomName = baseRooms.get(roomNum).getName();
-        roomPrice = Double.toString(baseRooms.get(roomNum).getPricePerNight());
-        gui.setRoomOccupancy(baseRooms.get(roomNum).getVacancyPeriods());
-    } else {
-        roomNum -= baseRooms.size();
-        if (roomNum < deluxeRooms.size()) {
-            roomName = deluxeRooms.get(roomNum).getName();
-            roomPrice = Double.toString(deluxeRooms.get(roomNum).getPricePerNight());
-            gui.setRoomOccupancy(deluxeRooms.get(roomNum).getVacancyPeriods());
+        gui.setGuestName(reservation.getGuestName());
+        gui.setCheckInDate(Integer.toString(reservation.getCheckInDate()));
+        gui.setCheckOutDate(Integer.toString(reservation.getCheckOutDate()));
+        if (selectedHotel.getDiscountCode(reservation.getDiscountCode()) != 1.0)
+            gui.setDiscountCode(reservation.getDiscountCode());
+        else
+            gui.setDiscountCode("N/A");
+            
+        gui.setBookingPrice(bookingPrice);
+    }
+
+    public void updateLowLevelRoomInfo() {
+        int roomNum, roomOccupancy, reservationNum;
+        String roomName, roomPrice;
+
+        if (gui.getRoomInfoFieldText().equals("")) {
+            JOptionPane.showMessageDialog(gui, "Please enter a room number.", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        roomNum = Integer.parseInt(gui.getRoomInfoFieldText()) - 1; // -1 for indexing
+
+        roomName = "";
+        roomPrice = "";
+
+        baseRooms = selectedHotel.getRooms();
+        deluxeRooms = selectedHotel.getDeluxeRooms();
+        execRooms = selectedHotel.getExecRooms();
+
+        if (roomNum < baseRooms.size()) {
+            roomName = baseRooms.get(roomNum).getName();
+            roomPrice = Double.toString(baseRooms.get(roomNum).getPricePerNight());
+            setRoomPrice(Double.parseDouble(roomPrice));
+            gui.setRoomOccupancy(baseRooms.get(roomNum).getVacancyPeriods());
+            reservations = baseRooms.get(roomNum).getReservations();
         } 
         else {
-            roomNum -= deluxeRooms.size();
-            if (roomNum < execRooms.size()) {
-                roomName = execRooms.get(roomNum).getName();
-                roomPrice = Double.toString(execRooms.get(roomNum).getPricePerNight());
-                gui.setRoomOccupancy(execRooms.get(roomNum).getVacancyPeriods());
+            roomNum -= baseRooms.size();
+            if (roomNum < deluxeRooms.size()) {
+                roomName = deluxeRooms.get(roomNum).getName();
+                roomPrice = Double.toString(deluxeRooms.get(roomNum).getPricePerNight());
+                setRoomPrice(Double.parseDouble(roomPrice));
+                gui.setRoomOccupancy(deluxeRooms.get(roomNum).getVacancyPeriods());
+                reservations = deluxeRooms.get(roomNum).getReservations();
             } 
             else {
-                throw new IndexOutOfBoundsException("Invalid room number");
+                roomNum -= deluxeRooms.size();
+                if (roomNum < execRooms.size()) {
+                    roomName = execRooms.get(roomNum).getName();
+                    roomPrice = Double.toString(execRooms.get(roomNum).getPricePerNight());
+                    setRoomPrice(Double.parseDouble(roomPrice));
+                    gui.setRoomOccupancy(execRooms.get(roomNum).getVacancyPeriods());
+                    reservations = execRooms.get(roomNum).getReservations();
+                } 
+                else {
+                    throw new IndexOutOfBoundsException("Invalid room number");
+                }
             }
         }
+        gui.setRoomName(roomName);
+        gui.setRoomPrice(roomPrice);
+
+        setReservations(reservations);
+        gui.updateLowLevelReservationNum();
     }
-    gui.setRoomName(roomName);
-    gui.setRoomPrice(roomPrice);
-}
+
+    public void setRoomPrice(double roomPrice) {
+        this.roomPrice = roomPrice;
+    }
+    public void setReservations(ArrayList<Reservation> reservations) {
+        this.reservations = reservations;
+    }
 
     public void updateLowRoomDateAvailList() {
         selectedHotel     = hotelList.getHotels().get(gui.getSelectedHotelIndex());
@@ -224,7 +294,7 @@ public void updateLowLevelRoomInfo() {
         }
         gui.setCreateBtnEnabled(false);
     }
-    
+
     public void bookRoomForSelectedHotel() {
         Room room;
         DeluxeRoom deluxeRoom;
@@ -238,10 +308,6 @@ public void updateLowLevelRoomInfo() {
         checkOut = gui.getCheckOutDate();
         discountCode = gui.getDiscountCode();
         selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
-
-        availRooms = selectedHotel.removableRooms();
-        availDeluxeRooms = selectedHotel.removableDeluxeRooms();
-        availExecRooms = selectedHotel.removableExecRooms();
 
         deluxeRoom = null;
         execRoom = null;
@@ -291,18 +357,22 @@ public void updateLowLevelRoomInfo() {
         bookRoom(selectedHotel, guestName, Integer.parseInt(checkIn), Integer.parseInt(checkOut), 
                     room, deluxeRoom, execRoom, discountCode);
 
-        gui.setBaseRoomOcc(selectedHotel.totalStandardRoomsReserved());
+        availRooms = selectedHotel.removableRooms();
+        availDeluxeRooms = selectedHotel.removableDeluxeRooms();
+        availExecRooms = selectedHotel.removableExecRooms();
+
+        gui.setBaseRoomOcc(selectedHotel.totalBaseRoomsReserved());
         if (selectedHotel.getDeluxeRooms().size() > 0)
             gui.setDeluxeRoomOcc(selectedHotel.totalDeluxeRoomsReserved());
         if (selectedHotel.getExecRooms().size() > 0)
             gui.setExecRoomOcc(selectedHotel.totalExecRoomsReserved());
         
-        gui.setTotalHotelEarnings(selectedHotel.calculateEstimatedEarnings());
-        gui.setRoomReservationTotal(selectedHotel.getTotalHotelReservations());
+        gui.setTotalHotelEarnings(selectedHotel.calculateMonthlyEarnings());
+        gui.setReservationTotal(selectedHotel.getTotalHotelReservations());
         gui.updateComboBoxItems(availDeluxeRooms, availExecRooms);
 
         JOptionPane.showMessageDialog(gui, "Room booked successfully!", 
-                                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                                      "Success", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void bookRoom(Hotel hotel, String guestName, int checkInDate, int checkOutDate, 
@@ -376,18 +446,19 @@ public void updateLowLevelRoomInfo() {
             gui.setSelectedHotelRoomSize(hotel.getRooms().size());
             gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
             gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
-            gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings());
+            gui.setTotalHotelEarnings(hotel.calculateMonthlyEarnings());
             
             gui.updateRoomInfoFieldFormatter(totalRooms);
             gui.setTotalRooms(totalRooms);
 
             gui.updateBookingRelated();
+            gui.updateLowLevelReservationInfo();
         }
         gui.updateManageHotel();
 
 
 
-        
+
         gui.revalidate();
         gui.repaint();
     }

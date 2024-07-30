@@ -521,7 +521,7 @@ public class Hotel {
      */
     public int totalRoomsReserved() {
         int totalRooms = 0;
-        totalRooms += totalStandardRoomsReserved();
+        totalRooms += totalBaseRoomsReserved();
         totalRooms += totalDeluxeRoomsReserved();
         totalRooms += totalExecRoomsReserved();
         return totalRooms;
@@ -533,7 +533,7 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved standard rooms
      */
-    public int totalStandardRoomsReserved(){
+    public int totalBaseRoomsReserved(){
         int totalStandardRooms = 0;
         for (Room room : getRooms()) {
             if (room.getBookStatus())
@@ -1116,7 +1116,7 @@ public class Hotel {
     }
 
     public void displayRoomTypes() {
-        System.out.println("[1] Base Room      - " + (rooms.size()-totalStandardRoomsReserved()) 
+        System.out.println("[1] Base Room      - " + (rooms.size()-totalBaseRoomsReserved()) 
                            + " rooms unbooked");
 
         if (deluxeRooms.size() > 0) {
