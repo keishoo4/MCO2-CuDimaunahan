@@ -18,6 +18,7 @@ public class Reservation {
      * @param checkInDate   the check-in date of the reservation
      * @param checkOutDate  the check-out date of the reservation
      * @param room          the room reserved for the guest
+     * @param discountCode  the discount code used for the reservation
      */
     public Reservation(String guestName, int checkInDate, int checkOutDate, Room room, String discountCode) {
         this.guestName = guestName;
