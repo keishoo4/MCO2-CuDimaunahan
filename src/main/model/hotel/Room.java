@@ -122,7 +122,7 @@ public class Room {
         return true; // No overlap
     }
 
-    public boolean isFullyBooked() {
+    private boolean isFullyBooked() {
         if (reservations.isEmpty()) {
             return false;
         }
@@ -233,7 +233,7 @@ public class Room {
         }        
     }
 
-    public boolean isPresentBookingDay(int date) {
+    private boolean isPresentBookingDay(int date) {
         for (Reservation reservation : reservations) {
             if (date >= reservation.getCheckInDate() && date <= reservation.getCheckOutDate()) {
                 return true;

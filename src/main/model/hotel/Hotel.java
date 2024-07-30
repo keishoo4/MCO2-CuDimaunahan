@@ -118,7 +118,7 @@ public class Hotel {
      * 
      * @param newPrice the new price per night for all rooms
      */
-    public void changeRoomPrice(double newPrice) {
+    private void changeRoomPrice(double newPrice) {
         for (Room room : rooms) {
             room.setPricePerNight(newPrice);
         }
@@ -391,7 +391,7 @@ public class Hotel {
      * 
      * @param availability the availability of the rooms to print ("All" or "Reserved")
      */
-    public void showRooms(String availability) {
+    private void showRooms(String availability) {
         if (availability.equals("All")) {
             System.out.println("All Rooms: ");
 
@@ -519,7 +519,7 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved rooms
      */
-    public int totalRoomsReserved() {
+    private int totalRoomsReserved() {
         int totalRooms = 0;
         totalRooms += totalBaseRoomsReserved();
         totalRooms += totalDeluxeRoomsReserved();
@@ -773,7 +773,7 @@ public class Hotel {
         }
     }
 
-    public void setDatePriceModifier(int day, double priceModifier) {
+    private void setDatePriceModifier(int day, double priceModifier) {
         if (day < 1 || day > 31) {
             System.out.println("Invalid day! Please enter a day between 1 and 31.");
             return;
@@ -781,7 +781,7 @@ public class Hotel {
         datePriceModifiers[day - 1] = priceModifier / 100; // sets day in the array to its price modifier 
     }
 
-    public double getDateModifier(int day) {
+    private double getDateModifier(int day) {
         if (day < 1 || day > 31) {
             System.out.println("Invalid day! Please enter a day between 1 and 31.");
             return 1.0; // Default modifier if day is invalid
@@ -902,21 +902,21 @@ public class Hotel {
         System.out.println("Estimated Earnings for the Month: " + String.format("%.2f", estimatedEarnings));
     }
 
-    public double calculateEstimatedEarnings() { // ONLY FOR ONE RESERVATION
-        double estimatedEarnings = getRooms().stream()
-                .flatMap(room -> room.getReservations().stream())
-                .mapToDouble(reservation -> {
-                    int checkInDate = reservation.getCheckInDate();
-                    int checkOutDate = reservation.getCheckOutDate();
-                    Room room = reservation.getRoom();
-                    String discountCode = reservation.getDiscountCode();
+    // private double calculateEstimatedEarnings() { // ONLY FOR ONE RESERVATION
+    //     double estimatedEarnings = getRooms().stream()
+    //             .flatMap(room -> room.getReservations().stream())
+    //             .mapToDouble(reservation -> {
+    //                 int checkInDate = reservation.getCheckInDate();
+    //                 int checkOutDate = reservation.getCheckOutDate();
+    //                 Room room = reservation.getRoom();
+    //                 String discountCode = reservation.getDiscountCode();
     
-                    double pricePerNight = room.getPricePerNight();
+    //                 double pricePerNight = room.getPricePerNight();
     
-                    return fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
-                }).sum();
-        return estimatedEarnings;
-    }
+    //                 return fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
+    //             }).sum();
+    //     return estimatedEarnings;
+    // }
 
     /**
      * Checks if a given date is within a specified range.
