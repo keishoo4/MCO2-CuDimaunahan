@@ -102,7 +102,7 @@ public class HotelList {
      *
      * @param hotelList the HotelList object to add the hotel to
      */
-    public void addHotels(HotelList hotelList) {
+    public void addHotels() {
         String hotelName;
         int baseRooms, deluxeRooms, execRooms, totalRooms, 
             maxDeluxe, maxExec, remainingRooms;
@@ -110,7 +110,7 @@ public class HotelList {
         System.out.print("Enter hotel name: ");
         hotelName = ScannerUtil.readString();
     
-        if (hotelList.sameHotelName(hotelName)) {
+        if (sameHotelName(hotelName)) {
             System.out.println("Hotel with this name already exists!");
             return;
         }
@@ -152,7 +152,7 @@ public class HotelList {
             return;
         }
 
-        hotelList.addHotel(hotelName, baseRooms, deluxeRooms, execRooms);
+        addHotel(hotelName, baseRooms, deluxeRooms, execRooms);
         System.out.println("Hotel " + hotelName + " (" + totalRooms + " rooms) created successfully!");
         // Summary of each in println
         System.out.println("     Base Rooms - [" + baseRooms + "]");
