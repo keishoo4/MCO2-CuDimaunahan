@@ -158,7 +158,7 @@ public class Hotel {
     public void addRooms(int rooms, int deluxeRooms, int execRooms) {
         int i;
         for (i=0; i<rooms; i++)
-            this.rooms.add(new Room("RM" + (i + 1), basePrice));
+            this.rooms.add(new Room("RM" + (i + 1) + "-BS", basePrice));
 
         for (i=rooms; i<rooms+deluxeRooms; i++)
             this.deluxeRooms.add(new DeluxeRoom("RM" + (i + 1) + "-DL", basePrice));

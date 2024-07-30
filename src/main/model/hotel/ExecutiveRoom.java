@@ -19,6 +19,6 @@ public class ExecutiveRoom extends Room {
 
     @Override
     public String toString() {
-        return super.toString(); // Assuming DeluxeRoom uses the same name property
+        return super.toString(); 
     }
 }
