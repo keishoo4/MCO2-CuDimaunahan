@@ -17,7 +17,7 @@ import model.hotel.Reservation;
 import view.GUI;
 
 public class Controller implements ActionListener, DocumentListener, 
-                                   ListSelectionListener, MouseListener,
+                                   /*ListSelectionListener ,*/ MouseListener,
                                    ChangeListener {
     private HotelList hotelList;
     private Hotel hotel;
@@ -35,7 +35,7 @@ public class Controller implements ActionListener, DocumentListener,
 
         gui.setActionListener(this);
         gui.setDocumentListener(this);
-        gui.setListActionListener(this);
+        // gui.setListActionListener(this);
         gui.setMouseListener(this);
         gui.setChangeListener(this);
     }
@@ -109,26 +109,6 @@ public class Controller implements ActionListener, DocumentListener,
                 updateRoomBooking();
                 break;
    
-        }
-    }
-
-    @Override
-    public void valueChanged(ListSelectionEvent e) {
-        int selectedHotelIndex;
-        if (!e.getValueIsAdjusting()) {
-            selectedHotelIndex = gui.getHotelJList().getSelectedIndex();
-            if (selectedHotelIndex >= 0) {
-                hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
-                int totalRooms = hotel.getRooms().size() + 
-                                 hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
-                gui.setSelectedHotelName(hotel.getName());
-                gui.setSelectedHotelRoomSize(hotel.getRooms().size());
-                gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
-                gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
-                gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
-                
-                gui.setDisplayInfoAndBooking(totalRooms, selectedHotelIndex);
-            }
         }
     }
 
@@ -324,20 +304,55 @@ public class Controller implements ActionListener, DocumentListener,
 
     }
 
+    // @Override
+    // public void valueChanged(ListSelectionEvent e) {
+    //     int selectedHotelIndex;
+    //     if (!e.getValueIsAdjusting()) {
+    //         selectedHotelIndex = gui.getHotelJList().getSelectedIndex();
+    //         if (selectedHotelIndex >= 0) {
+    //             hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
+    //             int totalRooms = hotel.getRooms().size() + 
+    //                              hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+    //             gui.setSelectedHotelName(hotel.getName());
+    //             gui.setSelectedHotelRoomSize(hotel.getRooms().size());
+    //             gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
+    //             gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
+    //             gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
+                
+    //             gui.setDisplayInfoAndBooking(totalRooms, selectedHotelIndex);
+    //             gui.updateBookingRelated();
+    //         }
+    //     }
+    // }
+
+
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() != MouseEvent.BUTTON1) {
             return;  // Ignore if it's not a left-click
-        }        
-
+        }
+    
         int selectedHotelIndex = gui.getHotelJList().locationToIndex(e.getPoint());
-
+    
         if (selectedHotelIndex >= 0) {
             Object item = gui.getHotelListModel().getElementAt(selectedHotelIndex);
             System.out.println("Clicked on: " + item + " at index " + selectedHotelIndex); // DEBUGGING
             gui.setSelectedHotelIndex(selectedHotelIndex);
             hotel = hotelList.getHotels().get(selectedHotelIndex);
             gui.setCurrentHotelName(hotel.getName());
+    
+            // Transfer the logic from valueChanged
+            hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
+            int totalRooms = hotel.getRooms().size() + 
+                             hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+            gui.setSelectedHotelName(hotel.getName());
+            gui.setSelectedHotelRoomSize(hotel.getRooms().size());
+            gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
+            gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
+            gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
+            
+            gui.setDisplayInfoAndBooking(totalRooms, selectedHotelIndex);
+            gui.updateBookingRelated();
         }
         gui.updateManageHotel();
     }
