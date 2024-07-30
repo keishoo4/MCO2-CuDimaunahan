@@ -122,6 +122,11 @@ public class Room {
         return true; // No overlap
     }
 
+    /**
+     * Checks if the room is fully booked for the entire month.
+     *
+     * @return true if the room is fully booked, false otherwise
+     */
     private boolean isFullyBooked() {
         if (reservations.isEmpty()) {
             return false;
@@ -157,6 +162,13 @@ public class Room {
         return lastCheckout >= 29;  // If the last checkout is before day 29, there's a bookable gap at the end
     }
 
+    /**
+     * Returns a string representation of the vacant periods in the room's reservation schedule.
+     * The vacant periods are calculated based on the check-in and check-out dates of the reservations.
+     * If there are no reservations, the entire month is considered vacant.
+     *
+     * @return a string representing the vacant periods in the format "startDay-endDay", separated by commas.
+     */
     public String getVacancyPeriods() {
         if (reservations.isEmpty()) {
             return "1-31";  // If no reservations, the entire month is vacant
@@ -233,6 +245,12 @@ public class Room {
         }        
     }
 
+    /**
+     * Checks if the room has a booking for a specific date.
+     *
+     * @param date  the date to check for a booking
+     * @return true if the room has a booking for the specified date, false otherwise
+     */
     private boolean isPresentBookingDay(int date) {
         for (Reservation reservation : reservations) {
             if (date >= reservation.getCheckInDate() && date <= reservation.getCheckOutDate()) {
@@ -242,11 +260,20 @@ public class Room {
         return false;
     }
 
+    /**
+     * Sets the temporary date for the room. This temporary date is used to check the booking status of the room on a specific date.
+     *
+     * @param tempDate  the date to temporarily set for checking the booking status.
+     */
     public void setTempDate(int tempDate) {
         this.tempDate = tempDate;
     }
 
-
+    /**
+     * Overrides the toString method to provide a string representation of the Room object.
+     *
+     * @return a string representation of the Room object in the format "name - status"
+     */
     @Override
     public String toString() {
         if (isBooked == false)

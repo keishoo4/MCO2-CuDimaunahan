@@ -16,7 +16,13 @@ public class ExecutiveRoom extends Room {
     public ExecutiveRoom(String name, double basePricePerNight) {
         super(name, basePricePerNight * PRICE_MULTIPLIER);
     }
-
+        
+    /**
+     * Returns a string representation of this ExecutiveRoom object.
+     * The string representation consists of the room's name and base price per night.
+     *
+     * @return a string representation of this ExecutiveRoom object in the format: "ExecutiveRoom[name=roomName, basePricePerNight=price]"
+     */
     @Override
     public String toString() {
         return super.toString(); 
