@@ -12,6 +12,7 @@ public class Room {
     private double pricePerNight;
     private ArrayList<Reservation> reservations;
     private boolean isBooked = false;
+    private int tempDate;
 
     /**
      * Constructs a Room object with the specified name and price per night.
@@ -195,8 +196,28 @@ public class Room {
         }        
     }
 
+    public boolean isPresentBookingDay(int date) {
+        for (Reservation reservation : reservations) {
+            if (date >= reservation.getCheckInDate() && date <= reservation.getCheckOutDate()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setTempDate(int tempDate) {
+        this.tempDate = tempDate;
+    }
+
+
     @Override
     public String toString() {
-        return " " + name;
+        if (isBooked == false)
+            return " " + name + " - Fully Vacant";
+
+        if (isPresentBookingDay(tempDate))
+            return " " + name + " - Booked";
+
+        return " " + name + " - Available";
     }
 }

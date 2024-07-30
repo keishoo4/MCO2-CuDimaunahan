@@ -14,11 +14,12 @@ import javax.swing.text.NumberFormatter;
 import java.awt.event.*;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
 
 import model.hotel.Hotel;
 import model.hotel.Room;
 import model.hotel.Reservation;
+
+import java.util.*;
 
 public class GUI extends JFrame {
     private JFrame mainFrame, bookingFrame;
@@ -26,7 +27,8 @@ public class GUI extends JFrame {
                    hotelHighInfoPanel, hotelLowInfoPanel, 
                    upperLeftCreatePanel, upperRightManagePanel, lowerRightFiller, 
                    guestNamePanel, checkInPanel, checkOutPanel, discountCodePanel, roomTypePanel, 
-                   discountCodeFlowPanel;
+                   discountCodeFlowPanel,
+                   roomDateAvailPanel;
     private JLabel guestLabel, checkInLabel, checkOutLabel, discountCodeLabel, earningsValueLabel,
                    totalBaseRoomsLabel, totalDeluxeRoomsLabel, totalExecRoomsLabel;
 
@@ -40,8 +42,7 @@ public class GUI extends JFrame {
     private JTabbedPane lowerLeftTabbedPane;
     private JList<Hotel> hotelJList;
     private DefaultListModel<Hotel> hotelListModel;
-    private JList<Room> roomDateAvailList, roomInfoList;
-    private DefaultListModel<Room> roomDateAvailModel, roomInfoModel;
+    // private JList<Room> roomDateAvailList, roomInfoList;
     private JList<Reservation> reservationInfoList;
     private DefaultListModel<Reservation> reservationInfoModel;
 
@@ -51,10 +52,14 @@ public class GUI extends JFrame {
 
     private ArrayList<JButton> roomDateAvailBtns = new ArrayList<JButton>();
     private ArrayList<JFormattedTextField> roomDateAvailFields = new ArrayList<JFormattedTextField>();
+    private ArrayList<JScrollPane> roomDateAvailScrollPanes = new ArrayList<JScrollPane>();
+    private ArrayList<DefaultListModel<Room>> roomDateAvailModels = new ArrayList<DefaultListModel<Room>>();
+
+    private Map<String, Integer> hotelTabIndices = new HashMap<String, Integer>();
 
 
     private int selectedHotelIndex = -1;
-    private String selectedHotelName = "NULL"; // Placeholder
+    private String selectedHotelName, currentHotelName; // Placeholder
     private int totalHotels = 0, 
                 totalRooms, selectedHotelRoomSize, selectedHotelDeluxeRooms, selectedHotelExecRooms,
                 reservationTotal = 0,
@@ -63,6 +68,7 @@ public class GUI extends JFrame {
     private double totalHotelEarnings;
 
     private final int MAX_TOTAL_ROOMS = 50;
+    public static final String HOTEL_LIST_TAB_NAME = "Hotel List";
 
     public GUI() {
         super("Hotel Reservation System");
@@ -87,11 +93,6 @@ public class GUI extends JFrame {
 
         
         init(this); // Main program UI
-
-        // MAIN FRAME CONFIGURATION
-        // Upper row configuration (50/50 split)
-        // gridBagLayoutConfig(upperPanel, upperLeftCreatePanel, 0, 0, 0.5, 1.0);
-        // gridBagLayoutConfig(upperPanel, upperRightManagePanel, 1, 0, 0.5, 1.0);
 
         upperPanel.add(upperLeftCreatePanel);
         upperPanel.add(upperRightManagePanel);
@@ -285,20 +286,16 @@ public class GUI extends JFrame {
         (new Dimension(discountCodeField.getPreferredSize().width, 
                        discountCodeField.getPreferredSize().height + 3));
 
-        
-        showLowHotelInfo();
+        for (int i=0; i<50; i++) {
+            showLowHotelInfo();
+        }
+        System.out.println("Low Room Button: " + roomDateAvailBtns.size()); // DEBUGGING
 
         // TODO ADD TO CONTROLLER MAYBE???
         hotelJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (totalHotels >= roomDateAvailBtns.size()) {
-                    System.out.println("Low Room Button: " + roomDateAvailBtns.size()); // DEBUGGING
-                    showLowHotelInfo();
-                    System.out.println("Low Room Button: " + roomDateAvailBtns.size()); // DEBUGGING
-                }
                 if (e.getClickCount() == 2 && hotelJList.getSelectedValue() != null) {
-                    // showLowHotelInfo();
                     String selectedHotelName = hotelJList.getSelectedValue().toString();
                     boolean tabExists = false;
                     for (int i = 0; i < lowerLeftTabbedPane.getTabCount(); i++) {
@@ -310,60 +307,103 @@ public class GUI extends JFrame {
                     if (!tabExists) {
                         JPanel tabHotelPanel = new JPanel();
                         tabHotelPanel.setLayout(new GridBagLayout());
-                        
+        
                         JPanel tabHotelUpperPanel = new JPanel();
                         tabHotelUpperPanel.setLayout(new GridBagLayout());
-                        
+        
                         JPanel tabHotelLowerPanel = new JPanel();
                         tabHotelLowerPanel.setLayout(new BoxLayout(tabHotelLowerPanel, BoxLayout.Y_AXIS));
-                        
-                        // tabHotelPanel.add(tabHotelLowerPanel, gbcHotel);
-
+        
                         gridBagLayoutConfig(tabHotelPanel, tabHotelUpperPanel, 0, 0, 1.0, 0.8);
                         gridBagLayoutConfig(tabHotelPanel, tabHotelLowerPanel, 0, 1, 1.0, 0.2);
-
+        
                         gridBagLayoutConfig(tabHotelUpperPanel, hotelHighInfoPanel, 0, 0, 0.1, 1.0);
                         gridBagLayoutConfig(tabHotelUpperPanel, hotelLowInfoPanel, 1, 0, 0.9, 1.0);
-
+        
                         addClosableTab(selectedHotelName, tabHotelPanel);
-                        
+        
                         // SIMULATE BOOKING
                         JLabel simulateBookingLabel = new JLabel("Simulate Booking");
                         simulateBookingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        
                         JButton bookingBtn = createBookingButton(selectedHotelName);
-
+        
                         tabHotelLowerPanel.add(simulateBookingLabel);
                         tabHotelLowerPanel.add(Box.createVerticalStrut(10));
                         tabHotelLowerPanel.add(bookingBtn);
                         // SIMULATE BOOKING END
-                        
-                        lowerLeftTabbedPane.setSelectedIndex(lowerLeftTabbedPane.getTabCount()-1); // Switch to the newly added tab
+        
+                        int hotelListIndex = hotelJList.getSelectedIndex();
+                        hotelTabIndices.put(selectedHotelName, hotelListIndex);
+                        lowerLeftTabbedPane.setSelectedIndex(lowerLeftTabbedPane.indexOfTab(selectedHotelName)); // Switch to the newly added tab
                     }
                 }
             }
         });
-
-        // Add ChangeListener to print the current tab index
-        lowerLeftTabbedPane.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                selectedHotelIndex = lowerLeftTabbedPane.getSelectedIndex() - 1;
-                System.out.println("Current Tab Index: " + selectedHotelIndex);
-            }
-        });
+        
+        // // Add ChangeListener to print the current tab index
+        // lowerLeftTabbedPane.addChangeListener(new ChangeListener() {
+        //     @Override
+        //     public void stateChanged(ChangeEvent e) {
+        //         String selectedTabTitle = lowerLeftTabbedPane.getTitleAt(lowerLeftTabbedPane.getSelectedIndex());
+        //         if (!HOTEL_LIST_TAB_NAME.equals(selectedTabTitle)) {
+        //             Integer hotelListIndex = hotelTabIndices.get(selectedTabTitle);
+        //             if (hotelListIndex != null) {
+        //                 selectedHotelIndex = hotelListIndex;
+        //                 System.out.println("Current Hotel List Index: " + selectedHotelIndex);
+        //             } else {
+        //                 System.out.println("Selected tab not found in hotelTabIndices map");
+        //             }
+        //         } else {
+        //             System.out.println("Hotel List tab selected");
+        //         }
+        //     }
+        // });
 
         // END OF TABBED  PANE
 
 
 
 
-        // MANAGE HOTELS - LOWER RIGHT
-        // upperRightManagePanel = new JPanel();
+        // MANAGE HOTELS - UPPER RIGHT
+        JPanel manageHotelFrontPanel = new JPanel();
+        JPanel manageHotelMainPanel = new JPanel();
 
-        manageHotelBtn = new JButton("Manage Hotels");
-        manageHotelBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        upperRightManagePanel.add(manageHotelBtn);   
+        CardLayout cardLayout = new CardLayout();
+        upperRightManagePanel.setLayout(cardLayout);
+
+        manageHotelFrontPanel.setLayout(new BorderLayout());
+
+        manageHotelBtn = new JButton("Manage Hotel");
+        manageHotelBtn.setActionCommand("MANAGE_HOTEL"); // For Controller
+
+        JButton backToFrontManageBtn = new JButton("Back");
+
+        //CONFIG
+        int margin = 50;
+        manageHotelFrontPanel.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
+        currentFont = manageHotelBtn.getFont();
+        newFont = new Font(currentFont.getName(), Font.BOLD, currentFont.getSize() + 10);
+        manageHotelBtn.setFont(newFont);
+
+
+        manageHotelFrontPanel.add(manageHotelBtn, BorderLayout.CENTER);
+        manageHotelMainPanel.add(backToFrontManageBtn);
+        
+
+
+        upperRightManagePanel.add(manageHotelFrontPanel, "FRONT");
+        upperRightManagePanel.add(manageHotelMainPanel, "MAIN");
+        cardLayout.show(upperRightManagePanel, "FRONT");
+
+        manageHotelBtn.addActionListener(e -> {
+            cardLayout.show(upperRightManagePanel, "MAIN");
+        });
+
+        backToFrontManageBtn.addActionListener(e -> {
+            cardLayout.show(upperRightManagePanel, "FRONT");
+        });
+
     }
 
     private void gridBagLayoutConfig(JPanel panel, Component component, int gridx, int gridy, double weightx, double weighty) {
@@ -454,9 +494,9 @@ public class GUI extends JFrame {
         totalBaseRoomsLabel = new JLabel("  |Base Rooms: " + baseRoomOcc 
                                                 + "/" + getSelectedHotelRoomSize());
         totalDeluxeRoomsLabel = new JLabel("  |Deluxe Rooms: " + deluxeRoomOcc 
-                                                  + "/" + getSelectedHotelExecRoomsSize());
-        totalExecRoomsLabel = new JLabel("  |Executive Rooms: " + execRoomOcc
                                                   + "/" + getSelectedHotelDeluxeRoomsSize());
+        totalExecRoomsLabel = new JLabel("  |Executive Rooms: " + execRoomOcc
+                                                  + "/" + getSelectedHotelExecRoomsSize());
 
         String earnings = String.format("%.2f", getTotalHotelEarnings());
         JLabel estimatedEarningsLabel = new JLabel("  |Estimated Earnings:");
@@ -492,7 +532,7 @@ public class GUI extends JFrame {
         hotelLowInfoPanel.setBorder(titledBorder);
 
         // VIEW HOTEL
-        JPanel roomDateAvailPanel = new JPanel();
+        roomDateAvailPanel = new JPanel();
         JPanel roomInfoPanel = new JPanel();
         JPanel reservationInfoPanel = new JPanel();
 
@@ -508,13 +548,7 @@ public class GUI extends JFrame {
         roomInfoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         reservationInfoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // TEXT-FIELD FORMATTING
-        // numberFormatter = createNumberFormatter(1, 31);
-        // JFormattedTextField roomDateField = new JFormattedTextField(numberFormatter);
-        // roomDateField.setColumns(5);
-        // roomDateField.setPreferredSize(new Dimension(10, 20));
-        // roomDateField.setMaximumSize(roomDateField.getPreferredSize());
-
+        // WILL MOVE TO LOW HOTEL INFO EVEN BUTTONS
         numberFormatter = createNumberFormatter(1, totalRooms);
         JFormattedTextField roomInfoField = new JFormattedTextField(numberFormatter);
         roomInfoField.setColumns(5);
@@ -526,9 +560,6 @@ public class GUI extends JFrame {
         reservationInfoField.setColumns(5);
         reservationInfoField.setPreferredSize(new Dimension(10, 20));
         reservationInfoField.setMaximumSize(reservationInfoField.getPreferredSize());
-
-        // BUTTONS
-        // roomDateAvailBtn = new JButton("Check");
 
         JButton roomInfoBtn = new JButton("Check");
         JButton reservationInfoBtn = new JButton("Check");
@@ -559,14 +590,13 @@ public class GUI extends JFrame {
         roomDateAvailPanel.add(Box.createVerticalStrut(5));
         roomDateAvailPanel.add(roomDateAvailBtns.get(hotelIndex));
         roomDateAvailPanel.add(Box.createVerticalStrut(5));
-        displayLowRoomDateAvail(roomDateAvailPanel);
+        roomDateAvailPanel.add(roomDateAvailScrollPanes.get(hotelIndex));
 
         roomInfoPanel.add(roomInfoLabel);
         roomInfoPanel.add(roomInfoField);
         roomInfoPanel.add(Box.createVerticalStrut(5));
         roomInfoPanel.add(roomInfoBtn);
         roomInfoPanel.add(Box.createVerticalStrut(5));
-        displayLowRoomInfo(roomInfoPanel);
 
 
         reservationInfoPanel.add(reservationInfoLabel);
@@ -574,8 +604,6 @@ public class GUI extends JFrame {
         reservationInfoPanel.add(Box.createVerticalStrut(5));
         reservationInfoPanel.add(reservationInfoBtn);
         reservationInfoPanel.add(Box.createVerticalStrut(5));
-        displayReservationInfo(reservationInfoPanel);
-
 
         hotelLowInfoPanel.add(roomDateAvailPanel);
         hotelLowInfoPanel.add(roomInfoPanel);
@@ -595,6 +623,10 @@ public class GUI extends JFrame {
 
     public int getSelectedHotelIndex() {
         return selectedHotelIndex;
+    }
+
+    public void setSelectedHotelIndex(int selectedHotelIndex) {
+        this.selectedHotelIndex = selectedHotelIndex;
     }
     
     public void setSelectedHotelRoomSize(int selectedHotelRoomSize) {
@@ -641,6 +673,15 @@ public class GUI extends JFrame {
         return totalHotelEarnings;
     }
 
+    // MANAGE HOTEL
+    public JTabbedPane getLowerLeftTabbedPane() {
+        return lowerLeftTabbedPane;
+    }
+
+    public Map<String, Integer> getHotelTabIndices() {
+        return hotelTabIndices;
+    }
+
     // ROOM BOOKING UPDATES
     public void setBaseRoomOcc(int baseRoomOcc) {
         this.baseRoomOcc = baseRoomOcc;
@@ -681,22 +722,26 @@ public class GUI extends JFrame {
         return hotelListModel;
     }
 
-    public DefaultListModel<Room> getRoomDateAvailListModel() {
-        return roomDateAvailModel;
+    public DefaultListModel<Room> getRoomDateAvailListModel(int index) {
+        if (index >= 0 && index < roomDateAvailModels.size()) {
+            return roomDateAvailModels.get(index);
+        } else {
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
+        }
     }
 
-    private void setupHotelListClickMouseListener() {
-        hotelJList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                selectedHotelIndex = hotelJList.locationToIndex(e.getPoint());
-                if (selectedHotelIndex >= 0) {
-                    Object item = hotelListModel.getElementAt(selectedHotelIndex);
-                    System.out.println("Clicked on: " + item + " at index " + selectedHotelIndex); // DEBUGGING
-                }
-            }
-        });
-    }
+    // private void setupHotelListClickMouseListener() {
+    //     hotelJList.addMouseListener(new MouseAdapter() {
+    //         @Override
+    //         public void mouseClicked(MouseEvent e) {
+    //             selectedHotelIndex = hotelJList.locationToIndex(e.getPoint());
+    //             if (selectedHotelIndex >= 0) {
+    //                 Object item = hotelListModel.getElementAt(selectedHotelIndex);
+    //                 System.out.println("Clicked on: " + item + " at index " + selectedHotelIndex); // DEBUGGING
+    //             }
+    //         }
+    //     });
+    // }
 
     public void showLowHotelInfo() {
         JButton roomDateAvailBtn = new JButton("Check");
@@ -712,6 +757,14 @@ public class GUI extends JFrame {
         roomDateAvailField.setPreferredSize(new Dimension(10, 20));
         roomDateAvailField.setMaximumSize(roomDateAvailField.getPreferredSize());
         roomDateAvailFields.add(roomDateAvailField);
+
+        DefaultListModel<Room> roomDateAvailModel = new DefaultListModel<>();
+        JList<Room> roomDateAvailList = new JList<Room>(roomDateAvailModel);
+        JScrollPane roomDateAvailScrollPane = new JScrollPane(roomDateAvailList);
+        roomDateAvailScrollPane.setPreferredSize(new Dimension(200, 150));
+        roomDateAvailScrollPane.setMaximumSize(roomDateAvailScrollPane.getPreferredSize());
+        roomDateAvailScrollPanes.add(roomDateAvailScrollPane);
+        roomDateAvailModels.add(roomDateAvailModel);
     }
 
     public void displayHotels(JPanel tabHotelListPanel) {
@@ -729,40 +782,8 @@ public class GUI extends JFrame {
         tabHotelListPanel.add(hotelListScrollPane);
         tabHotelListPanel.add(hotelListLabel);
 
-        setupHotelListClickMouseListener();
+        // setupHotelListClickMouseListener();
     }
-
-    public void displayLowRoomDateAvail(JPanel panel) {
-        roomDateAvailModel = new DefaultListModel<>();
-        roomDateAvailList = new JList<>(roomDateAvailModel);
-
-        JScrollPane roomDateAvailScrollPane = new JScrollPane(roomDateAvailList);
-        roomDateAvailScrollPane.setPreferredSize(new Dimension(200, 150));
-        roomDateAvailScrollPane.setMaximumSize(roomDateAvailScrollPane.getPreferredSize());
-        
-        panel.add(roomDateAvailScrollPane);
-    }
-    public void displayLowRoomInfo(JPanel panel) {
-        roomInfoModel = new DefaultListModel<>();
-        roomInfoList = new JList<>(roomInfoModel);
-
-        JScrollPane roomInfoScrollPane = new JScrollPane(roomInfoList);
-        roomInfoScrollPane.setPreferredSize(new Dimension(200, 150));
-        roomInfoScrollPane.setMaximumSize(roomInfoScrollPane.getPreferredSize());
-        
-        panel.add(roomInfoScrollPane);
-    }
-    public void displayReservationInfo(JPanel panel) {
-        reservationInfoModel = new DefaultListModel<>(); 
-        reservationInfoList = new JList<>(reservationInfoModel);
-
-        JScrollPane reservationInfoScrollPane = new JScrollPane(reservationInfoList);
-        reservationInfoScrollPane.setPreferredSize(new Dimension(200, 150));
-        reservationInfoScrollPane.setMaximumSize(reservationInfoScrollPane.getPreferredSize());
-        
-        panel.add(reservationInfoScrollPane);
-    }
-
 
     public void addComboBoxRoomTypes() {
         roomTypePanel = new JPanel();
@@ -830,6 +851,10 @@ public class GUI extends JFrame {
         }
     }
 
+    public void addActionListenerToButton(JButton button, ActionListener listener) {
+        button.addActionListener(listener);
+    }
+
 
     public void setListActionListener(ListSelectionListener listener) {
         hotelJList.addListSelectionListener(listener);
@@ -841,6 +866,14 @@ public class GUI extends JFrame {
         checkInField.getDocument().addDocumentListener(listener);
         checkOutField.getDocument().addDocumentListener(listener);
         discountCodeField.getDocument().addDocumentListener(listener);
+    }
+
+    public void setMouseListener(MouseListener listener) {
+        hotelJList.addMouseListener(listener);
+    }
+
+    public void setChangeListener(ChangeListener listener) {
+        lowerLeftTabbedPane.addChangeListener(listener);
     }
 
     public void setupBookingFrame(JFrame bookingFrame) {
@@ -915,12 +948,15 @@ public class GUI extends JFrame {
 
     public void setHotelName(String hotelName) {
         hotelNameField.setText(hotelName);
-
     }
-
     public String getHotelName() {
         return hotelNameField.getText();
     }
+
+    public void setCurrentHotelName(String hotelName) {
+        this.currentHotelName = hotelName;
+    }
+
 
     public void clearCreateHotel() {
         hotelNameField.setText("");
@@ -944,7 +980,11 @@ public class GUI extends JFrame {
         totalBaseRoomsLabel.setText("  |Base Rooms: " + baseRoomOcc + "/" + getSelectedHotelRoomSize());
         totalDeluxeRoomsLabel.setText("  |Deluxe Rooms: " + deluxeRoomOcc + "/" + getSelectedHotelDeluxeRoomsSize());
         totalExecRoomsLabel.setText("  |Executive Rooms: " + execRoomOcc + "/" + getSelectedHotelExecRoomsSize());
-        earningsValueLabel.setText("   " + getTotalHotelEarnings());
+        earningsValueLabel.setText(" " + getTotalHotelEarnings());
+    }
+
+    public void updateManageHotel() {
+        manageHotelBtn.setText("Manage '" + currentHotelName + "'");
     }
 
 }

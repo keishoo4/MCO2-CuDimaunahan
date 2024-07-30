@@ -17,7 +17,8 @@ import model.hotel.Reservation;
 import view.GUI;
 
 public class Controller implements ActionListener, DocumentListener, 
-                                   ListSelectionListener {
+                                   ListSelectionListener, MouseListener,
+                                   ChangeListener {
     private HotelList hotelList;
     private Hotel hotel;
     private Room room;
@@ -35,6 +36,8 @@ public class Controller implements ActionListener, DocumentListener,
         gui.setActionListener(this);
         gui.setDocumentListener(this);
         gui.setListActionListener(this);
+        gui.setMouseListener(this);
+        gui.setChangeListener(this);
     }
 
     public void updateHotelList() {
@@ -115,7 +118,7 @@ public class Controller implements ActionListener, DocumentListener,
         if (!e.getValueIsAdjusting()) {
             selectedHotelIndex = gui.getHotelJList().getSelectedIndex();
             if (selectedHotelIndex >= 0) {
-                Hotel hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
+                hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
                 int totalRooms = hotel.getRooms().size() + 
                                  hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
                 gui.setSelectedHotelName(hotel.getName());
@@ -157,22 +160,40 @@ public class Controller implements ActionListener, DocumentListener,
         }
 
     public void updateLowRoomDateAvailList() {
-        selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
-        int date = Integer.parseInt(gui.getRoomDateAvailFieldText(gui.getSelectedHotelIndex()));
+        selectedHotel     = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        String dateString = gui.getRoomDateAvailFieldText(gui.getSelectedHotelIndex());
 
+        if (dateString.equals(STRING_EMPTY)) {
+            JOptionPane.showMessageDialog(gui, "Please enter a date.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        gui.getRoomDateAvailListModel().clear();
+        int date = Integer.parseInt(dateString);
+    
+        DefaultListModel<Room> roomDateAvailListModel = gui.getRoomDateAvailListModel(gui.getSelectedHotelIndex());
+        ArrayList<Room> roomDateAvailList = new ArrayList<>();
+        
+        // Clear the DefaultListModel
+        roomDateAvailListModel.clear();
+        
+        // Populate the ArrayList and DefaultListModel
         for (Room room : selectedHotel.getRooms()) {
-            // if (date >=)
-                gui.getRoomDateAvailListModel().addElement(room);
+            room.setTempDate(date);
+            roomDateAvailList.add(room);
+            roomDateAvailListModel.addElement(room); // Add Room object directly
         }
+        
         for (DeluxeRoom deluxeRoom : selectedHotel.getDeluxeRooms()) {
-
-                gui.getRoomDateAvailListModel().addElement(deluxeRoom);
+            deluxeRoom.setTempDate(date);
+            roomDateAvailList.add(deluxeRoom);
+            roomDateAvailListModel.addElement(deluxeRoom); // Add DeluxeRoom object directly
         }
+        
         for (ExecutiveRoom execRoom : selectedHotel.getExecRooms()) {
-
-                gui.getRoomDateAvailListModel().addElement(execRoom);
+            execRoom.setTempDate(date);
+            roomDateAvailList.add(execRoom);
+            roomDateAvailListModel.addElement(execRoom); // Add ExecutiveRoom object directly
         }
     }
 
@@ -195,6 +216,7 @@ public class Controller implements ActionListener, DocumentListener,
         checkIn = gui.getCheckInDate();
         checkOut = gui.getCheckOutDate();
         discountCode = gui.getDiscountCode();
+        selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
 
         deluxeRoom = null;
         execRoom = null;
@@ -223,7 +245,11 @@ public class Controller implements ActionListener, DocumentListener,
             return;
         }
 
-        selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        if (selectedHotel.sameGuestName(guestName)) {
+            JOptionPane.showMessageDialog(gui, "Guest with the same name already exists.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         roomToUse       = selectedHotel.latestRoomNoReservation();
         room            = selectedHotel.getRooms().get(roomToUse);
@@ -283,12 +309,6 @@ public class Controller implements ActionListener, DocumentListener,
 
     }
 
-
-    
-    // public ArrayList<Hotel> getHotels() {
-    //     return hotelList.getHotels();
-    // }
-
     @Override
     public void insertUpdate(DocumentEvent e) {
         
@@ -302,5 +322,65 @@ public class Controller implements ActionListener, DocumentListener,
     @Override
     public void changedUpdate(DocumentEvent e) {
 
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getButton() != MouseEvent.BUTTON1) {
+            return;  // Ignore if it's not a left-click
+        }        
+
+        int selectedHotelIndex = gui.getHotelJList().locationToIndex(e.getPoint());
+
+        if (selectedHotelIndex >= 0) {
+            Object item = gui.getHotelListModel().getElementAt(selectedHotelIndex);
+            System.out.println("Clicked on: " + item + " at index " + selectedHotelIndex); // DEBUGGING
+            gui.setSelectedHotelIndex(selectedHotelIndex);
+            hotel = hotelList.getHotels().get(selectedHotelIndex);
+            gui.setCurrentHotelName(hotel.getName());
+        }
+        gui.updateManageHotel();
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        String selectedTabTitle = gui.getLowerLeftTabbedPane().getTitleAt(gui.getLowerLeftTabbedPane().getSelectedIndex());
+        if (!GUI.HOTEL_LIST_TAB_NAME.equals(selectedTabTitle)) {
+            Integer hotelListIndex = gui.getHotelTabIndices().get(selectedTabTitle);
+            if (hotelListIndex != null) {
+                gui.setSelectedHotelIndex(hotelListIndex);
+                System.out.println("Current Hotel List Index: " + gui.getSelectedHotelIndex());
+
+                hotel = hotelList.getHotels().get(hotelListIndex);
+                gui.setCurrentHotelName(hotel.getName());
+                gui.updateManageHotel();
+            } 
+            else {
+                System.out.println("Selected tab not found in hotelTabIndices map");
+            }
+        } 
+        else {
+            System.out.println("Hotel List tab selected");
+        }        
     }
 }
