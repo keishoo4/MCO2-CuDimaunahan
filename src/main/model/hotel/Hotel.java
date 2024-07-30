@@ -841,23 +841,33 @@ public class Hotel {
     public double calculateMonthlyEarnings() {
         double totalEarnings = 0.0;
     
-        for (Room room : getRooms()) {
-            totalEarnings += calculateRoomEarnings(room);
-        }
-    
-        for (DeluxeRoom deluxeRoom : getDeluxeRooms()) {
-            totalEarnings += calculateRoomEarnings(deluxeRoom);
-        }
-    
-        for (ExecutiveRoom executiveRoom : getExecRooms()) {
-            totalEarnings += calculateRoomEarnings(executiveRoom);
+        for (int day = 1; day <= 31; day++) {
+            totalEarnings += calculateDailyEarnings(day);
         }
     
         return totalEarnings;
     }
     
-    private double calculateRoomEarnings(Room room) {
-        double roomEarnings = 0.0;
+    private double calculateDailyEarnings(int day) {
+        double dailyEarnings = 0.0;
+    
+        for (Room room : getRooms()) {
+            dailyEarnings += calculateRoomEarnings(room, day);
+        }
+    
+        for (DeluxeRoom deluxeRoom : getDeluxeRooms()) {
+            dailyEarnings += calculateRoomEarnings(deluxeRoom, day);
+        }
+    
+        for (ExecutiveRoom executiveRoom : getExecRooms()) {
+            dailyEarnings += calculateRoomEarnings(executiveRoom, day);
+        }
+    
+        return dailyEarnings;
+    }
+    
+    private double calculateRoomEarnings(Room room, int day) {
+        double roomDailyEarnings = 0.0;
     
         for (Reservation reservation : room.getReservations()) {
             int checkInDate = reservation.getCheckInDate();
@@ -865,14 +875,14 @@ public class Hotel {
             double pricePerNight = room.getPricePerNight();
             String discountCode = reservation.getDiscountCode();
     
-            int numNights = checkOutDate - checkInDate;
-            double totalPrice = fillDates(pricePerNight, checkInDate, checkOutDate, discountCode) * numNights;
-    
-            roomEarnings += totalPrice;
+            if (day >= checkInDate && day < checkOutDate) {
+                double totalPrice = fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
+                roomDailyEarnings += totalPrice / (checkOutDate - checkInDate); // Daily earnings portion
+            }
         }
     
-        return roomEarnings;
-    }
+        return roomDailyEarnings;
+    }    
 
     /**
      * Displays the high-level information of a hotel, including the hotel name, total number of rooms,
