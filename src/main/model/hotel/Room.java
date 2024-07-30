@@ -153,6 +153,39 @@ public class Room {
         return lastCheckout >= 29;  // If the last checkout is before day 29, there's a bookable gap at the end
     }
 
+    public String getVacancyPeriods() {
+        if (reservations.isEmpty()) {
+            return "1-31";  // If no reservations, the entire month is vacant
+        }
+    
+        // Sort reservations by check-in date
+        ArrayList<Reservation> sortedReservations = new ArrayList<>(reservations);
+        Collections.sort(sortedReservations, Comparator.comparingInt(Reservation::getCheckInDate));
+    
+        StringBuilder vacancies = new StringBuilder();
+        int lastCheckout = 0;
+    
+        for (Reservation reservation : sortedReservations) {
+            int currentCheckin = reservation.getCheckInDate();
+            
+            // Check for vacancy before this reservation
+            if (currentCheckin - lastCheckout > 2) {
+                if (vacancies.length() > 0) vacancies.append(", ");
+                vacancies.append(lastCheckout + 1).append("-").append(currentCheckin - 1);
+            }
+            
+            lastCheckout = Math.max(lastCheckout, reservation.getCheckOutDate());
+        }
+    
+        // Check for vacancy after the last reservation
+        if (lastCheckout < 31) {
+            if (vacancies.length() > 0) vacancies.append(", ");
+            vacancies.append(lastCheckout + 1).append("-31");
+        }
+    
+        return vacancies.toString();
+    }
+
 
     /**
      * Sets the name of the room.
