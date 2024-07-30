@@ -81,6 +81,7 @@ public class Controller implements ActionListener, DocumentListener,
                     return;
                 }
                 hotelController.addHotel(hotelName, rooms, deluxeRooms, execRooms); // From Model
+                gui.updateComboBoxItems(deluxeRooms, execRooms);
                 gui.setTotalHotels(hotelList.getHotels().size());
                 
                 updateHotelList();
@@ -377,6 +378,9 @@ public void updateLowLevelRoomInfo() {
         }
         gui.updateManageHotel();
 
+
+
+        
         gui.revalidate();
         gui.repaint();
     }
