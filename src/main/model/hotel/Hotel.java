@@ -299,7 +299,7 @@ public class Hotel {
      * 
      * @return the number of deluxe rooms that can be removed
      */
-    public int removeableExecutiveRooms(){
+    public int removableExecRooms(){
         int count = 0;
         for (ExecutiveRoom executiveRoom : execRooms) {
             if (!executiveRoom.getBookStatus())
@@ -307,6 +307,8 @@ public class Hotel {
         }
         return count;
     }
+
+
 
     /**
      * Checks if there is a reservation with the given guest name in any of the rooms.
@@ -383,8 +385,6 @@ public class Hotel {
 
         return totalReservations;
     }
-
-
 
     /**
      * Prints the list of rooms based on the availability.
@@ -579,7 +579,7 @@ public class Hotel {
      */
     public void removeRooms(Hotel hotel) {
         int lastRoom = getRooms().size() + getDeluxeRooms().size() + getExecRooms().size();
-        int removableRooms = removableRooms() + removableDeluxeRooms() + removeableExecutiveRooms();
+        int removableRooms = removableRooms() + removableDeluxeRooms() + removableExecRooms();
 
         if (lastRoom == 1) {
             System.out.println("A hotel cannot have zero rooms.\n");

@@ -242,13 +242,18 @@ public class Controller implements ActionListener, DocumentListener,
         DeluxeRoom deluxeRoom;
         ExecutiveRoom execRoom;
         String checkIn, checkOut, guestName, discountCode;
-        int roomToUse, deluxeRoomToUse, execRoomToUse;
+        int roomToUse, deluxeRoomToUse, execRoomToUse,
+            availRooms, availDeluxeRooms, availExecRooms;
 
         guestName = gui.getGuestName();
         checkIn = gui.getCheckInDate();
         checkOut = gui.getCheckOutDate();
         discountCode = gui.getDiscountCode();
         selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        availRooms = selectedHotel.removableRooms();
+        availDeluxeRooms = selectedHotel.removableDeluxeRooms();
+        availExecRooms = selectedHotel.removableExecRooms();
 
         deluxeRoom = null;
         execRoom = null;
@@ -305,8 +310,8 @@ public class Controller implements ActionListener, DocumentListener,
             gui.setExecRoomOcc(selectedHotel.totalExecRoomsReserved());
         
         gui.setTotalHotelEarnings(selectedHotel.calculateEstimatedEarnings());
-
         gui.setRoomReservationTotal(selectedHotel.getTotalHotelReservations());
+        gui.updateComboBoxItems(availDeluxeRooms, availExecRooms);
 
         JOptionPane.showMessageDialog(gui, "Room booked successfully!", 
                                         "Success", JOptionPane.INFORMATION_MESSAGE);
