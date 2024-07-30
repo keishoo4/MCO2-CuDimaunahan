@@ -516,6 +516,7 @@ public class Hotel {
     /**
      * Calculates the total number of rooms reserved for all room types in the hotel.
      *
+     * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved rooms
      */
     public int totalRoomsReserved() {
@@ -529,6 +530,7 @@ public class Hotel {
     /**
      * Calculates the total number of standard rooms reserved in the hotel.
      *
+     * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved standard rooms
      */
     public int totalBaseRoomsReserved(){
@@ -543,6 +545,7 @@ public class Hotel {
     /**
      * Calculates the total number of deluxe rooms reserved in the hotel.
      *
+     * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved deluxe rooms
      */
     public int totalDeluxeRoomsReserved(){
@@ -557,6 +560,7 @@ public class Hotel {
     /**
      * Calculates the total number of executiverooms reserved in the hotel.
      *
+     * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of executive reserved rooms
      */
     public int totalExecRoomsReserved(){
@@ -640,6 +644,16 @@ public class Hotel {
         System.out.println("Removal Success!\n");
     }
 
+    public void removeRoom(Room room, int roomToRemove) {
+        if (room instanceof DeluxeRoom) {
+            deluxeRooms.remove(roomToRemove);
+        } else if (room instanceof ExecutiveRoom) {
+            execRooms.remove(roomToRemove);
+        } else {
+            rooms.remove(roomToRemove);
+        }
+    }
+    
     /**
      * Adds a new reservation to the given list of reservations and updates the book status of the specified room.
      *
@@ -837,33 +851,23 @@ public class Hotel {
     public double calculateMonthlyEarnings() {
         double totalEarnings = 0.0;
     
-        for (int day = 1; day <= 31; day++) {
-            totalEarnings += calculateDailyEarnings(day);
+        for (Room room : getRooms()) {
+            totalEarnings += calculateRoomEarnings(room);
+        }
+    
+        for (DeluxeRoom deluxeRoom : getDeluxeRooms()) {
+            totalEarnings += calculateRoomEarnings(deluxeRoom);
+        }
+    
+        for (ExecutiveRoom executiveRoom : getExecRooms()) {
+            totalEarnings += calculateRoomEarnings(executiveRoom);
         }
     
         return totalEarnings;
     }
     
-    private double calculateDailyEarnings(int day) {
-        double dailyEarnings = 0.0;
-    
-        for (Room room : getRooms()) {
-            dailyEarnings += calculateRoomEarnings(room, day);
-        }
-    
-        for (DeluxeRoom deluxeRoom : getDeluxeRooms()) {
-            dailyEarnings += calculateRoomEarnings(deluxeRoom, day);
-        }
-    
-        for (ExecutiveRoom executiveRoom : getExecRooms()) {
-            dailyEarnings += calculateRoomEarnings(executiveRoom, day);
-        }
-    
-        return dailyEarnings;
-    }
-    
-    private double calculateRoomEarnings(Room room, int day) {
-        double roomDailyEarnings = 0.0;
+    private double calculateRoomEarnings(Room room) {
+        double roomEarnings = 0.0;
     
         for (Reservation reservation : room.getReservations()) {
             int checkInDate = reservation.getCheckInDate();
@@ -871,14 +875,14 @@ public class Hotel {
             double pricePerNight = room.getPricePerNight();
             String discountCode = reservation.getDiscountCode();
     
-            if (day >= checkInDate && day < checkOutDate) {
-                double totalPrice = fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
-                roomDailyEarnings += totalPrice / (checkOutDate - checkInDate); // Daily earnings portion
-            }
+            int numNights = checkOutDate - checkInDate;
+            double totalPrice = fillDates(pricePerNight, checkInDate, checkOutDate, discountCode) * numNights;
+    
+            roomEarnings += totalPrice;
         }
     
-        return roomDailyEarnings;
-    }    
+        return roomEarnings;
+    }
 
     /**
      * Displays the high-level information of a hotel, including the hotel name, total number of rooms,

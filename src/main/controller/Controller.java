@@ -18,7 +18,7 @@ import model.hotel.Reservation;
 import view.GUI;
 
 public class Controller implements ActionListener, DocumentListener, 
-                                   /*ListSelectionListener ,*/ MouseListener,
+                                   MouseListener,
                                    ChangeListener {
     private HotelList hotelList;
     private Hotel hotel;
@@ -62,7 +62,8 @@ public class Controller implements ActionListener, DocumentListener,
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-    
+
+        int hotelIndex = gui.getSelectedHotelIndex();
         switch (command) {
             case "ADD_HOTEL":
                 String hotelName = gui.getHotelName().trim();
@@ -82,8 +83,8 @@ public class Controller implements ActionListener, DocumentListener,
                 }
                 hotelController.addHotel(hotelName, rooms, deluxeRooms, execRooms); // From Model
                 gui.updateComboBoxItems(deluxeRooms, execRooms);
-                gui.setTotalHotels(hotelList.getHotels().size());
-                
+                gui.setTotalHotels(hotelList.getHotels().size());            
+
                 updateHotelList();
                 break;
             
@@ -113,15 +114,48 @@ public class Controller implements ActionListener, DocumentListener,
                 gui.updateLowLevelReservationInfo();
                 break;
 
-            case "MANAGE_HOTELS":
+            case "CHANGE_HOTEL_NAME":
+                hotelController.changeHotelName();
                 updateHotelList();
+                break;
+
+            case "ADD_BASE_ROOMS":
+                hotel = hotelList.getHotels().get(hotelIndex);
+                hotelController.addBaseRooms();
+                gui.updateManageAllRooms();
+                gui.updateBookingRelated();
+                updateRoomsToRemove(hotel);
+                break;
+
+            case "ADD_DELUXE_ROOMS":
+                hotel = hotelList.getHotels().get(hotelIndex);
+                hotelController.addDeluxeRooms();
+                gui.updateManageAllRooms();
+                gui.updateBookingRelated();
+                updateRoomsToRemove(hotel);
+                break;
+
+            case "ADD_EXEC_ROOMS":
+                hotel = hotelList.getHotels().get(hotelIndex);
+                hotelController.addExecRooms();
+                gui.updateManageAllRooms();
+                gui.updateBookingRelated();
+                updateRoomsToRemove(hotel);
+                break;
+
+            case "REMOVE_ROOM":
+                hotel = hotelList.getHotels().get(hotelIndex);
+                System.out.println("Current Hotel  " + hotel.getName()); // DEBUGGING
+                // hotelController.removeRoom();
+                updateRoomsToRemove(hotel);
+                
                 break;
 
             case "FINALIZE_BOOKING":
                 hotelController.bookRoomForSelectedHotel();
                 updateRoomBooking();
+                updateRoomsToRemove(hotel);
                 break;
-   
         }
     }
 
@@ -137,7 +171,6 @@ public class Controller implements ActionListener, DocumentListener,
         private ArrayList<ExecutiveRoom> execRooms;
         private ArrayList<Reservation> reservations;
 
-        private int selectedHotelIndex;
         private double roomPrice;
         private final String STRING_EMPTY = "";
     
@@ -146,19 +179,125 @@ public class Controller implements ActionListener, DocumentListener,
             this.gui = gui;
         }
     
-        public void addHotel(String hotelName, int rooms, int deluxeRooms, int execRooms) {
-            int totalRooms;
-            if (hotelList.sameHotelName(hotelName)) {
-                JOptionPane.showMessageDialog(gui, "Hotel with the same name already exists", 
-                                              "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                totalRooms = rooms + deluxeRooms + execRooms;
-                hotelList.addHotel(hotelName, rooms, deluxeRooms, execRooms);
-                JOptionPane.showMessageDialog(gui, "Hotel " + hotelName + " (" + totalRooms + " rooms)" 
-                                              + " created successfully!",
-                                              "Success", JOptionPane.INFORMATION_MESSAGE);
-            }
+    public void addHotel(String hotelName, int rooms, int deluxeRooms, int execRooms) {
+        int totalRooms;
+        if (hotelList.sameHotelName(hotelName)) {
+            JOptionPane.showMessageDialog(gui, "Hotel with the same name already exists", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+        } 
+        else {
+            totalRooms = rooms + deluxeRooms + execRooms;
+            hotelList.addHotel(hotelName, rooms, deluxeRooms, execRooms);
+            JOptionPane.showMessageDialog(gui, "Hotel " + hotelName + " (" + totalRooms + " rooms)" 
+                                            + " created successfully!",
+                                            "Success", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    public void removeRoom() {
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        String roomName = gui.getRoomToRemove();
+        int response = JOptionPane.showConfirmDialog(gui, "Remove room '" + roomName + "'?", 
+        "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+
+        selectedHotel.removeRoom(roomName);
+        gui.updateManageAllRooms();
+        gui.updateBookingRelated();
+        updateRoomsToRemove(selectedHotel);
+    }
+
+    public void addBaseRooms() {
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        if (gui.getAddBaseRoomsField().equals("")) {
+            JOptionPane.showMessageDialog(gui, "Please enter a number of rooms to add.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int toAddRooms = Integer.parseInt(gui.getAddBaseRoomsField());
+        int response = JOptionPane.showConfirmDialog(gui, "Add '" + toAddRooms + "' to existing " + 
+                        selectedHotel.getRooms().size() + " rooms?", 
+        "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+
+        selectedHotel.addRooms(toAddRooms, 0, 0);
+        gui.setSelectedHotelRoomSize(hotel.getRooms().size());
+        gui.setTotalRooms(hotel.getRooms().size() + 
+            hotel.getDeluxeRooms().size() + hotel.getExecRooms().size());
+    
+    }
+
+    public void addDeluxeRooms() {
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        if (gui.getAddDeluxeRoomsField().equals("")) {
+            JOptionPane.showMessageDialog(gui, "Please enter a number of deluxe rooms to add.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int toAddDeluxeRooms = Integer.parseInt(gui.getAddDeluxeRoomsField());
+        int response = JOptionPane.showConfirmDialog(gui, "Add '" + toAddDeluxeRooms + "' to existing " + 
+                        selectedHotel.getDeluxeRooms().size() + " deluxe rooms?", 
+        "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+
+        selectedHotel.addRooms(0, toAddDeluxeRooms, 0);
+        gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
+        gui.setTotalRooms(hotel.getRooms().size() + 
+            hotel.getDeluxeRooms().size() + hotel.getExecRooms().size());
+   
+    }
+
+    public void addExecRooms() {
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        if (gui.getAddExecRoomsField().equals("")) {
+            JOptionPane.showMessageDialog(gui, "Please enter a number of executive rooms to add.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int toAddExecRooms = Integer.parseInt(gui.getAddExecRoomsField());
+        int response = JOptionPane.showConfirmDialog(gui, "Add '" + toAddExecRooms + "' to existing " + 
+                        selectedHotel.getExecRooms().size() + " executive rooms?", 
+        "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+
+        selectedHotel.addRooms(0, 0, toAddExecRooms);
+        gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
+        gui.setTotalRooms(hotel.getRooms().size() + 
+            hotel.getDeluxeRooms().size() + hotel.getExecRooms().size());
+    }
+
+    public void changeHotelName() {
+        if (gui.getChangeHotelNameFieldText().equals("")) {
+            JOptionPane.showMessageDialog(gui, "Please enter a new hotel name.", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        hotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        int response = JOptionPane.showConfirmDialog(gui, "Change '" + hotel.getName() 
+                       + "'' to '" + gui.getChangeHotelNameFieldText() + "'?", 
+        "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+        
+        hotel.setName(gui.getChangeHotelNameFieldText());
+    }
 
     public void updateLowLevelReservationInfo() {
         int reservationNum;
@@ -408,7 +547,7 @@ public class Controller implements ActionListener, DocumentListener,
 
     @Override
     public void insertUpdate(DocumentEvent e) {
-        
+
     }
 
     @Override
@@ -436,31 +575,10 @@ public class Controller implements ActionListener, DocumentListener,
             hotel = hotelList.getHotels().get(selectedHotelIndex);
             gui.setCurrentHotelName(hotel.getName());
 
-            gui.getRoomDateAvailListModel().clear(); // Reset List for every different hotel
-    
-            // Transfer the logic from valueChanged
-            hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
-            int totalRooms = hotel.getRooms().size() + 
-                             hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
-            gui.setSelectedHotelName(hotel.getName());
-            gui.setSelectedHotelRoomSize(hotel.getRooms().size());
-            gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
-            gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
-            gui.setTotalHotelEarnings(hotel.calculateMonthlyEarnings());
-            
-            gui.updateRoomInfoFieldFormatter(totalRooms);
-            gui.setTotalRooms(totalRooms);
-
-            gui.updateBookingRelated();
-            gui.updateLowLevelReservationInfo();
+            gui.getRoomDateAvailListModel().clear();
+            gui.enableManageHotelBtn();
         }
         gui.updateManageHotel();
-
-
-
-
-        gui.revalidate();
-        gui.repaint();
     }
 
     @Override
@@ -485,7 +603,8 @@ public class Controller implements ActionListener, DocumentListener,
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        String selectedTabTitle = gui.getLowerLeftTabbedPane().getTitleAt(gui.getLowerLeftTabbedPane().getSelectedIndex());
+        String selectedTabTitle = gui.getLowerLeftTabbedPane()
+               .getTitleAt(gui.getLowerLeftTabbedPane().getSelectedIndex());
         if (!GUI.HOTEL_LIST_TAB_NAME.equals(selectedTabTitle)) {
             Integer hotelListIndex = gui.getHotelTabIndices().get(selectedTabTitle);
             if (hotelListIndex != null) {
@@ -494,7 +613,24 @@ public class Controller implements ActionListener, DocumentListener,
 
                 hotel = hotelList.getHotels().get(hotelListIndex);
                 gui.setCurrentHotelName(hotel.getName());
+        
+                int totalRooms = hotel.getRooms().size() + 
+                                 hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+                gui.setSelectedHotelName(hotel.getName());
+                gui.setSelectedHotelRoomSize(hotel.getRooms().size());
+                gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
+                gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
+                gui.setTotalHotelEarnings(hotel.calculateMonthlyEarnings());
+                
+                gui.updateRoomInfoFieldFormatter(totalRooms);
+                gui.setTotalRooms(totalRooms);
+
+                gui.updateBookingRelated();
+                gui.updateLowLevelReservationInfo();
+
                 gui.updateManageHotel();
+                gui.updateManageAllRooms();
+                updateRoomsToRemove(hotel);
             } 
             else {
                 System.out.println("Selected tab not found in hotelTabIndices map");
@@ -503,5 +639,28 @@ public class Controller implements ActionListener, DocumentListener,
         else {
             System.out.println("Hotel List tab selected");
         }        
+    }
+
+    public void updateRoomsToRemove(Hotel hotel) {
+        ArrayList<String> allRooms = new ArrayList<String>();
+        for (Room room : hotel.getRooms()) {
+            if (room.getBookStatus() == false)
+                allRooms.add(room.getName());
+        }
+        for (DeluxeRoom room : hotel.getDeluxeRooms()) {
+            if (room.getBookStatus() == false)
+                allRooms.add(room.getName());
+        }
+        for (ExecutiveRoom room : hotel.getExecRooms()) {
+            if (room.getBookStatus() == false)
+                allRooms.add(room.getName());
+        }
+
+        // Convert the list to a String[] array
+        String[] allRoomsArray = new String[allRooms.size()];
+        allRoomsArray = allRooms.toArray(allRoomsArray);
+
+        // Update rooms for removal
+        gui.updateRoomsForRemoval(allRoomsArray);        
     }
 }
