@@ -73,10 +73,21 @@ public class Reservation {
         this.guestName = guestName;
     }
 
+    /**
+     * Returns the discount code used for the reservation.
+     *
+     * @return the discount code applied to the reservation. If no discount code is used, this method will return null.
+     */
     public String getDiscountCode() {
         return discountCode;
     }
 
+    /**
+     * Sets the discount code used for the reservation.
+     *
+     * @param discountCode the discount code to set. If no discount code is used, this parameter should be set to null.
+     *                     The discount code should be a valid one, otherwise, it will not be applied to the reservation.
+     */
     public void setDiscountCode(String discountCode) {
         this.discountCode = discountCode;
     }    

@@ -17,6 +17,12 @@ public class DeluxeRoom extends Room {
         super(name, basePricePerNight * PRICE_MULTIPLIER);
     }
 
+    /**
+     * Overrides the toString method to provide a string representation of the DeluxeRoom object.
+     * The string representation includes the room's name and price per night.
+     *
+     * @return a string representation of the DeluxeRoom object in the format: "DeluxeRoom{name=<roomName>, pricePerNight=<pricePerNight>}"
+     */
     @Override
     public String toString() {
         return super.toString();

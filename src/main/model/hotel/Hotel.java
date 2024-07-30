@@ -118,7 +118,7 @@ public class Hotel {
      * 
      * @param newPrice the new price per night for all rooms
      */
-    public void changeRoomPrice(double newPrice) {
+    private void changeRoomPrice(double newPrice) {
         for (Room room : rooms) {
             room.setPricePerNight(newPrice);
         }
@@ -208,6 +208,11 @@ public class Hotel {
         return -1;
     }
 
+    /**
+     * Calculates the total number of reservations in all rooms of the hotel.
+     *
+     * @return the total number of reservations in all rooms.
+     */
     public int getTotalHotelReservations() {
         int totalReservations = 0;
         for (Room room : rooms) {
@@ -391,7 +396,7 @@ public class Hotel {
      * 
      * @param availability the availability of the rooms to print ("All" or "Reserved")
      */
-    public void showRooms(String availability) {
+    private void showRooms(String availability) {
         if (availability.equals("All")) {
             System.out.println("All Rooms: ");
 
@@ -519,7 +524,7 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved rooms
      */
-    public int totalRoomsReserved() {
+    private int totalRoomsReserved() {
         int totalRooms = 0;
         totalRooms += totalBaseRoomsReserved();
         totalRooms += totalDeluxeRoomsReserved();
@@ -655,7 +660,7 @@ public class Hotel {
     }
     
     /**
-     * Adds a new reservation to the given list of reservations and updates the book status of the specified room.
+     * Adds a new base room reservation to the given list of reservations and updates the book status of the specified room.
      *
      * @param room The room to be booked.
      * @param roomToUse The index of the room to be booked.
@@ -670,18 +675,47 @@ public class Hotel {
         room.setBookStatus(true);
     }
 
+    /**
+     * Adds a new deluxe room reservation to the given list of reservations and updates the book status of the specified room.
+     *
+     * @param room The room to be booked.
+     * @param roomToUse The index of the room to be booked.
+     * @param reservations The list of reservations.
+     * @param guestName The name of the guest making the reservation.
+     * @param checkInDate The check-in date of the reservation.
+     * @param checkOutDate The check-out date of the reservation.
+     */
     public void bookDeluxeRoomInputInfo(DeluxeRoom room, ArrayList<Reservation> reservations, 
                               String guestName, int checkInDate, int checkOutDate, String discountCode) {
         reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room, discountCode));
         room.setBookStatus(true);
     }
 
+     /**
+     * Adds a new executive room reservation to the given list of reservations and updates the book status of the specified room.
+     *
+     * @param room The room to be booked.
+     * @param roomToUse The index of the room to be booked.
+     * @param reservations The list of reservations.
+     * @param guestName The name of the guest making the reservation.
+     * @param checkInDate The check-in date of the reservation.
+     * @param checkOutDate The check-out date of the reservation.
+     */
     public void bookExecRoomInputInfo(ExecutiveRoom room, ArrayList<Reservation> reservations, 
                               String guestName, int checkInDate, int checkOutDate, String discountCode) {
         reservations.add(new Reservation(guestName, checkInDate, checkOutDate, room, discountCode));
         room.setBookStatus(true);
     }
 
+     /**
+     * Fills the dates for a reservation with calculated prices.
+     *
+     * @param pricePerNight The base price per night for the room.
+     * @param checkInDate The check-in date of the reservation.
+     * @param checkOutDate The check-out date of the reservation.
+     * @param discountCode The discount code applied to the reservation.
+     * @return The total price for the reservation.
+     */
     public double fillDates(double pricePerNight, int checkInDate, int checkOutDate, String discountCode) {
         double totalPrice = 0.0;
 
@@ -706,6 +740,14 @@ public class Hotel {
         return totalPrice;
     }
     
+     /**
+     * Returns the discount multiplier for a given discount code.
+     *
+     * @param discountCode The discount code for which to get the multiplier.
+     * @return The discount multiplier for the given discount code.
+     *         Returns 1.0 if the discount code is not recognized.
+     *
+     */
     public double getDiscountCode(String discountCode) {
         switch (discountCode) {
             case "I_WORK_HERE":
@@ -783,7 +825,15 @@ public class Hotel {
         }
     }
 
-    public void setDatePriceModifier(int day, double priceModifier) {
+     /**
+     * Updates the price modifier for a specific day in the hotel.
+     *
+     * @param day The day of the month (1-31).
+     * @param priceModifier The new price modifier for the specified day, in percentage.
+     *
+     * @return void
+     */
+    private void setDatePriceModifier(int day, double priceModifier) {
         if (day < 1 || day > 31) {
             System.out.println("Invalid day! Please enter a day between 1 and 31.");
             return;
@@ -791,7 +841,14 @@ public class Hotel {
         datePriceModifiers[day - 1] = priceModifier / 100; // sets day in the array to its price modifier 
     }
 
-    public double getDateModifier(int day) {
+     /**
+     * Retrieves the date price modifier for a specific day.
+     *
+     * @param day The day of the month (1-31).
+     * @return The date price modifier for the specified day. If the day is invalid,
+     *         it returns 1.0 as the default modifier.
+     */
+    private double getDateModifier(int day) {
         if (day < 1 || day > 31) {
             System.out.println("Invalid day! Please enter a day between 1 and 31.");
             return 1.0; // Default modifier if day is invalid
@@ -848,8 +905,30 @@ public class Hotel {
                 rooms.get(roomNum).getName() + " removed!\n");
     }
 
+     /**
+     * Calculates the total monthly earnings of the hotel by summing up the daily earnings for each day in the month.
+     *
+     * @return the total monthly earnings of the hotel.
+     */
     public double calculateMonthlyEarnings() {
         double totalEarnings = 0.0;
+    
+        for (int day = 1; day <= 31; day++) {
+            totalEarnings += calculateDailyEarnings(day);
+        }
+    
+        return totalEarnings;
+    }
+    
+     /**
+     * Calculates the total daily earnings of the hotel by summing up the daily earnings 
+     * for each room type in the hotel for a given day.
+     *
+     * @param day The day for which to calculate the daily earnings.
+     * @return The total daily earnings for the hotel on the given day.
+     */
+    private double calculateDailyEarnings(int day) {
+        double dailyEarnings = 0.0;
     
         for (Room room : getRooms()) {
             totalEarnings += calculateRoomEarnings(room);
@@ -860,14 +939,22 @@ public class Hotel {
         }
     
         for (ExecutiveRoom executiveRoom : getExecRooms()) {
-            totalEarnings += calculateRoomEarnings(executiveRoom);
+            dailyEarnings += calculateRoomEarnings(executiveRoom, day);
         }
     
-        return totalEarnings;
+        return dailyEarnings;
     }
     
-    private double calculateRoomEarnings(Room room) {
-        double roomEarnings = 0.0;
+     /**
+     * Calculates the total daily earnings of a hotel room by summing up the daily earnings 
+     * for each reservation in the room for a given day.
+     *
+     * @param room The room object for which to calculate the daily earnings.
+     * @param day The day for which to calculate the daily earnings.
+     * @return The total daily earnings for the room on the given day.
+     */
+    private double calculateRoomEarnings(Room room, int day) {
+        double roomDailyEarnings = 0.0;
     
         for (Reservation reservation : room.getReservations()) {
             int checkInDate = reservation.getCheckInDate();
@@ -900,22 +987,6 @@ public class Hotel {
         System.out.println("Hotel Name: " + getName());
         System.out.println("Total Number of Rooms: " + totalRooms);
         System.out.println("Estimated Earnings for the Month: " + String.format("%.2f", estimatedEarnings));
-    }
-
-    public double calculateEstimatedEarnings() { // ONLY FOR ONE RESERVATION
-        double estimatedEarnings = getRooms().stream()
-                .flatMap(room -> room.getReservations().stream())
-                .mapToDouble(reservation -> {
-                    int checkInDate = reservation.getCheckInDate();
-                    int checkOutDate = reservation.getCheckOutDate();
-                    Room room = reservation.getRoom();
-                    String discountCode = reservation.getDiscountCode();
-    
-                    double pricePerNight = room.getPricePerNight();
-    
-                    return fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
-                }).sum();
-        return estimatedEarnings;
     }
 
     /**
@@ -1125,6 +1196,16 @@ public class Hotel {
         } 
     }
 
+    /**
+     * Displays the available room types in the hotel and their respective unbooked room counts.
+     * 
+     * This function prints out the room types and their unbooked room counts. 
+     * 
+     * If there are deluxe rooms, it prints out the deluxe room type and its unbooked room count.
+     * If there are executive rooms, it prints out the executive room type and its unbooked room count.
+     * 
+     * @return void
+     */
     public void displayRoomTypes() {
         System.out.println("[1] Base Room      - " + (rooms.size()-totalBaseRoomsReserved()) 
                            + " rooms unbooked");
