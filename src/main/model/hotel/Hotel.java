@@ -947,7 +947,6 @@ public class Hotel {
     
         System.out.println("Total Available Rooms: " + totalAvailableRooms);
         System.out.println("Total Booked Rooms: " + totalBookedRooms);
-        System.out.println("Total Available Rooms: " + totalAvailableRooms);
     }
 
     /**
@@ -1017,7 +1016,7 @@ public class Hotel {
     public void viewReservationInfo(Hotel hotel) {
         Reservation reservation;
         
-        System.out.print("Under what room type is the guest staying in?: ");
+        System.out.println("Under what room type is the guest staying in?: ");
         System.out.println("[1] Base Room");
         System.out.println("[2] Deluxe Room");
         System.out.println("[3] Executive Room");
