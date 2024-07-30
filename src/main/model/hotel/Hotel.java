@@ -208,6 +208,20 @@ public class Hotel {
         return -1;
     }
 
+    public int getTotalHotelReservations() {
+        int totalReservations = 0;
+        for (Room room : rooms) {
+            totalReservations += room.getReservations().size();
+        }
+        for (DeluxeRoom deluxeRoom : deluxeRooms) {
+            totalReservations += deluxeRoom.getReservations().size();
+        }
+        for (ExecutiveRoom execRoom : execRooms) {
+            totalReservations += execRoom.getReservations().size();
+        }
+        return totalReservations;
+    }
+
     /**
      * Prompts the user to enter a check-in date and validates the input.
      * 
@@ -819,7 +833,7 @@ public class Hotel {
                 rooms.get(roomNum).getName() + " removed!\n");
     }
 
-    public double calculateMonthlyEarnings(Hotel hotel) {
+    public double calculateMonthlyEarnings() {
         double totalEarnings = 0.0;
     
         for (Room room : getRooms()) {
@@ -861,8 +875,8 @@ public class Hotel {
      *
      * @param hotel The hotel object for which to display the information.
      */
-    public void viewHighLevelInfo(Hotel hotel) {
-        double estimatedEarnings = calculateMonthlyEarnings(hotel);
+    public void viewHighLevelInfo() {
+        double estimatedEarnings = calculateMonthlyEarnings();
         
         int totalRooms = getRooms().size() + 
                         getDeluxeRooms().size() + 
@@ -873,7 +887,7 @@ public class Hotel {
         System.out.println("Estimated Earnings for the Month: " + String.format("%.2f", estimatedEarnings));
     }
 
-    public double calculateEstimatedEarnings(Hotel hotel) { // ONLY FOR ONE RESERVATION
+    public double calculateEstimatedEarnings() { // ONLY FOR ONE RESERVATION
         double estimatedEarnings = getRooms().stream()
                 .flatMap(room -> room.getReservations().stream())
                 .mapToDouble(reservation -> {
