@@ -730,6 +730,11 @@ public class Hotel {
                 System.out.print("Enter the new room price: ");
                 double newPrice = ScannerUtil.readDouble();
 
+                if (newPrice < 100){
+                    System.out.println("Room price must be at least 100.");
+                    return;
+                }
+
                 System.out.println("Confirm change of room price to " + newPrice);
                 System.out.print("Confirm [Yes/No]: ");
                 boolean confirmed = ScannerUtil.readBoolean();
