@@ -34,7 +34,7 @@ public class GUI extends JFrame {
                    totalBaseRoomsLabel, totalDeluxeRoomsLabel, totalExecRoomsLabel,
                    roomDateAvailLabel, roomInfoLabel, reservationInfoLabel,
                    roomNameLabel, roomPriceLabel, roomOccupancyLabel, roomOccupancyValueLabel,
-                   reservationGuestLabel, reservationCheckInLabel, 
+                   reservationInfoReminderLabel, reservationGuestLabel, reservationCheckInLabel, 
                    reservationCheckOutLabel, reservationBookingPriceLabel;
 
 
@@ -307,6 +307,9 @@ public class GUI extends JFrame {
                     while (lowerLeftTabbedPane.getTabCount() > 1) {
                         lowerLeftTabbedPane.remove(1);
                     }
+
+                    revalidate();
+                    repaint();
         
                     JPanel tabHotelPanel = new JPanel();
                     tabHotelPanel.setLayout(new GridBagLayout());
@@ -528,6 +531,7 @@ public class GUI extends JFrame {
         roomDateAvailLabel = new JLabel("Room-Date Availability (1-31)");
         roomInfoLabel = new JLabel("Room Info (1-" + totalRooms + ")");
         reservationInfoLabel = new JLabel("Reservation Info");
+        reservationInfoReminderLabel = new JLabel("<--('Check' a room first)");
 
         showLowHotelInfo();
 
@@ -552,7 +556,9 @@ public class GUI extends JFrame {
         roomInfoPanel.add(roomOccupancyValueLabel);
 
         reservationInfoPanel.add(reservationInfoLabel);
+
         reservationInfoPanel.add(reservationInfoField);
+        reservationInfoPanel.add(reservationInfoReminderLabel);
         reservationInfoPanel.add(Box.createVerticalStrut(5));
         reservationInfoPanel.add(reservationInfoBtn);
         reservationInfoPanel.add(Box.createVerticalStrut(5));
@@ -754,6 +760,7 @@ public class GUI extends JFrame {
         reservationBookingPriceLabel = new JLabel("Booking Price: ");
         
         reservationInfoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        reservationInfoReminderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         reservationInfoField.setAlignmentX(Component.CENTER_ALIGNMENT);
         reservationInfoBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         reservationGuestLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -818,6 +825,25 @@ public class GUI extends JFrame {
         checkAvailBtn.setMaximumSize(checkAvailBtn.getPreferredSize());
     }
 
+    public void updateComboBoxItems(int deluxeRoomTotal, int execRoomTotal) {
+        if (deluxeRoomTotal < 1 && execRoomTotal < 1) {
+            comboBox.setModel(new javax.swing.DefaultComboBoxModel<>
+                             (new String[] {"Base Room"}));
+        } 
+        else if (deluxeRoomTotal < 1) {
+            comboBox.setModel(new javax.swing.DefaultComboBoxModel<>
+                             (new String[] {"Base Room", "Executive Room"}));
+        } 
+        else if (execRoomTotal < 1) {
+            comboBox.setModel(new javax.swing.DefaultComboBoxModel<>
+                             (new String[] {"Base Room", "Deluxe Room"}));
+        } 
+        else {
+            comboBox.setModel(new javax.swing.DefaultComboBoxModel<>
+                             (new String[] {"Base Room", "Deluxe Room", "Executive Room"}));
+        }
+    }    
+
     public void displayBookingFrame(String hotelName) {
         /* NEW WINDOW POP-UP FOR BOOKING */
         bookingFrame = new JFrame(hotelName + " Booking");
@@ -863,6 +889,7 @@ public class GUI extends JFrame {
         comboBox.addActionListener(listener);
         roomDateAvailBtn.addActionListener(listener);
         roomInfoBtn.addActionListener(listener);
+        reservationInfoBtn.addActionListener(listener);
     }
 
     public void addActionListenerToButton(JButton button, ActionListener listener) {
@@ -881,6 +908,7 @@ public class GUI extends JFrame {
         discountCodeField.getDocument().addDocumentListener(listener);
         roomDateAvailField.getDocument().addDocumentListener(listener);
         roomInfoField.getDocument().addDocumentListener(listener);
+        reservationInfoField.getDocument().addDocumentListener(listener);
     }
 
     public void setMouseListener(MouseListener listener) {
@@ -1021,9 +1049,6 @@ public class GUI extends JFrame {
             reservationInfoField.setEnabled(false);
             reservationInfoBtn.setEnabled(false);
         }
-
-        
-
     }
 
     public void updateManageHotel() {

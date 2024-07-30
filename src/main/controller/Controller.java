@@ -81,6 +81,7 @@ public class Controller implements ActionListener, DocumentListener,
                     return;
                 }
                 hotelController.addHotel(hotelName, rooms, deluxeRooms, execRooms); // From Model
+                gui.updateComboBoxItems(deluxeRooms, execRooms);
                 gui.setTotalHotels(hotelList.getHotels().size());
                 
                 updateHotelList();
@@ -384,7 +385,7 @@ public class Controller implements ActionListener, DocumentListener,
             gui.setSelectedHotelRoomSize(hotel.getRooms().size());
             gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
             gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
-            gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
+            gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings());
             
             gui.updateRoomInfoFieldFormatter(totalRooms);
             gui.setTotalRooms(totalRooms);
@@ -393,6 +394,9 @@ public class Controller implements ActionListener, DocumentListener,
         }
         gui.updateManageHotel();
 
+
+
+        
         gui.revalidate();
         gui.repaint();
     }
