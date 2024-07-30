@@ -299,7 +299,7 @@ public class Hotel {
      * 
      * @return the number of deluxe rooms that can be removed
      */
-    public int removeableExecutiveRooms(){
+    public int removableExecRooms(){
         int count = 0;
         for (ExecutiveRoom executiveRoom : execRooms) {
             if (!executiveRoom.getBookStatus())
@@ -307,6 +307,8 @@ public class Hotel {
         }
         return count;
     }
+
+
 
     /**
      * Checks if there is a reservation with the given guest name in any of the rooms.
@@ -383,8 +385,6 @@ public class Hotel {
 
         return totalReservations;
     }
-
-
 
     /**
      * Prints the list of rooms based on the availability.
@@ -521,7 +521,7 @@ public class Hotel {
      */
     public int totalRoomsReserved() {
         int totalRooms = 0;
-        totalRooms += totalStandardRoomsReserved();
+        totalRooms += totalBaseRoomsReserved();
         totalRooms += totalDeluxeRoomsReserved();
         totalRooms += totalExecRoomsReserved();
         return totalRooms;
@@ -533,7 +533,7 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved standard rooms
      */
-    public int totalStandardRoomsReserved(){
+    public int totalBaseRoomsReserved(){
         int totalStandardRooms = 0;
         for (Room room : getRooms()) {
             if (room.getBookStatus())
@@ -579,7 +579,7 @@ public class Hotel {
      */
     public void removeRooms() {
         int lastRoom = getRooms().size() + getDeluxeRooms().size() + getExecRooms().size();
-        int removableRooms = removableRooms() + removableDeluxeRooms() + removeableExecutiveRooms();
+        int removableRooms = removableRooms() + removableDeluxeRooms() + removableExecRooms();
 
         if (lastRoom == 1) {
             System.out.println("A hotel cannot have zero rooms.\n");
@@ -1126,7 +1126,7 @@ public class Hotel {
     }
 
     public void displayRoomTypes() {
-        System.out.println("[1] Base Room      - " + (rooms.size()-totalStandardRoomsReserved()) 
+        System.out.println("[1] Base Room      - " + (rooms.size()-totalBaseRoomsReserved()) 
                            + " rooms unbooked");
 
         if (deluxeRooms.size() > 0) {

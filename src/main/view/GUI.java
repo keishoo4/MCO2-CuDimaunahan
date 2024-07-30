@@ -35,8 +35,7 @@ public class GUI extends JFrame {
                    roomDateAvailLabel, roomInfoLabel, reservationInfoLabel,
                    roomNameLabel, roomPriceLabel, roomOccupancyLabel, roomOccupancyValueLabel,
                    reservationInfoReminderLabel, reservationGuestLabel, reservationCheckInLabel, 
-                   reservationCheckOutLabel, reservationBookingPriceLabel;
-
+                   reservationCheckOutLabel, reservationDiscountCodeLabel, reservationBookingPriceLabel;
 
     private JTextField hotelNameField, guestNameField, discountCodeField;
     private JFormattedTextField checkInField, checkOutField, 
@@ -69,13 +68,14 @@ public class GUI extends JFrame {
                    guestName = "",
                    checkInDate = "",
                    checkOutDate = "",
-                   bookingPrice = "";
+                   discountCode = "";
+
     private int totalHotels = 0, 
                 totalRooms, selectedHotelRoomSize, selectedHotelDeluxeRooms, selectedHotelExecRooms,
                 reservationTotal = 0,
                 baseRoomOcc = 0, deluxeRoomOcc = 0, execRoomOcc = 0;
 
-    private double totalHotelEarnings;
+    private double totalHotelEarnings, bookingPrice;
 
     private final int MAX_TOTAL_ROOMS = 50;
     public static final String HOTEL_LIST_TAB_NAME = "Hotel List";
@@ -487,7 +487,7 @@ public class GUI extends JFrame {
         totalExecRoomsLabel = new JLabel("  |Executive Rooms: " + execRoomOcc
                                                   + "/" + getSelectedHotelExecRoomsSize());
 
-        String earnings = String.format("%.2f", getTotalHotelEarnings());
+        String earnings = String.format("%.2f", 0.0);
         JLabel estimatedEarningsLabel = new JLabel("  |Estimated Earnings:");
         earningsValueLabel = new JLabel("  " + earnings);
         earningsValueLabel.setForeground(new Color(0, 100, 0));
@@ -562,6 +562,16 @@ public class GUI extends JFrame {
         reservationInfoPanel.add(Box.createVerticalStrut(5));
         reservationInfoPanel.add(reservationInfoBtn);
         reservationInfoPanel.add(Box.createVerticalStrut(5));
+        reservationInfoPanel.add(reservationGuestLabel);
+        reservationInfoPanel.add(Box.createVerticalStrut(5));
+        reservationInfoPanel.add(reservationCheckInLabel);
+        reservationInfoPanel.add(Box.createVerticalStrut(5));
+        reservationInfoPanel.add(reservationCheckOutLabel);
+        reservationInfoPanel.add(Box.createVerticalStrut(5));
+        reservationInfoPanel.add(reservationDiscountCodeLabel);
+        reservationInfoPanel.add(Box.createVerticalStrut(5));
+        reservationInfoPanel.add(reservationBookingPriceLabel);
+        
 
         hotelLowInfoPanel.add(roomDateAvailPanel);
         hotelLowInfoPanel.add(roomInfoPanel);
@@ -614,6 +624,27 @@ public class GUI extends JFrame {
     public void setSelectedRoomType(String roomType) {
         this.comboBox.setSelectedItem(roomType);
     }
+
+    // RESERVATION
+    public void setGuestName(String guestName) {
+        this.guestName = guestName;
+    }
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+    public void setDiscountCode(String discountCode) {
+        this.discountCode = discountCode;
+    }
+    public void setBookingPrice(double bookingPrice) {
+        this.bookingPrice = bookingPrice;
+    }
+    public String getReservationInfoTextField() {
+        return reservationInfoField.getText();
+    }
+
 
     public int getSelectedHotelRoomSize() {
         return selectedHotelRoomSize;
@@ -692,7 +723,7 @@ public class GUI extends JFrame {
         return roomInfoField.getText();
     }
 
-    public void setRoomReservationTotal(int reservationTotal) {
+    public void setReservationTotal(int reservationTotal) {
         this.reservationTotal = reservationTotal;
     }
 
@@ -757,6 +788,7 @@ public class GUI extends JFrame {
         reservationGuestLabel = new JLabel("Guest Name: ");
         reservationCheckInLabel = new JLabel("Check-In Date: ");
         reservationCheckOutLabel = new JLabel("Check-Out Date: ");
+        reservationDiscountCodeLabel = new JLabel("Discount Code: ");
         reservationBookingPriceLabel = new JLabel("Booking Price: ");
         
         reservationInfoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -766,6 +798,7 @@ public class GUI extends JFrame {
         reservationGuestLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         reservationCheckInLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         reservationCheckOutLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        reservationDiscountCodeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         reservationBookingPriceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         // Since no reservations are made yet 
@@ -1022,7 +1055,7 @@ public class GUI extends JFrame {
         totalBaseRoomsLabel.setText("  |Base Rooms: " + baseRoomOcc + "/" + getSelectedHotelRoomSize());
         totalDeluxeRoomsLabel.setText("  |Deluxe Rooms: " + deluxeRoomOcc + "/" + getSelectedHotelDeluxeRoomsSize());
         totalExecRoomsLabel.setText("  |Executive Rooms: " + execRoomOcc + "/" + getSelectedHotelExecRoomsSize());
-        earningsValueLabel.setText(" " + getTotalHotelEarnings());
+        earningsValueLabel.setText(" " + String.format("%.2f", totalHotelEarnings));
     }
 
     public void updateLowLevelRoomInfo() {
@@ -1033,7 +1066,7 @@ public class GUI extends JFrame {
         roomOccupancyValueLabel.setText(roomOccupancy);
     }
 
-    public void updateLowLevelReservationInfo() {
+    public void updateLowLevelReservationNum() {
         updateReservationInfoFieldFormatter(reservationTotal);
 
         if (reservationTotal >= 1) {
@@ -1049,6 +1082,14 @@ public class GUI extends JFrame {
             reservationInfoField.setEnabled(false);
             reservationInfoBtn.setEnabled(false);
         }
+    }
+
+    public void updateLowLevelReservationInfo() {
+        reservationGuestLabel.setText("Guest Name: " + guestName);
+        reservationCheckInLabel.setText("Check-In Date: " + checkInDate);
+        reservationCheckOutLabel.setText("Check-Out Date: " + checkOutDate);
+        reservationDiscountCodeLabel.setText("Availed Discount: " + discountCode);
+        reservationBookingPriceLabel.setText("Booking Price: " + String.format("%.2f", bookingPrice));
     }
 
     public void updateManageHotel() {
