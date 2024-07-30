@@ -1110,7 +1110,7 @@ public class GUI extends JFrame {
         addDeluxeRoomsBtn.addActionListener(listener);
         addExecRoomsBtn.addActionListener(listener);
         removeRoomBtn.addActionListener(listener);
-        roomsWithoutReservationsComboBox.addActionListener(listener);
+        // roomsWithoutReservationsComboBox.addActionListener(listener);
 
     }
 

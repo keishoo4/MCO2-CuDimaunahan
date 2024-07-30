@@ -649,13 +649,25 @@ public class Hotel {
         System.out.println("Removal Success!\n");
     }
 
-    public void removeRoom(Room room, int roomToRemove) {
-        if (room instanceof DeluxeRoom) {
-            deluxeRooms.remove(roomToRemove);
-        } else if (room instanceof ExecutiveRoom) {
-            execRooms.remove(roomToRemove);
-        } else {
-            rooms.remove(roomToRemove);
+    public void removeRoom(String roomName) {
+        int i;
+        for (i = 0; i < rooms.size(); i++) {
+            if (rooms.get(i).getName().equals(roomName)) {
+                rooms.remove(i);
+                return;
+            }
+        }
+        for (i = 0; i < deluxeRooms.size(); i++) {
+            if (deluxeRooms.get(i).getName().equals(roomName)) {
+                deluxeRooms.remove(i);
+                return;
+            }
+        }
+        for (i = 0; i < execRooms.size(); i++) {
+            if (execRooms.get(i).getName().equals(roomName)) {
+                execRooms.remove(i);
+                return;
+            }
         }
     }
     
@@ -931,11 +943,11 @@ public class Hotel {
         double dailyEarnings = 0.0;
     
         for (Room room : getRooms()) {
-            totalEarnings += calculateRoomEarnings(room);
+            dailyEarnings += calculateRoomEarnings(room, day);
         }
     
         for (DeluxeRoom deluxeRoom : getDeluxeRooms()) {
-            totalEarnings += calculateRoomEarnings(deluxeRoom);
+            dailyEarnings += calculateRoomEarnings(deluxeRoom, day);
         }
     
         for (ExecutiveRoom executiveRoom : getExecRooms()) {
@@ -955,7 +967,7 @@ public class Hotel {
      */
     private double calculateRoomEarnings(Room room, int day) {
         double roomDailyEarnings = 0.0;
-    
+        
         for (Reservation reservation : room.getReservations()) {
             int checkInDate = reservation.getCheckInDate();
             int checkOutDate = reservation.getCheckOutDate();
@@ -965,10 +977,10 @@ public class Hotel {
             int numNights = checkOutDate - checkInDate;
             double totalPrice = fillDates(pricePerNight, checkInDate, checkOutDate, discountCode) * numNights;
     
-            roomEarnings += totalPrice;
+            roomDailyEarnings += totalPrice;
         }
     
-        return roomEarnings;
+        return roomDailyEarnings;
     }
 
     /**

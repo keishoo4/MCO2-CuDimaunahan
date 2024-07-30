@@ -146,7 +146,7 @@ public class Controller implements ActionListener, DocumentListener,
             case "REMOVE_ROOM":
                 hotel = hotelList.getHotels().get(hotelIndex);
                 System.out.println("Current Hotel  " + hotel.getName()); // DEBUGGING
-                // hotelController.removeRoom();
+                hotelController.removeRoom();
                 updateRoomsToRemove(hotel);
                 
                 break;
@@ -196,17 +196,18 @@ public class Controller implements ActionListener, DocumentListener,
 
     public void removeRoom() {
         selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
-        String roomName = gui.getRoomToRemove();
+        String roomName = gui.getSelectedRoomForRemoval();
         int response = JOptionPane.showConfirmDialog(gui, "Remove room '" + roomName + "'?", 
         "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (response == JOptionPane.NO_OPTION) {
                 return;
             }
-
         selectedHotel.removeRoom(roomName);
+        gui.updateLowLevelReservationInfo();
         gui.updateManageAllRooms();
         gui.updateBookingRelated();
         updateRoomsToRemove(selectedHotel);
+
     }
 
     public void addBaseRooms() {
