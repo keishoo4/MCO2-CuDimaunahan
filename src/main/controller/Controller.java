@@ -7,6 +7,7 @@ import javax.swing.event.*;
 
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import model.hotel.HotelList;
 import model.hotel.Hotel;
@@ -21,7 +22,6 @@ public class Controller implements ActionListener, DocumentListener,
                                    ChangeListener {
     private HotelList hotelList;
     private Hotel hotel;
-    private Room room;
     private Reservation reservation;
     private GUI gui;
     private HotelController hotelController;
@@ -50,8 +50,8 @@ public class Controller implements ActionListener, DocumentListener,
 
     public void updateRoomBooking() {
         gui.clearBookingInfo();
-        // gui.update
         gui.updateBookingRelated();
+        gui.updateLowLevelReservationInfo();
     }
 
     public void updateHotelView() {
@@ -100,6 +100,12 @@ public class Controller implements ActionListener, DocumentListener,
                 hotelController.updateLowRoomDateAvailList();
                 break;
 
+            case "ROOM_INFO_SHOW":
+                System.out.println("Room Info Show DEBUG");
+                hotelController.updateLowLevelRoomInfo();
+                gui.updateLowLevelRoomInfo();
+                break;
+
             case "MANAGE_HOTELS":
                 updateHotelList();
                 break;
@@ -116,6 +122,9 @@ public class Controller implements ActionListener, DocumentListener,
         private HotelList hotelList;
         private GUI gui;
         private Hotel selectedHotel;
+        private ArrayList<Room> baseRooms;
+        private ArrayList<DeluxeRoom> deluxeRooms;
+        private ArrayList<ExecutiveRoom> execRooms;
 
         private int selectedHotelIndex;
         private final String STRING_EMPTY = "";
@@ -138,6 +147,47 @@ public class Controller implements ActionListener, DocumentListener,
                                               "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         }
+
+public void updateLowLevelRoomInfo() {
+    int roomNum, roomOccupancy;
+    String roomName, roomPrice;
+
+    selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+    roomNum = Integer.parseInt(gui.getRoomInfoFieldText()) - 1; // -1 for indexing
+
+    roomName = "";
+    roomPrice = "";
+
+    baseRooms = selectedHotel.getRooms();
+    deluxeRooms = selectedHotel.getDeluxeRooms();
+    execRooms = selectedHotel.getExecRooms();
+
+    if (roomNum < baseRooms.size()) {
+        roomName = baseRooms.get(roomNum).getName();
+        roomPrice = Double.toString(baseRooms.get(roomNum).getPricePerNight());
+        gui.setRoomOccupancy(baseRooms.get(roomNum).getVacancyPeriods());
+    } else {
+        roomNum -= baseRooms.size();
+        if (roomNum < deluxeRooms.size()) {
+            roomName = deluxeRooms.get(roomNum).getName();
+            roomPrice = Double.toString(deluxeRooms.get(roomNum).getPricePerNight());
+            gui.setRoomOccupancy(deluxeRooms.get(roomNum).getVacancyPeriods());
+        } 
+        else {
+            roomNum -= deluxeRooms.size();
+            if (roomNum < execRooms.size()) {
+                roomName = execRooms.get(roomNum).getName();
+                roomPrice = Double.toString(execRooms.get(roomNum).getPricePerNight());
+                gui.setRoomOccupancy(execRooms.get(roomNum).getVacancyPeriods());
+            } 
+            else {
+                throw new IndexOutOfBoundsException("Invalid room number");
+            }
+        }
+    }
+    gui.setRoomName(roomName);
+    gui.setRoomPrice(roomPrice);
+}
 
     public void updateLowRoomDateAvailList() {
         selectedHotel     = hotelList.getHotels().get(gui.getSelectedHotelIndex());
@@ -239,7 +289,7 @@ public class Controller implements ActionListener, DocumentListener,
         if (selectedHotel.getDeluxeRooms().size() > 0)
             gui.setDeluxeRoomOcc(selectedHotel.totalDeluxeRoomsReserved());
         if (selectedHotel.getExecRooms().size() > 0)
-            gui.setExecRoomOcc(selectedHotel.totalExecutiveRoomsReserved());
+            gui.setExecRoomOcc(selectedHotel.totalExecRoomsReserved());
         
             gui.setTotalHotelEarnings(selectedHotel.calculateEstimatedEarnings(selectedHotel));
 
@@ -293,28 +343,6 @@ public class Controller implements ActionListener, DocumentListener,
 
     }
 
-    // @Override
-    // public void valueChanged(ListSelectionEvent e) {
-    //     int selectedHotelIndex;
-    //     if (!e.getValueIsAdjusting()) {
-    //         selectedHotelIndex = gui.getHotelJList().getSelectedIndex();
-    //         if (selectedHotelIndex >= 0) {
-    //             hotel = gui.getHotelListModel().getElementAt(selectedHotelIndex);
-    //             int totalRooms = hotel.getRooms().size() + 
-    //                              hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
-    //             gui.setSelectedHotelName(hotel.getName());
-    //             gui.setSelectedHotelRoomSize(hotel.getRooms().size());
-    //             gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
-    //             gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
-    //             gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
-                
-    //             gui.setDisplayInfoAndBooking(totalRooms, selectedHotelIndex);
-    //             gui.updateBookingRelated();
-    //         }
-    //     }
-    // }
-
-
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() != MouseEvent.BUTTON1) {
@@ -342,11 +370,10 @@ public class Controller implements ActionListener, DocumentListener,
             gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
             gui.setTotalHotelEarnings(hotel.calculateEstimatedEarnings(hotel));
             
+            gui.updateRoomInfoFieldFormatter(totalRooms);
             gui.setTotalRooms(totalRooms);
 
-            // gui.setDisplayInfoAndBooking(totalRooms);
             gui.updateBookingRelated();
-            gui.updateLowLevelInfo();
         }
         gui.updateManageHotel();
 

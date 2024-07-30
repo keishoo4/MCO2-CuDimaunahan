@@ -9,6 +9,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import javax.swing.event.*;
 import javax.swing.text.DefaultFormatter;
+import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 
 import java.awt.event.*;
@@ -32,7 +33,7 @@ public class GUI extends JFrame {
     private JLabel guestLabel, checkInLabel, checkOutLabel, discountCodeLabel, earningsValueLabel,
                    totalBaseRoomsLabel, totalDeluxeRoomsLabel, totalExecRoomsLabel,
                    roomDateAvailLabel, roomInfoLabel, reservationInfoLabel,
-                   roomNameLabel, roomPriceLabel, roomOccupancyLabel;
+                   roomNameLabel, roomPriceLabel, roomOccupancyLabel, roomOccupancyValueLabel;
 
 
     private JTextField hotelNameField, guestNameField, discountCodeField;
@@ -451,10 +452,6 @@ public class GUI extends JFrame {
     }
 
     public void setDisplayInfoAndBooking() {
-
-        // roomDateAvailPanel.removeAll();
-        // roomInfoPanel.removeAll();
-        // reservationInfoPanel.removeAll();
         
         // HIGH-LEVEL INFO
         // Display hotel name, total base rooms, total deluxe rooms, 
@@ -566,8 +563,11 @@ public class GUI extends JFrame {
         roomInfoPanel.add(roomInfoBtn);
         roomInfoPanel.add(Box.createVerticalStrut(5));
         roomInfoPanel.add(roomNameLabel);
+        roomInfoPanel.add(Box.createVerticalStrut(5));
         roomInfoPanel.add(roomPriceLabel);
+        roomInfoPanel.add(Box.createVerticalStrut(5));
         roomInfoPanel.add(roomOccupancyLabel);
+        roomInfoPanel.add(roomOccupancyValueLabel);
 
 
         reservationInfoPanel.add(reservationInfoLabel);
@@ -701,6 +701,10 @@ public class GUI extends JFrame {
         return roomDateAvailField.getText();
     }
 
+    public String getRoomInfoFieldText() {
+        return roomInfoField.getText();
+    }
+
     public void showLowHotelInfo() {
         
         // Column 1 - Room-Date Availability        
@@ -721,8 +725,8 @@ public class GUI extends JFrame {
         roomDateAvailScrollPane.setMaximumSize(roomDateAvailScrollPane.getPreferredSize());
 
         // Column 2 - Room Info
-        numberFormatter = createNumberFormatter(1, totalRooms);
-        roomInfoField = new JFormattedTextField(numberFormatter);
+        NumberFormatter numberFormatter1 = createNumberFormatter(1, totalRooms);
+        roomInfoField = new JFormattedTextField(numberFormatter1);
         roomInfoField.setColumns(5);
         roomInfoField.setPreferredSize(new Dimension(10, 20));
         roomInfoField.setMaximumSize(roomInfoField.getPreferredSize());
@@ -732,7 +736,8 @@ public class GUI extends JFrame {
 
         roomNameLabel = new JLabel("Room Name: ");
         roomPriceLabel = new JLabel("Room Price: ");
-        roomOccupancyLabel = new JLabel("Room Occupancy: ");
+        roomOccupancyLabel = new JLabel("Room Vacancy: ");
+        roomOccupancyValueLabel = new JLabel("");
 
         roomInfoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         roomInfoField.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -740,7 +745,13 @@ public class GUI extends JFrame {
         roomNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         roomPriceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         roomOccupancyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        roomOccupancyValueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+    }
+
+    public void updateRoomInfoFieldFormatter(int totalRooms) {
+    NumberFormatter numberFormatter = createNumberFormatter(1, totalRooms);
+    roomInfoField.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
     }
 
     public void setRoomName(String roomName) {
@@ -828,7 +839,7 @@ public class GUI extends JFrame {
         finalizeBookingBtn.addActionListener(listener);
         comboBox.addActionListener(listener);
         roomDateAvailBtn.addActionListener(listener);
-        // roomDateAvailField.addActionListener(listener);
+        roomInfoBtn.addActionListener(listener);
     }
 
     public void addActionListenerToButton(JButton button, ActionListener listener) {
@@ -846,6 +857,7 @@ public class GUI extends JFrame {
         checkOutField.getDocument().addDocumentListener(listener);
         discountCodeField.getDocument().addDocumentListener(listener);
         roomDateAvailField.getDocument().addDocumentListener(listener);
+        roomInfoField.getDocument().addDocumentListener(listener);
     }
 
     public void setMouseListener(MouseListener listener) {
@@ -937,7 +949,6 @@ public class GUI extends JFrame {
         this.currentHotelName = hotelName;
     }
 
-
     public void clearCreateHotel() {
         hotelNameField.setText("");
         slider1.setValue(1);
@@ -963,19 +974,39 @@ public class GUI extends JFrame {
         earningsValueLabel.setText(" " + getTotalHotelEarnings());
     }
 
-    public void updateLowLevelInfo() {
+    public void updateLowLevelRoomInfo() {
         roomInfoLabel.setText("Room Info (1-" + totalRooms + ")");
         roomNameLabel.setText("Room Name: " + roomName);
         roomPriceLabel.setText("Room Price: " + roomPrice);
-        roomOccupancyLabel.setText("Room Occupancy: " + roomOccupancy);
+        roomOccupancyLabel.setText("Room Vacancy: ");
+        roomOccupancyValueLabel.setText(roomOccupancy);
+    }
 
-        reservationInfoLabel.setText("Reservation Info");
+    public void updateLowReservationInfo() {
+        reservationInfoLabel.setText("Reservation Info (1-" + reservationTotal + ")");
+    }
+
+    public void updateLowLevelReservationInfo() {
+        if (reservationTotal >= 1) {
+            reservationInfoField.setEnabled(true);
+            reservationInfoBtn.setEnabled(true);
+
+            if (reservationTotal == 1)
+                reservationInfoLabel.setText("Reservation Info (1)");
+            else
+                reservationInfoLabel.setText("Reservation Info (1-" + reservationTotal + ")");        
+        }
+        else {
+            reservationInfoField.setEnabled(false);
+            reservationInfoBtn.setEnabled(false);
+        }
+
+        // TODO
+
     }
 
     public void updateManageHotel() {
         manageHotelBtn.setText("Manage '" + currentHotelName + "'");
     }
-
-    // public void update
 
 }

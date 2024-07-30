@@ -509,7 +509,7 @@ public class Hotel {
         int totalRooms = 0;
         totalRooms += totalStandardRoomsReserved();
         totalRooms += totalDeluxeRoomsReserved();
-        totalRooms += totalExecutiveRoomsReserved();
+        totalRooms += totalExecRoomsReserved();
         return totalRooms;
     }
 
@@ -549,7 +549,7 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of executive reserved rooms
      */
-    public int totalExecutiveRoomsReserved(){
+    public int totalExecRoomsReserved(){
         int totalExecRooms = 0;
         for (ExecutiveRoom room : getExecRooms()) {
             if (room.getBookStatus())
@@ -1106,7 +1106,7 @@ public class Hotel {
                                + " rooms unbooked");
         } 
         if (execRooms.size() > 0) {
-            System.out.println("[3] Executive Room - "  + (execRooms.size()-totalExecutiveRoomsReserved()) 
+            System.out.println("[3] Executive Room - "  + (execRooms.size()-totalExecRoomsReserved()) 
                                + " rooms unbooked");
         }
     }
