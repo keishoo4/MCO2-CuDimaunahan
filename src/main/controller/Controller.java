@@ -107,11 +107,6 @@ public class Controller implements ActionListener, DocumentListener,
                 gui.updateLowLevelRoomInfo();
                 break;
 
-            case "RESERVATION_INFO_SHOW":
-                System.out.println("Reservation Info Show DEBUG");
-                gui.updateLowLevelReservationInfo();
-                break;
-
             case "MANAGE_HOTELS":
                 updateHotelList();
                 break;
@@ -154,53 +149,46 @@ public class Controller implements ActionListener, DocumentListener,
             }
         }
 
-    public void updateLowLevelRoomInfo() {
-        int roomNum, roomOccupancy;
-        String roomName, roomPrice;
+public void updateLowLevelRoomInfo() {
+    int roomNum, roomOccupancy;
+    String roomName, roomPrice;
 
-        if (gui.getRoomInfoFieldText().equals(STRING_EMPTY)) {
-            JOptionPane.showMessageDialog(gui, "Please enter a room number.", 
-                                            "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+    roomNum = Integer.parseInt(gui.getRoomInfoFieldText()) - 1; // -1 for indexing
 
+    roomName = "";
+    roomPrice = "";
 
-        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
-        roomNum = Integer.parseInt(gui.getRoomInfoFieldText()) - 1; // -1 for indexing
+    baseRooms = selectedHotel.getRooms();
+    deluxeRooms = selectedHotel.getDeluxeRooms();
+    execRooms = selectedHotel.getExecRooms();
 
-        roomName = "";
-        roomPrice = "";
-
-        baseRooms = selectedHotel.getRooms();
-        deluxeRooms = selectedHotel.getDeluxeRooms();
-        execRooms = selectedHotel.getExecRooms();
-
-        if (roomNum < baseRooms.size()) {
-            roomName = baseRooms.get(roomNum).getName();
-            roomPrice = Double.toString(baseRooms.get(roomNum).getPricePerNight());
-            gui.setRoomOccupancy(baseRooms.get(roomNum).getVacancyPeriods());
-        } else {
-            roomNum -= baseRooms.size();
-            if (roomNum < deluxeRooms.size()) {
-                roomName = deluxeRooms.get(roomNum).getName();
-                roomPrice = Double.toString(deluxeRooms.get(roomNum).getPricePerNight());
-                gui.setRoomOccupancy(deluxeRooms.get(roomNum).getVacancyPeriods());
+    if (roomNum < baseRooms.size()) {
+        roomName = baseRooms.get(roomNum).getName();
+        roomPrice = Double.toString(baseRooms.get(roomNum).getPricePerNight());
+        gui.setRoomOccupancy(baseRooms.get(roomNum).getVacancyPeriods());
+    } else {
+        roomNum -= baseRooms.size();
+        if (roomNum < deluxeRooms.size()) {
+            roomName = deluxeRooms.get(roomNum).getName();
+            roomPrice = Double.toString(deluxeRooms.get(roomNum).getPricePerNight());
+            gui.setRoomOccupancy(deluxeRooms.get(roomNum).getVacancyPeriods());
+        } 
+        else {
+            roomNum -= deluxeRooms.size();
+            if (roomNum < execRooms.size()) {
+                roomName = execRooms.get(roomNum).getName();
+                roomPrice = Double.toString(execRooms.get(roomNum).getPricePerNight());
+                gui.setRoomOccupancy(execRooms.get(roomNum).getVacancyPeriods());
             } 
             else {
-                roomNum -= deluxeRooms.size();
-                if (roomNum < execRooms.size()) {
-                    roomName = execRooms.get(roomNum).getName();
-                    roomPrice = Double.toString(execRooms.get(roomNum).getPricePerNight());
-                    gui.setRoomOccupancy(execRooms.get(roomNum).getVacancyPeriods());
-                } 
-                else {
-                    throw new IndexOutOfBoundsException("Invalid room number");
-                }
+                throw new IndexOutOfBoundsException("Invalid room number");
             }
         }
-        gui.setRoomName(roomName);
-        gui.setRoomPrice(roomPrice);
     }
+    gui.setRoomName(roomName);
+    gui.setRoomPrice(roomPrice);
+}
 
     public void updateLowRoomDateAvailList() {
         selectedHotel     = hotelList.getHotels().get(gui.getSelectedHotelIndex());
@@ -345,8 +333,6 @@ public class Controller implements ActionListener, DocumentListener,
         public RoomController(GUI gui) {
             this.gui = gui;
         }
-
-
 
     }
 

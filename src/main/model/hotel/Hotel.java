@@ -436,7 +436,7 @@ public class Hotel {
      *
      * @param hotel the Hotel object to modify
      */
-    public void addRoomsPrompt(Hotel hotel) {
+    public void addRoomsPrompt() {
         int baseRooms, deluxeRooms = 0, execRooms = 0, remainingRooms, totalRooms;
 
         int initialTotalRooms = getRooms().size() + getDeluxeRooms().size() + getExecRooms().size();
@@ -577,7 +577,7 @@ public class Hotel {
      *
      * @param hotel the Hotel object to modify
      */
-    public void removeRooms(Hotel hotel) {
+    public void removeRooms() {
         int lastRoom = getRooms().size() + getDeluxeRooms().size() + getExecRooms().size();
         int removableRooms = removableRooms() + removableDeluxeRooms() + removableExecRooms();
 
@@ -714,7 +714,7 @@ public class Hotel {
      *
      * @param hotel the Hotel object to modify
      */
-    public void updateRoomPrice(Hotel hotel) {
+    public void updateRoomPrice() {
         if (reservationStatus() == true) {
             System.out.println("Cannot update price nor set date modifier with reservation(s).\n");
             return;
@@ -731,7 +731,7 @@ public class Hotel {
                 double newPrice = ScannerUtil.readDouble();
 
                 if (newPrice < 100){
-                    System.out.println("Room price must be at least 100.");
+                    System.out.println("Room price must be at least 100.\n");
                     return;
                 }
 
@@ -757,7 +757,7 @@ public class Hotel {
                     return;
                 }
                 
-                System.out.print("Enter the price modifier for day " + day + " in percentage.");
+                System.out.print("Enter the price modifier for day " + day + " in percentage: ");
                 double priceModifier = ScannerUtil.readDouble();
                 
                 if (priceModifier <= 0 || priceModifier > 150 || priceModifier < 50) {
@@ -766,7 +766,7 @@ public class Hotel {
                 }
 
                 setDatePriceModifier(day, priceModifier);
-                System.out.println("Price modifier for day " + day + " updated to " + priceModifier + ".");
+                System.out.println("Price modifier for day " + day + " updated to " + priceModifier);
                 break;
             default:
                 System.out.println("Invalid choice.\n");
@@ -796,7 +796,7 @@ public class Hotel {
      * @param hotel the Hotel object to modify
      * @param rooms the list of rooms in the hotel
      */
-    public void removeReservations(Hotel hotel, ArrayList<Room> rooms) {
+    public void removeReservations(ArrayList<Room> rooms) {
         showRooms("Reserved");
         System.out.println("[0] Back to Main Menu");
         System.out.print("Input Room Name: ");
@@ -925,7 +925,7 @@ public class Hotel {
      *
      * @param hotel The hotel object containing the list of rooms.
      */
-    public void viewAvailableAndBookedRoomsPrompt(Hotel hotel) {
+    public void viewAvailableAndBookedRoomsPrompt() {
         System.out.print("Enter the day of reservation (eg. 23): ");
         int date = ScannerUtil.readInt();
         if (date < 1 || date > 31) {
@@ -973,7 +973,7 @@ public class Hotel {
      *
      * @param hotel the hotel object containing the rooms
      */
-    public void viewRoomInfo(Hotel hotel) {
+    public void viewRoomInfo() {
         System.out.println("What room type would you like to view?: ");
         System.out.println("[1] Base Room");
         System.out.println("[2] Deluxe Room");
@@ -1032,7 +1032,7 @@ public class Hotel {
      * 
      * @param hotel the Hotel object containing the rooms and reservations
      */
-    public void viewReservationInfo(Hotel hotel) {
+    public void viewReservationInfo() {
         Reservation reservation;
         
         System.out.println("Under what room type is the guest staying in?: ");
@@ -1090,7 +1090,7 @@ public class Hotel {
             System.out.println("Check-out Date: 1-" + (checkOutDate < 10 ? "0" + checkOutDate : checkOutDate));
             System.out.println("Total Price: " + String.format("%.2f", totalPrice));  
         } else if (roomType == 3){
-            reservation = hotel.getExecRooms().stream()
+            reservation = getExecRooms().stream()
                       .flatMap(room -> room.getReservations().stream())
                       .filter(r -> r.getGuestName().equals(guestName))
                       .findFirst()
