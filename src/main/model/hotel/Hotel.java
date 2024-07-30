@@ -516,7 +516,6 @@ public class Hotel {
     /**
      * Calculates the total number of rooms reserved for all room types in the hotel.
      *
-     * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved rooms
      */
     private int totalRoomsReserved() {
@@ -530,7 +529,6 @@ public class Hotel {
     /**
      * Calculates the total number of standard rooms reserved in the hotel.
      *
-     * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved standard rooms
      */
     public int totalBaseRoomsReserved(){
@@ -545,7 +543,6 @@ public class Hotel {
     /**
      * Calculates the total number of deluxe rooms reserved in the hotel.
      *
-     * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved deluxe rooms
      */
     public int totalDeluxeRoomsReserved(){
@@ -560,7 +557,6 @@ public class Hotel {
     /**
      * Calculates the total number of executiverooms reserved in the hotel.
      *
-     * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of executive reserved rooms
      */
     public int totalExecRoomsReserved(){
