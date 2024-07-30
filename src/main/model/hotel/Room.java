@@ -62,6 +62,10 @@ public class Room {
         return reservations;
     }
 
+    public int getTotalReservations() {
+        return reservations.size();
+    }
+
     /**
      * Prints the reservations for the room.
      *

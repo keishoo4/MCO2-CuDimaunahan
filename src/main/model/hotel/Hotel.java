@@ -208,6 +208,20 @@ public class Hotel {
         return -1;
     }
 
+    public int getTotalHotelReservations() {
+        int totalReservations = 0;
+        for (Room room : rooms) {
+            totalReservations += room.getReservations().size();
+        }
+        for (DeluxeRoom deluxeRoom : deluxeRooms) {
+            totalReservations += deluxeRoom.getReservations().size();
+        }
+        for (ExecutiveRoom execRoom : execRooms) {
+            totalReservations += execRoom.getReservations().size();
+        }
+        return totalReservations;
+    }
+
     /**
      * Prompts the user to enter a check-in date and validates the input.
      * 
