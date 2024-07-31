@@ -541,18 +541,16 @@ public class GUI extends JFrame {
         remainingBaseRooms = MAX_TOTAL_ROOMS - totalRooms;
         remainingBaseRooms = Math.max(remainingBaseRooms, 0);
     }
+    
     public void setRemainingDeluxeRooms() {
-        remainingRooms = MAX_TOTAL_ROOMS - totalRooms - selectedHotelRoomSize;
-        maxDeluxeRooms = (int) Math.min((int) 
-                        Math.floor(selectedHotelRoomSize * 0.6), remainingRooms);
-        // remainingDeluxeRooms = maxDeluxeRooms - totalRooms;
-        remainingDeluxeRooms = maxDeluxeRooms;
-        this.remainingDeluxeRooms = Math.max(remainingDeluxeRooms, 0);
+        remainingDeluxeRooms = MAX_TOTAL_ROOMS - totalRooms - selectedHotelRoomSize;
+        remainingDeluxeRooms = Math.min((int) Math.floor(selectedHotelRoomSize * 0.6), remainingDeluxeRooms);
+        remainingDeluxeRooms = Math.max(remainingDeluxeRooms, 0);
     }
+    
     public void setRemainingExecRooms() {
-        maxExecRooms = (MAX_TOTAL_ROOMS * EXEC_RATIO) / RATIO_PARTS;
-        remainingExecRooms = maxExecRooms - totalRooms;
-        this.remainingExecRooms = Math.max(remainingExecRooms, 0);
+        remainingExecRooms = (MAX_TOTAL_ROOMS * EXEC_RATIO) / RATIO_PARTS - totalRooms;
+        remainingExecRooms = Math.max(remainingExecRooms, 0);
     }
 
     public void updateManageAllRooms() {
