@@ -949,9 +949,6 @@ public class Hotel {
         }
     }
 
-
-
-
      /**
      * Calculates the total monthly earnings of the hotel by summing up the daily earnings for each day in the month.
      *

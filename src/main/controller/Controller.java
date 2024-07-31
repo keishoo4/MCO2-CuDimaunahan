@@ -94,7 +94,11 @@ public class Controller implements ActionListener, DocumentListener,
             
             case "CLEAR_HOTEL":
                 updateCreateHotel();
-                break;    
+                break;
+
+            case "NEW_BOOKING":
+                hotelController.bookingValidation();
+                break;
 
             case "SELECT_HOTEL":
 
@@ -246,6 +250,24 @@ public class Controller implements ActionListener, DocumentListener,
 
     }
 
+    public void bookingValidation() {
+        int availRooms, availDeluxeRooms, availExecRooms;
+
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        availRooms = selectedHotel.removableRooms();
+        availDeluxeRooms = selectedHotel.removableDeluxeRooms();
+        availExecRooms = selectedHotel.removableExecRooms();
+
+        if (availRooms == 0 && availDeluxeRooms == 0 && availExecRooms == 0) {
+            JOptionPane.showMessageDialog(gui, "No rooms available for booking.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        gui.displayBookingFrame();
+    }
+
     public void updateDateModifier() {
         selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
         String dateModifier = gui.getUpdateDateModifierField();
@@ -323,7 +345,7 @@ public class Controller implements ActionListener, DocumentListener,
         String guestName = extractName(reservationName);
 
         System.out.println(guestName);
-        if (guestName.equals(STRING_EMPTY)) {
+        if (reservationName.equals(STRING_EMPTY)) {
             JOptionPane.showMessageDialog(gui, "No reservation to remove.", 
                                             "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -335,7 +357,8 @@ public class Controller implements ActionListener, DocumentListener,
                 return;
             }
 
-
+        selectedHotel.removeReservation(guestName);
+        updateReserationsToRemove(selectedHotel);
     }
 
     public String extractName(String input) {
@@ -472,7 +495,8 @@ public class Controller implements ActionListener, DocumentListener,
                                         "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        gui.setReservationTotal(reservations.size());
+        hotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        gui.setReservationTotal(hotel.getAllReservations());
         // gui.updateLowLevelReservationNum();
         reservationNum = Integer.parseInt(gui.getReservationInfoTextField()) - 1;
         
@@ -605,11 +629,16 @@ public class Controller implements ActionListener, DocumentListener,
         int roomToUse, deluxeRoomToUse, execRoomToUse,
             availRooms, availDeluxeRooms, availExecRooms;
 
+        selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        availRooms = selectedHotel.removableRooms();
+        availDeluxeRooms = selectedHotel.removableDeluxeRooms();
+        availExecRooms = selectedHotel.removableExecRooms();
+
         guestName = gui.getGuestName();
         checkIn = gui.getCheckInDate();
         checkOut = gui.getCheckOutDate();
         discountCode = gui.getDiscountCode();
-        selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
 
         deluxeRoom = null;
         execRoom = null;
@@ -658,10 +687,6 @@ public class Controller implements ActionListener, DocumentListener,
         // Get the check-in and check-out dates from the GUI, run the booking logic from model
         bookRoom(selectedHotel, guestName, Integer.parseInt(checkIn), Integer.parseInt(checkOut), 
                     room, deluxeRoom, execRoom, discountCode);
-
-        availRooms = selectedHotel.removableRooms();
-        availDeluxeRooms = selectedHotel.removableDeluxeRooms();
-        availExecRooms = selectedHotel.removableExecRooms();
 
         gui.setBaseRoomOcc(selectedHotel.totalBaseRoomsReserved());
         if (selectedHotel.getDeluxeRooms().size() > 0)
@@ -824,12 +849,12 @@ public class Controller implements ActionListener, DocumentListener,
         }
         for (DeluxeRoom room : hotel.getDeluxeRooms()) {
             for (Reservation reservation : room.getReservations()) {
-                allReservations.add(reservation.getGuestName());
+                allReservations.add(" " + reservation.getGuestName());
             }
         }
         for (ExecutiveRoom room : hotel.getExecRooms()) {
             for (Reservation reservation : room.getReservations()) {
-                allReservations.add(reservation.getGuestName());
+                allReservations.add(" " + reservation.getGuestName());
             }
         }
 
@@ -845,15 +870,15 @@ public class Controller implements ActionListener, DocumentListener,
         ArrayList<String> allRooms = new ArrayList<String>();
         for (Room room : hotel.getRooms()) {
             if (room.getBookStatus() == false)
-                allRooms.add(room.getName());
+                allRooms.add(" " + room.getName());
         }
         for (DeluxeRoom room : hotel.getDeluxeRooms()) {
             if (room.getBookStatus() == false)
-                allRooms.add(room.getName());
+                allRooms.add(" " + room.getName());
         }
         for (ExecutiveRoom room : hotel.getExecRooms()) {
             if (room.getBookStatus() == false)
-                allRooms.add(room.getName());
+                allRooms.add(" " + room.getName());
         }
 
         // Convert the list to a String[] array

@@ -46,7 +46,7 @@ public class GUI extends JFrame {
                                 roomDateAvailField, roomInfoField, reservationInfoField,
                                 addBaseRoomsField, addDeluxeRoomsField, addExecRoomsField,
                                 updateRoomPriceField, updateDateModifierField;
-    private JButton createHotelBtn, finalizeBookingBtn, clearBtn, closeTabBtn,
+    private JButton createHotelBtn, newBookingBtn, finalizeBookingBtn, clearBtn, closeTabBtn,
                     checkAvailBtn, roomDateAvailBtn, roomInfoBtn, reservationInfoBtn,
                     manageHotelBtn, backToFrontManageBtn, changeHotelNameBtn, 
                     addRoomsBtn, addDeluxeRoomsBtn, addExecRoomsBtn, 
@@ -313,6 +313,7 @@ public class GUI extends JFrame {
 
         setDisplayInfoAndBooking();
 
+        JButton bookingBtn = createBookingButton(selectedHotelName);
         // TODO ADD TO CONTROLLER MAYBE???
         hotelJList.addMouseListener(new MouseAdapter() {
             @Override
@@ -349,7 +350,7 @@ public class GUI extends JFrame {
                     JLabel simulateBookingLabel = new JLabel("Simulate Booking");
                     simulateBookingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-                    JButton bookingBtn = createBookingButton(selectedHotelName);
+                    // JButton bookingBtn = createBookingButton(selectedHotelName);
         
                     tabHotelLowerPanel.add(simulateBookingLabel);
                     tabHotelLowerPanel.add(Box.createVerticalStrut(10));
@@ -565,15 +566,16 @@ public class GUI extends JFrame {
         remainingBaseRooms = MAX_TOTAL_ROOMS - totalRooms;
         remainingBaseRooms = Math.max(remainingBaseRooms, 0);
     }
-    
+
     public void setRemainingDeluxeRooms() {
         remainingDeluxeRooms = MAX_TOTAL_ROOMS - totalRooms - selectedHotelRoomSize;
         remainingDeluxeRooms = Math.min((int) Math.floor(selectedHotelRoomSize * 0.6), remainingDeluxeRooms);
         remainingDeluxeRooms = Math.max(remainingDeluxeRooms, 0);
     }
-    
+
     public void setRemainingExecRooms() {
-        remainingExecRooms = (MAX_TOTAL_ROOMS * EXEC_RATIO) / RATIO_PARTS - totalRooms;
+        remainingExecRooms = MAX_TOTAL_ROOMS - totalRooms - selectedHotelRoomSize;
+        remainingExecRooms = Math.min((MAX_TOTAL_ROOMS * EXEC_RATIO) / RATIO_PARTS, remainingExecRooms);
         remainingExecRooms = Math.max(remainingExecRooms, 0);
     }
 
@@ -633,7 +635,7 @@ public class GUI extends JFrame {
     // REMOVE RESERVATION
     public void addReservationsComboBox() {
         reservationsComboBox = new JComboBox<>();
-        reservationsComboBox.setMaximumSize(new Dimension(175, 
+        reservationsComboBox.setMaximumSize(new Dimension(250, 
                                          removeReservationBtn.getPreferredSize().height));
     }
     public String getSelectedReservationForRemoval() {
@@ -752,11 +754,12 @@ public class GUI extends JFrame {
     }
             
     public JButton createBookingButton(String hotelName) {
-        JButton newBookingBtn = new JButton("Book a Room");
+        newBookingBtn = new JButton("Book a Room");
+        newBookingBtn.setActionCommand("NEW_BOOKING"); // For Controller
         newBookingBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         newBookingBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, newBookingBtn.getPreferredSize().height));
         
-        newBookingBtn.addActionListener(e -> displayBookingFrame(hotelName));
+        // newBookingBtn.addActionListener(e -> displayBookingFrame(hotelName));
         
         return newBookingBtn;
     }
@@ -1202,9 +1205,9 @@ public class GUI extends JFrame {
         }
     }
 
-    public void displayBookingFrame(String hotelName) {
+    public void displayBookingFrame() {
         /* NEW WINDOW POP-UP FOR BOOKING */
-        bookingFrame = new JFrame(hotelName + " Booking");
+        bookingFrame = new JFrame(currentHotelName + " Booking");
         setupBookingFrame(bookingFrame);
 
         JPanel bookingPanel = new JPanel();
@@ -1243,6 +1246,7 @@ public class GUI extends JFrame {
     public void setActionListener(ActionListener listener) {
         createHotelBtn.addActionListener(listener);
         clearBtn.addActionListener(listener);
+        newBookingBtn.addActionListener(listener);
         finalizeBookingBtn.addActionListener(listener);
         comboBox.addActionListener(listener);
         roomDateAvailBtn.addActionListener(listener);
@@ -1359,10 +1363,7 @@ public class GUI extends JFrame {
     public int getExecRoomsSliderValue() {
         return slider3.getValue();
     }
-
-    public void setHotelName(String hotelName) {
-        hotelNameField.setText(hotelName);
-    }
+    
     public String getHotelName() {
         return hotelNameField.getText();
     }
