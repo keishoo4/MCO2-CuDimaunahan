@@ -7,7 +7,6 @@ import javax.swing.event.*;
 
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,17 +26,14 @@ public class Controller implements ActionListener, DocumentListener,
     private Reservation reservation;
     private GUI gui;
     private HotelController hotelController;
-    private RoomController roomController;
 
     public Controller(HotelList hotelList, GUI gui) {
         this.hotelList = hotelList;
         this.gui = gui;
         this.hotelController = new HotelController(hotelList, gui);
-        // updateView();
 
         gui.setActionListener(this);
         gui.setDocumentListener(this);
-        // gui.setListActionListener(this);
         gui.setMouseListener(this);
         gui.setChangeListener(this);
     }
@@ -46,20 +42,9 @@ public class Controller implements ActionListener, DocumentListener,
         hotelController.updateHotelList(hotelList.getHotels());
     }
 
-    public void updateCreateHotel() {
-        gui.clearCreateHotel();
-    }
-
-    public void updateRoomBooking() {
-        gui.clearBookingInfo();
-        gui.updateBookingRelated();
-        // gui.updateLowLevelReservationNum();
-    }
-
     public void updateHotelView() {
         gui.setSelectedHotelName(hotel.getName());
     }
-
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -88,21 +73,16 @@ public class Controller implements ActionListener, DocumentListener,
                 gui.setTotalHotels(hotelList.getHotels().size());            
 
                 updateHotelList();
-                updateCreateHotel();
+                gui.clearCreateHotel();
                 gui.updateManageHotel();
                 break;
             
             case "CLEAR_HOTEL":
-                updateCreateHotel();
+                gui.clearCreateHotel();
                 break;
 
             case "NEW_BOOKING":
                 hotelController.bookingValidation();
-                break;
-
-            case "SELECT_HOTEL":
-
-                updateHotelView();
                 break;
 
             case "ROOM_DATE_AVAIL":
@@ -113,13 +93,13 @@ public class Controller implements ActionListener, DocumentListener,
             case "ROOM_INFO_SHOW":
                 System.out.println("Room Info Show DEBUG");
                 hotelController.updateLowLevelRoomInfo();
-                gui.updateLowLevelRoomInfo();
+                gui.updateLowRoomReservationInfo();
                 break;
 
             case "RESERVATION_INFO_SHOW":
                 System.out.println("Reservation Info Show DEBUG");
-                hotelController.updateLowLevelReservationInfo();
-                gui.updateLowLevelReservationInfo();
+                hotelController.updateLowRoomReservationInfo();
+                gui.updateLowRoomReservationInfo();
                 break;
 
             case "CHANGE_HOTEL_NAME":
@@ -170,6 +150,7 @@ public class Controller implements ActionListener, DocumentListener,
             case "UPDATE_DATE_MODIFIER":
                 hotelController.updateDateModifier();
                 break;
+                
             case "REMOVE_HOTEL":
                 hotelController.removeHotel();
                 updateHotelList();
@@ -178,7 +159,8 @@ public class Controller implements ActionListener, DocumentListener,
             case "FINALIZE_BOOKING":
                 hotel = hotelList.getHotels().get(hotelIndex);
                 hotelController.bookRoomForSelectedHotel();
-                updateRoomBooking();
+                gui.clearBookingInfo();
+                gui.updateBookingRelated();
                 updateRoomsToRemove(hotel);
                 updateReserationsToRemove(hotel);
                 break;
@@ -189,9 +171,6 @@ public class Controller implements ActionListener, DocumentListener,
         private HotelList hotelList;
         private GUI gui;
         private Hotel selectedHotel;
-        private Room room;
-        private DeluxeRoom deluxeRoom;
-        private ExecutiveRoom execRoom;
         private ArrayList<Room> baseRooms;
         private ArrayList<DeluxeRoom> deluxeRooms;
         private ArrayList<ExecutiveRoom> execRooms;
@@ -231,14 +210,18 @@ public class Controller implements ActionListener, DocumentListener,
 
         int response = JOptionPane.showConfirmDialog(gui, "Remove hotel '" + hotel.getName() + "'?", 
         "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (response == JOptionPane.YES_OPTION) {
-                int secondResponse = JOptionPane.showConfirmDialog(gui, "CONFIRM REMOVAL OF '" + hotel.getName() + "'?", 
+    
+        if (response == JOptionPane.YES_OPTION) {
+            int secondResponse = JOptionPane.showConfirmDialog(gui, "CONFIRM REMOVAL OF '" + hotel.getName() + "'?", 
                 "Confirm Again", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                if (secondResponse == JOptionPane.NO_OPTION) {
-                    return;
-                }
-            }   
-
+            
+            if (secondResponse != JOptionPane.YES_OPTION) {
+                return; // This covers both NO_OPTION and CLOSED_OPTION
+            }
+        } 
+        else {
+            return; // This covers both NO_OPTION and CLOSED_OPTION for the first dialog
+        }
         hotelList.getHotels().remove(gui.getSelectedHotelIndex());
         gui.setTotalHotels(hotelList.getHotels().size());
         gui.setCurrentHotelName(STRING_EMPTY);
@@ -294,12 +277,11 @@ public class Controller implements ActionListener, DocumentListener,
         int startDay = gui.getSelectedDay();
         int endDay = gui.getSelectedDynamicDay();
         int response = JOptionPane.showConfirmDialog(gui, "Change Date Rate to '" + modifier + "' for Day " +
-                                                    + startDay + " to " + endDay + " ?", 
-                 "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (response == JOptionPane.NO_OPTION) {
+        startDay + " to " + endDay + " ?", 
+        "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION || response == JOptionPane.CLOSED_OPTION) {
                 return;
             }
-
     
         selectedHotel.setDatePriceModifier(startDay, endDay, modifier);
 
@@ -335,7 +317,7 @@ public class Controller implements ActionListener, DocumentListener,
 
         selectedHotel.setNewPrice(newPrice);
         selectedHotel.changeRoomPrice(newPrice);
-        gui.updateLowLevelRoomInfo();
+        gui.updateLowRoomReservationInfo();
         gui.updateBookingRelated();
     }
 
@@ -358,6 +340,9 @@ public class Controller implements ActionListener, DocumentListener,
             }
 
         selectedHotel.removeReservation(guestName);
+        gui.setReservationTotal(selectedHotel.getAllReservations());
+        gui.updateLowRoomReservationInfo();
+
         updateReserationsToRemove(selectedHotel);
     }
 
@@ -387,8 +372,13 @@ public class Controller implements ActionListener, DocumentListener,
             if (response == JOptionPane.NO_OPTION) {
                 return;
             }
+
+        int totalRooms = selectedHotel.getRooms().size() + selectedHotel.getDeluxeRooms().size() + 
+                         selectedHotel.getExecRooms().size();
         selectedHotel.removeRoom(roomName);
-        gui.updateLowLevelReservationInfo();
+        gui.setTotalRooms(totalRooms);
+        gui.updateRoomInfoFieldFormatter(totalRooms);
+        gui.updateLowRoomReservationInfo();
         gui.updateManageAllRooms();
         gui.updateBookingRelated();
         updateRoomsToRemove(selectedHotel);
@@ -406,16 +396,22 @@ public class Controller implements ActionListener, DocumentListener,
 
         int toAddRooms = Integer.parseInt(gui.getAddBaseRoomsField());
         int response = JOptionPane.showConfirmDialog(gui, "Add '" + toAddRooms + "' to existing " + 
-                        selectedHotel.getRooms().size() + " rooms?", 
+        selectedHotel.getRooms().size() + " rooms?", 
         "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (response == JOptionPane.NO_OPTION) {
-                return;
-            }
+        if (response == JOptionPane.NO_OPTION || response == JOptionPane.CLOSED_OPTION) {
+            return;
+        }
+
+
+        int totalRooms = selectedHotel.getRooms().size() + selectedHotel.getDeluxeRooms().size() + 
+        selectedHotel.getExecRooms().size();
 
         selectedHotel.addRooms(toAddRooms, 0, 0);
         gui.setSelectedHotelRoomSize(hotel.getRooms().size());
-        gui.setTotalRooms(hotel.getRooms().size() + 
-            hotel.getDeluxeRooms().size() + hotel.getExecRooms().size());
+        gui.setTotalRooms(totalRooms);
+        gui.updateLowRoomReservationInfo();
+        gui.updateRoomInfoFieldFormatter(totalRooms);
+
     
     }
 
@@ -436,10 +432,14 @@ public class Controller implements ActionListener, DocumentListener,
                 return;
             }
 
+        int totalRooms = selectedHotel.getRooms().size() + selectedHotel.getDeluxeRooms().size() +
+            selectedHotel.getExecRooms().size();
+
         selectedHotel.addRooms(0, toAddDeluxeRooms, 0);
         gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
-        gui.setTotalRooms(hotel.getRooms().size() + 
-            hotel.getDeluxeRooms().size() + hotel.getExecRooms().size());
+        gui.setTotalRooms(totalRooms);
+        gui.updateLowRoomReservationInfo();
+        gui.updateRoomInfoFieldFormatter(totalRooms);
    
     }
 
@@ -459,11 +459,15 @@ public class Controller implements ActionListener, DocumentListener,
             if (response == JOptionPane.NO_OPTION) {
                 return;
             }
-
+        
+        int totalRooms = selectedHotel.getRooms().size() + selectedHotel.getDeluxeRooms().size() +
+            selectedHotel.getExecRooms().size();
         selectedHotel.addRooms(0, 0, toAddExecRooms);
         gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
-        gui.setTotalRooms(hotel.getRooms().size() + 
-            hotel.getDeluxeRooms().size() + hotel.getExecRooms().size());
+        gui.setTotalRooms(totalRooms);
+        gui.updateLowRoomReservationInfo();
+        gui.updateRoomInfoFieldFormatter(totalRooms);
+        
     }
 
     public void changeHotelName() {
@@ -485,7 +489,7 @@ public class Controller implements ActionListener, DocumentListener,
         hotel.setName(gui.getChangeHotelNameFieldText());
     }
 
-    public void updateLowLevelReservationInfo() {
+    public void updateLowRoomReservationInfo() {
         int reservationNum;
         String guestName, checkInDate, checkOutDate, discountCode;
         double bookingPrice;
@@ -497,7 +501,6 @@ public class Controller implements ActionListener, DocumentListener,
         }
         hotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
         gui.setReservationTotal(hotel.getAllReservations());
-        // gui.updateLowLevelReservationNum();
         reservationNum = Integer.parseInt(gui.getReservationInfoTextField()) - 1;
         
         reservation = reservations.get(reservationNum);
@@ -509,13 +512,11 @@ public class Controller implements ActionListener, DocumentListener,
                        Integer.parseInt(checkOutDate), 
                        discountCode));
 
-
-
-        gui.setGuestName(reservation.getGuestName());
-        gui.setCheckInDate(Integer.toString(reservation.getCheckInDate()));
-        gui.setCheckOutDate(Integer.toString(reservation.getCheckOutDate()));
-        if (selectedHotel.getDiscountCode(reservation.getDiscountCode()) != 1.0)
-            gui.setDiscountCode(reservation.getDiscountCode());
+        gui.setGuestName(guestName);
+        gui.setCheckInDate(checkInDate);
+        gui.setCheckOutDate(checkOutDate);
+        if (selectedHotel.getDiscountCode(discountCode) != 1.0)
+            gui.setDiscountCode(discountCode);
         else
             gui.setDiscountCode("N/A");
             
@@ -576,7 +577,7 @@ public class Controller implements ActionListener, DocumentListener,
         gui.setRoomPrice(roomPrice);
 
         setReservations(reservations);
-        gui.updateLowLevelReservationNum();
+        gui.updateLowRoomReservationInfo();
     }
 
     public void setRoomPrice(double roomPrice) {
@@ -724,15 +725,6 @@ public class Controller implements ActionListener, DocumentListener,
 
 }
 
-    public class RoomController {
-        private GUI gui;
-    
-        public RoomController(GUI gui) {
-            this.gui = gui;
-        }
-
-    }
-
     @Override
     public void insertUpdate(DocumentEvent e) {
 
@@ -827,7 +819,7 @@ public class Controller implements ActionListener, DocumentListener,
         gui.setTotalRooms(totalRooms);
 
         gui.updateBookingRelated();
-        gui.updateLowLevelReservationInfo();
+        gui.updateLowRoomReservationInfo();
 
         gui.updateManageHotel();
         gui.updateManageAllRooms();

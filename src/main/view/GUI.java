@@ -123,8 +123,7 @@ public class GUI extends JFrame {
         gridBagLayoutConfig(upperPanel, upperRightManagePanel, 1, 0, 0.65, 1.0);
 
         // Lower row configuration (80/20 split)
-        gridBagLayoutConfig(lowerPanel, lowerLeftTabbedPane, 0, 0, 0.5, 1.0);
-        gridBagLayoutConfig(lowerPanel, lowerRightFiller, 1, 0, 0.5, 1.0);  
+        gridBagLayoutConfig(lowerPanel, lowerLeftTabbedPane, 0, 0, 1.0, 1.0);
         
         add(upperPanel);
         add(lowerPanel);
@@ -1397,17 +1396,20 @@ public class GUI extends JFrame {
         earningsValueLabel.setText(" " + String.format("%.2f", totalHotelEarnings));
     }
 
-    public void updateLowLevelRoomInfo() {
-        roomInfoLabel.setText("Room Info (1-" + totalRooms + ")");
+    public void updateLowRoomReservationInfo() {
+        // ROOM
+        if (totalRooms == 1)
+            roomInfoLabel.setText("Room Info (1)");
+        else
+            roomInfoLabel.setText("Room Info (1-" + totalRooms + ")");
+        
         roomNameLabel.setText("Room Name: " + roomName);
         roomPriceLabel.setText("Room Price: " + roomPrice);
         roomOccupancyLabel.setText("Room Vacancy: ");
         roomOccupancyValueLabel.setText(roomOccupancy);
-    }
 
-    public void updateLowLevelReservationNum() {
+        // RESERVATION
         updateReservationInfoFieldFormatter(reservationTotal);
-
         if (reservationTotal >= 1) {
             reservationInfoField.setEnabled(true);
             reservationInfoBtn.setEnabled(true);
@@ -1421,9 +1423,6 @@ public class GUI extends JFrame {
             reservationInfoField.setEnabled(false);
             reservationInfoBtn.setEnabled(false);
         }
-    }
-
-    public void updateLowLevelReservationInfo() {
         reservationGuestLabel.setText("Guest Name: " + guestName);
         reservationCheckInLabel.setText("Check-In Date: " + checkInDate);
         reservationCheckOutLabel.setText("Check-Out Date: " + checkOutDate);
