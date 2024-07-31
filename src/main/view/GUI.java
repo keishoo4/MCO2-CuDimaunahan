@@ -29,21 +29,23 @@ public class GUI extends JFrame {
                    upperLeftCreatePanel, upperRightManagePanel, lowerRightFiller, 
                    guestNamePanel, checkInPanel, checkOutPanel, discountCodePanel, roomTypePanel, 
                    discountCodeFlowPanel, roomDateAvailPanel, 
-                   changeHotelNamePanel1, addRoomsPanel2, removeRoomAndBookingPanel3, updateRoomPricePanel4,
-                   updateDateModifierPanel5, removeReservationPanel6, removeHotelPanel7;
+                   changeHotelNamePanel1, addRoomsPanel2, removeRoomAndBookingPanel3, updateRoomPriceAndDateModifyPanel4,
+                   updateDateModifierPanel4, removeHotelPanel7;
     private JLabel guestLabel, checkInLabel, checkOutLabel, discountCodeLabel, earningsValueLabel,
                    totalBaseRoomsLabel, totalDeluxeRoomsLabel, totalExecRoomsLabel,
                    roomDateAvailLabel, roomInfoLabel, reservationInfoLabel,
                    roomNameLabel, roomPriceLabel, roomOccupancyLabel, roomOccupancyValueLabel,
                    reservationInfoReminderLabel, reservationGuestLabel, reservationCheckInLabel, 
                    reservationCheckOutLabel, reservationDiscountCodeLabel, reservationBookingPriceLabel,
-                   baseRoomsLabel, deluxeRoomsLabel, execRoomsLabel;
+                   baseRoomsLabel, deluxeRoomsLabel, execRoomsLabel,
+                   updateDateModifierLabel;
 
     private JTextField hotelNameField, guestNameField, discountCodeField,
-                       changeHotelNameField, updateRoomPriceField;
+                       changeHotelNameField;
     private JFormattedTextField checkInField, checkOutField, 
                                 roomDateAvailField, roomInfoField, reservationInfoField,
-                                addBaseRoomsField, addDeluxeRoomsField, addExecRoomsField;
+                                addBaseRoomsField, addDeluxeRoomsField, addExecRoomsField,
+                                updateRoomPriceField, updateDateModifierField;
     private JButton createHotelBtn, finalizeBookingBtn, clearBtn, closeTabBtn,
                     checkAvailBtn, roomDateAvailBtn, roomInfoBtn, reservationInfoBtn,
                     manageHotelBtn, backToFrontManageBtn, changeHotelNameBtn, 
@@ -52,6 +54,7 @@ public class GUI extends JFrame {
                     removeHotelBtn;
     private JSlider slider1, slider2, slider3;
     private JComboBox<String> comboBox, roomsWithoutReservationsComboBox, reservationsComboBox;
+    private JComboBox<Integer> dayComboBox, dynamicDayComboBox;
     private JTabbedPane lowerLeftTabbedPane;
     private DefaultListModel<Hotel> hotelListModel;
     private DefaultListModel<Room> roomDateAvailListModel;
@@ -276,7 +279,7 @@ public class GUI extends JFrame {
         checkInPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         checkInLabel = new JLabel("   Check-In Date: ");
 
-        numberFormatter = createNumberFormatter(1, 31);
+        numberFormatter = createIntegerFormatter(1, 31);
 
         checkInField = new JFormattedTextField(numberFormatter);
         checkInField.setColumns(5); // Set the column size
@@ -286,7 +289,7 @@ public class GUI extends JFrame {
         checkOutPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         checkOutLabel = new JLabel("Check-Out Date: ");
 
-        numberFormatter = createNumberFormatter(1, 31);
+        numberFormatter = createIntegerFormatter(1, 31);
         checkOutField = new JFormattedTextField(numberFormatter);
         checkOutField.setColumns(5);
 
@@ -378,7 +381,7 @@ public class GUI extends JFrame {
         manageHotelBtn.setActionCommand("MANAGE_HOTEL"); // For Controller
 
         //MAIN MANAGER
-        manageHotelMainPanel.setLayout(new GridLayout(7, 1));
+        manageHotelMainPanel.setLayout(new GridLayout(5, 1));
 
         // CHANGE HOTEL NAME
         changeHotelNamePanel1 = new JPanel();
@@ -398,7 +401,7 @@ public class GUI extends JFrame {
         baseRoomsLabel = new JLabel("Base (" + 0 + "-" + (50-selectedHotelRoomSize) + ") ");
         addRoomsBtn = new JButton("Add");
         addRoomsBtn.setActionCommand("ADD_BASE_ROOMS"); // For Controller
-        numberFormatter = createNumberFormatter(1, 50-selectedHotelRoomSize);
+        numberFormatter = createIntegerFormatter(1, 50-selectedHotelRoomSize);
         addBaseRoomsField = new JFormattedTextField(numberFormatter);
         addBaseRoomsField.setMaximumSize
                              (new Dimension(30, addRoomsBtn.getPreferredSize().height+1));
@@ -409,7 +412,7 @@ public class GUI extends JFrame {
         addRoomsPanel2.add(Box.createHorizontalStrut(10));
         // DELUXE ROOMS
         deluxeRoomsLabel = new JLabel("Deluxe (0-" + remainingDeluxeRooms + ") ");
-        numberFormatter = createNumberFormatter(0, remainingDeluxeRooms);
+        numberFormatter = createIntegerFormatter(0, remainingDeluxeRooms);
         addDeluxeRoomsField = new JFormattedTextField(numberFormatter);
         addDeluxeRoomsField.setMaximumSize
                              (new Dimension(30, addRoomsBtn.getPreferredSize().height+1));
@@ -422,7 +425,7 @@ public class GUI extends JFrame {
         addRoomsPanel2.add(Box.createHorizontalStrut(10));
         // EXECUTIVE ROOMS
         execRoomsLabel = new JLabel("Executive (0-" + remainingExecRooms + ") ");
-        numberFormatter = createNumberFormatter(0, remainingExecRooms);
+        numberFormatter = createIntegerFormatter(0, remainingExecRooms);
         addExecRoomsField = new JFormattedTextField(numberFormatter);
         addExecRoomsField.setMaximumSize
                            (new Dimension(30, addRoomsBtn.getPreferredSize().height+1));
@@ -449,19 +452,39 @@ public class GUI extends JFrame {
         addReservationsComboBox();
         removeRoomAndBookingPanel3.add(reservationsComboBox);
 
-
-
         // UPDATE ROOM PRICE
-        updateRoomPricePanel4 = new JPanel();
-        updateRoomPricePanel4.setLayout(new BoxLayout(updateRoomPricePanel4, BoxLayout.X_AXIS));
+        updateRoomPriceAndDateModifyPanel4 = new JPanel();
+        updateRoomPriceAndDateModifyPanel4.setLayout(new BoxLayout(updateRoomPriceAndDateModifyPanel4, BoxLayout.X_AXIS));
         updateRoomsPriceBtn = new JButton("Update Room Price");
         updateRoomsPriceBtn.setActionCommand("UPDATE_ROOM_PRICE"); // For Controller
-        numberFormatter = createNumberFormatter(1, 10000);
+        numberFormatter = createIntegerFormatter(1, 10000);
         updateRoomPriceField = new JFormattedTextField(numberFormatter);
         updateRoomPriceField.setMaximumSize
-                             (new Dimension(100, updateRoomsPriceBtn.getPreferredSize().height+1));
-        updateRoomPricePanel4.add(updateRoomsPriceBtn);
-        updateRoomPricePanel4.add(updateRoomPriceField);
+                             (new Dimension(75, updateRoomsPriceBtn.getPreferredSize().height+1));
+        updateRoomPriceAndDateModifyPanel4.add(updateRoomsPriceBtn);
+        updateRoomPriceAndDateModifyPanel4.add(updateRoomPriceField);
+        updateRoomPriceAndDateModifyPanel4.add(Box.createHorizontalStrut(20));
+        // DATE MODIFIER
+        updateDateModifierBtn = new JButton("Date Rate (50%-150%)");
+        updateDateModifierBtn.setActionCommand("UPDATE_DATE_MODIFIER"); // For Controller
+        numberFormatter = createDoubleFormatter(1.0, 150.0);
+        updateDateModifierField = new JFormattedTextField(numberFormatter);
+        updateDateModifierField.setMaximumSize
+                             (new Dimension(50, updateRoomsPriceBtn.getPreferredSize().height+1));
+        updateDateModifierLabel = new JLabel("Pick Date-Interval");
+
+
+        updateRoomPriceAndDateModifyPanel4.add(updateDateModifierBtn);
+        updateRoomPriceAndDateModifyPanel4.add(updateDateModifierField);
+        updateRoomPriceAndDateModifyPanel4.add(Box.createHorizontalStrut(10));
+        initiateDayComboBoxes();
+        updateRoomPriceAndDateModifyPanel4.add(dayComboBox);
+        updateRoomPriceAndDateModifyPanel4.add(Box.createHorizontalStrut(10));
+        updateRoomPriceAndDateModifyPanel4.add(dynamicDayComboBox);
+        updateRoomPriceAndDateModifyPanel4.add(Box.createHorizontalStrut(10));
+        updateRoomPriceAndDateModifyPanel4.add(updateDateModifierLabel);
+
+        
 
         // REMOVE HOTEL
         removeHotelPanel7 = new JPanel();
@@ -490,7 +513,7 @@ public class GUI extends JFrame {
         manageHotelMainPanel.add(changeHotelNamePanel1);
         manageHotelMainPanel.add(addRoomsPanel2);
         manageHotelMainPanel.add(removeRoomAndBookingPanel3);
-        manageHotelMainPanel.add(updateRoomPricePanel4);
+        manageHotelMainPanel.add(updateRoomPriceAndDateModifyPanel4);
 
         manageHotelMainPanel.add(removeHotelPanel7);
         // manageHotelMainPanel.add(backToFrontManageBtn);
@@ -524,7 +547,7 @@ public class GUI extends JFrame {
 
     // ADD ROOMS
     public void updateNumberFieldFormatter(JFormattedTextField field, int min, int max) {
-        NumberFormatter numberFormatter = createNumberFormatter(min, max);
+        NumberFormatter numberFormatter = createIntegerFormatter(min, max);
         field.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
     }
 
@@ -598,6 +621,9 @@ public class GUI extends JFrame {
                                          removeRoomBtn.getPreferredSize().height));
     }
     public String getSelectedRoomForRemoval() {
+        if (roomsWithoutReservationsComboBox.getSelectedItem() == null) {
+            return "";
+        }
         return roomsWithoutReservationsComboBox.getSelectedItem().toString();
     }
     public void updateRoomsForRemoval(String roomsNoReserve[]) {
@@ -611,6 +637,9 @@ public class GUI extends JFrame {
                                          removeReservationBtn.getPreferredSize().height));
     }
     public String getSelectedReservationForRemoval() {
+        if (reservationsComboBox.getSelectedItem() == null) {
+            return "";
+        }
         return reservationsComboBox.getSelectedItem().toString();
     }
     public void updateReservationsForRemoval(String reservations[]) {
@@ -621,6 +650,45 @@ public class GUI extends JFrame {
     // UPDATE ROOM PRICES
     public String getUpdateRoomPriceField() {
         return updateRoomPriceField.getText();
+    }
+
+    // DATE MODIFIER
+    public void initiateDayComboBoxes() {
+        dayComboBox = new JComboBox<>();
+        for (int i = 1; i <= 31; i++) {
+            dayComboBox.addItem(i);
+        }
+        dayComboBox.setMaximumSize(new Dimension(50, 
+        removeReservationBtn.getPreferredSize().height));
+
+        dynamicDayComboBox = new JComboBox<>();
+        dynamicDayComboBox.setMaximumSize(new Dimension(50, 
+        removeReservationBtn.getPreferredSize().height));
+
+        dayComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateDynamicComboBox();
+            }
+        });
+        dayComboBox.setSelectedIndex(0);
+    }
+    private void updateDynamicComboBox() {
+        int selectedDay = (int) dayComboBox.getSelectedItem();
+        dynamicDayComboBox.removeAllItems();
+        for (int i = selectedDay; i <= 31; i++) {
+            dynamicDayComboBox.addItem(i);
+        }
+    }   
+    public int getSelectedDay() {
+        return (int) dayComboBox.getSelectedItem();
+    }
+    public int getSelectedDynamicDay() {
+        return (int) dynamicDayComboBox.getSelectedItem();
+    }
+
+    public String getUpdateDateModifierField() {
+        return updateDateModifierField.getText();
     }
 
 
@@ -640,7 +708,7 @@ public class GUI extends JFrame {
         panel.add(component, gbc);
     }
 
-    private NumberFormatter createNumberFormatter(int minNum, int maxNum) {
+    private NumberFormatter createIntegerFormatter(int minNum, int maxNum) {
         NumberFormat format = NumberFormat.getInstance(); // Step 1: Create a NumberFormat instance
         format.setGroupingUsed(false); // Disable comma grouping
     
@@ -654,6 +722,28 @@ public class GUI extends JFrame {
             }
         };
         numberFormatter.setValueClass(Integer.class);
+        numberFormatter.setMinimum(minNum); // Minimum value
+        numberFormatter.setMaximum(maxNum); // Maximum value
+        numberFormatter.setAllowsInvalid(false); // Don't allow invalid values
+    
+        return numberFormatter;
+    }
+
+    private NumberFormatter createDoubleFormatter(double minNum, double maxNum) {
+        NumberFormat format = NumberFormat.getInstance(); // Step 1: Create a NumberFormat instance
+        format.setGroupingUsed(false); // Disable comma grouping
+        format.setMaximumFractionDigits(2);
+
+        NumberFormatter numberFormatter = new NumberFormatter(format) { // Step 2: Set up a NumberFormatter
+            @Override
+            public Object stringToValue(String string) throws ParseException {
+                if (string == null || string.trim().isEmpty()) {
+                    return null; // Return null for empty input
+                }
+                return super.stringToValue(string);
+            }
+        };
+        numberFormatter.setValueClass(Double.class);
         numberFormatter.setMinimum(minNum); // Minimum value
         numberFormatter.setMaximum(maxNum); // Maximum value
         numberFormatter.setAllowsInvalid(false); // Don't allow invalid values
@@ -965,7 +1055,7 @@ public class GUI extends JFrame {
     public void showLowHotelInfo() {
         
         // Column 1 - Room-Date Availability        
-        numberFormatter = createNumberFormatter(1, 31);
+        numberFormatter = createIntegerFormatter(1, 31);
         roomDateAvailField = new JFormattedTextField(numberFormatter);
         roomDateAvailField.setColumns(5);
         roomDateAvailField.setPreferredSize(new Dimension(10, 20));
@@ -985,7 +1075,7 @@ public class GUI extends JFrame {
 
 
         // Column 2 - Room Info
-        numberFormatter = createNumberFormatter(1, totalRooms);
+        numberFormatter = createIntegerFormatter(1, totalRooms);
         roomInfoField = new JFormattedTextField(numberFormatter);
         roomInfoField.setColumns(5);
         roomInfoField.setPreferredSize(new Dimension(10, 20));
@@ -1011,7 +1101,7 @@ public class GUI extends JFrame {
             roomInfoLabel.setText("Room Info (1)");
 
         // Column 3 - Reservation Info
-        numberFormatter = createNumberFormatter(1, reservationTotal);
+        numberFormatter = createIntegerFormatter(1, reservationTotal);
         reservationInfoField = new JFormattedTextField(numberFormatter);
         reservationInfoField.setColumns(5);
         reservationInfoField.setPreferredSize(new Dimension(10, 20));
@@ -1044,11 +1134,11 @@ public class GUI extends JFrame {
     }
 
     public void updateRoomInfoFieldFormatter(int totalRooms) {
-        NumberFormatter numberFormatter = createNumberFormatter(1, totalRooms);
+        NumberFormatter numberFormatter = createIntegerFormatter(1, totalRooms);
         roomInfoField.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
     }
     public void updateReservationInfoFieldFormatter(int totalReservations) {
-        NumberFormatter numberFormatter = createNumberFormatter(1, totalReservations);
+        NumberFormatter numberFormatter = createIntegerFormatter(1, totalReservations);
         reservationInfoField.setFormatterFactory(new DefaultFormatterFactory(numberFormatter));
     }    
 
@@ -1163,8 +1253,9 @@ public class GUI extends JFrame {
         addDeluxeRoomsBtn.addActionListener(listener);
         addExecRoomsBtn.addActionListener(listener);
         removeRoomBtn.addActionListener(listener);
+        removeReservationBtn.addActionListener(listener);
         updateRoomsPriceBtn.addActionListener(listener);
-
+        updateDateModifierBtn.addActionListener(listener);
         removeHotelBtn.addActionListener(listener);
 
     }
@@ -1183,6 +1274,7 @@ public class GUI extends JFrame {
         addDeluxeRoomsField.getDocument().addDocumentListener(listener);
         addExecRoomsField.getDocument().addDocumentListener(listener);
         updateRoomPriceField.getDocument().addDocumentListener(listener);
+        updateDateModifierField.getDocument().addDocumentListener(listener);
 
     }
 
@@ -1339,12 +1431,16 @@ public class GUI extends JFrame {
     }
 
     public void updateManageHotel() {
-        if (currentHotelName.equals("") || selectedHotelIndex == -1) {
-            manageHotelBtn.setText("Manage Hotel");
-            manageHotelBtn.setEnabled(false);
+        backToFrontManageBtn.doClick();
+        if (currentHotelName != null) {
+            if (currentHotelName.equals("") || selectedHotelIndex == -1) {
+                manageHotelBtn.setText("Manage Hotel");
+                manageHotelBtn.setEnabled(false);
+            }
+            else
+                manageHotelBtn.setText("Manage '" + currentHotelName + "'");
+    
         }
-        else
-            manageHotelBtn.setText("Manage '" + currentHotelName + "'");
     }
 
 }

@@ -1,6 +1,7 @@
 package model.hotel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import utils.ScannerUtil;
 
@@ -853,6 +854,14 @@ public class Hotel {
         datePriceModifiers[day - 1] = priceModifier / 100; // sets day in the array to its price modifier 
     }
 
+    public void setDatePriceModifier(int startDay, int endDay, double priceModifier) {  
+        int day;
+        for (day = startDay; day <= endDay; day++) {
+            datePriceModifiers[day-1] = priceModifier / 100; // sets day in the array to its price modifier
+        }
+    }
+
+
      /**
      * Retrieves the date price modifier for a specific day.
      *
@@ -916,6 +925,32 @@ public class Hotel {
         System.out.println("Reservation " + resNum + " of " +
                 rooms.get(roomNum).getName() + " removed!\n");
     }
+
+    public void removeReservation(String name) {
+        // Iterate through standard rooms
+        removeReservationFromRooms(rooms, name);
+
+        // Iterate through deluxe rooms
+        removeReservationFromRooms(deluxeRooms, name);
+
+        // Iterate through executive rooms
+        removeReservationFromRooms(execRooms, name);
+    }
+
+    private <T extends Room> void removeReservationFromRooms(ArrayList<T> rooms, String name) {
+        for (T room : rooms) {
+            Iterator<Reservation> iterator = room.getReservations().iterator();
+            while (iterator.hasNext()) {
+                Reservation reservation = iterator.next();
+                if (reservation.getGuestName().equals(name)) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+
+
 
      /**
      * Calculates the total monthly earnings of the hotel by summing up the daily earnings for each day in the month.

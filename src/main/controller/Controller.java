@@ -8,6 +8,8 @@ import javax.swing.event.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import model.hotel.HotelList;
 import model.hotel.Hotel;
@@ -87,6 +89,7 @@ public class Controller implements ActionListener, DocumentListener,
 
                 updateHotelList();
                 updateCreateHotel();
+                gui.updateManageHotel();
                 break;
             
             case "CLEAR_HOTEL":
@@ -151,11 +154,18 @@ public class Controller implements ActionListener, DocumentListener,
                 updateRoomsToRemove(hotel);
                 break;
 
+            case "REMOVE_RESERVATION":
+                hotelController.removeReservation();
+                break;
+
             case "UPDATE_ROOM_PRICE":
                 hotelController.updateRoomsPrice();
                 gui.updateBookingRelated();
                 break;
 
+            case "UPDATE_DATE_MODIFIER":
+                hotelController.updateDateModifier();
+                break;
             case "REMOVE_HOTEL":
                 hotelController.removeHotel();
                 updateHotelList();
@@ -236,6 +246,43 @@ public class Controller implements ActionListener, DocumentListener,
 
     }
 
+    public void updateDateModifier() {
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        String dateModifier = gui.getUpdateDateModifierField();
+
+        if (dateModifier.equals("")) {
+            JOptionPane.showMessageDialog(gui, "Please enter a date modifier.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double modifier = Integer.parseInt(dateModifier);
+
+        if (modifier < 50) {
+            JOptionPane.showMessageDialog(gui, "Date modifier cannot be less than 50%.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (modifier > 150) {
+            JOptionPane.showMessageDialog(gui, "Date modifier  cannot be more than 150%", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int startDay = gui.getSelectedDay();
+        int endDay = gui.getSelectedDynamicDay();
+        int response = JOptionPane.showConfirmDialog(gui, "Change Date Rate to '" + modifier + "' for Day " +
+                                                    + startDay + " to " + endDay + " ?", 
+                 "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+
+    
+        selectedHotel.setDatePriceModifier(startDay, endDay, modifier);
+
+    }
+
     public void updateRoomsPrice() {
         selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
 
@@ -270,9 +317,48 @@ public class Controller implements ActionListener, DocumentListener,
         gui.updateBookingRelated();
     }
 
+    public void removeReservation() {
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+        String reservationName = gui.getSelectedReservationForRemoval();
+        String guestName = extractName(reservationName);
+
+        System.out.println(guestName);
+        if (guestName.equals(STRING_EMPTY)) {
+            JOptionPane.showMessageDialog(gui, "No reservation to remove.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int response = JOptionPane.showConfirmDialog(gui, "Remove reservation '" + reservationName + "'?",
+        "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+
+
+    }
+
+    public String extractName(String input) {
+        String pattern = "RM\\d+-(?:BS|DL|EX): \\(\\d+-\\d+\\) - (.+)$";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(input);
+        
+        if (m.find()) {
+            return m.group(1).trim();
+        }
+        return null;
+    }
+
     public void removeRoom() {
         selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
         String roomName = gui.getSelectedRoomForRemoval();
+
+        if (roomName.equals(STRING_EMPTY)) {
+            JOptionPane.showMessageDialog(gui, "No room to remove.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         int response = JOptionPane.showConfirmDialog(gui, "Remove room '" + roomName + "'?", 
         "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (response == JOptionPane.NO_OPTION) {
@@ -690,6 +776,7 @@ public class Controller implements ActionListener, DocumentListener,
 
                 hotel = hotelList.getHotels().get(hotelListIndex);
                 setCurrentHotelInfo(hotel);
+                gui.updateManageHotel();
             } 
             else {
                 System.out.println("Selected tab not found in hotelTabIndices map");
