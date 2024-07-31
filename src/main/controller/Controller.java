@@ -161,12 +161,12 @@ public class Controller implements ActionListener, DocumentListener,
                 updateHotelList();
                 break;
 
-
-
             case "FINALIZE_BOOKING":
+                hotel = hotelList.getHotels().get(hotelIndex);
                 hotelController.bookRoomForSelectedHotel();
                 updateRoomBooking();
                 updateRoomsToRemove(hotel);
+                updateReserationsToRemove(hotel);
                 break;
         }
     }
@@ -721,17 +721,18 @@ public class Controller implements ActionListener, DocumentListener,
         gui.updateManageAllRooms();
         updateRoomsToRemove(hotel);
         
-        // updateReservationToRemove(hotel);
+        updateReserationsToRemove(hotel);
     }
 
     public void updateReserationsToRemove(Hotel hotel) {
         ArrayList<String> allReservations = new ArrayList<String>();
         for (Room room : hotel.getRooms()) {
             for (Reservation reservation : room.getReservations()) {
-                allReservations.add(reservation.getGuestName() + " "
-                                + reservation.getRoom().getName() + " "
+                allReservations.add(reservation.getRoom().getName() + ":" 
+                                +  " ("
                                 + reservation.getCheckInDate() + "-"
-                                + reservation.getCheckOutDate());
+                                + reservation.getCheckOutDate() + ") - "
+                                + reservation.getGuestName());
             }
         }
         for (DeluxeRoom room : hotel.getDeluxeRooms()) {

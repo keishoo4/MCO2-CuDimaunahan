@@ -101,7 +101,8 @@ public class GUI extends JFrame {
     
         setLayout(new GridLayout(2, 1));
 
-        upperPanel = new JPanel(new GridLayout(1, 2));
+        // upperPanel = new JPanel(new GridLayout(1, 2));
+        upperPanel = new JPanel(new GridBagLayout());
         lowerPanel = new JPanel(new GridBagLayout());
         
         upperLeftCreatePanel = new JPanel();
@@ -115,8 +116,8 @@ public class GUI extends JFrame {
         
         init(this); // Main program UI
 
-        upperPanel.add(upperLeftCreatePanel);
-        upperPanel.add(upperRightManagePanel);
+        gridBagLayoutConfig(upperPanel, upperLeftCreatePanel, 0, 0, 0.35, 1.0);
+        gridBagLayoutConfig(upperPanel, upperRightManagePanel, 1, 0, 0.65, 1.0);
 
         // Lower row configuration (80/20 split)
         gridBagLayoutConfig(lowerPanel, lowerLeftTabbedPane, 0, 0, 0.5, 1.0);
@@ -447,7 +448,7 @@ public class GUI extends JFrame {
         removeRoomAndBookingPanel3.add(removeReservationBtn);
         addReservationsComboBox();
         removeRoomAndBookingPanel3.add(reservationsComboBox);
-        
+
 
 
         // UPDATE ROOM PRICE
@@ -606,7 +607,7 @@ public class GUI extends JFrame {
     // REMOVE RESERVATION
     public void addReservationsComboBox() {
         reservationsComboBox = new JComboBox<>();
-        reservationsComboBox.setMaximumSize(new Dimension(75, 
+        reservationsComboBox.setMaximumSize(new Dimension(175, 
                                          removeReservationBtn.getPreferredSize().height));
     }
     public String getSelectedReservationForRemoval() {
