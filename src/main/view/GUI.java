@@ -82,7 +82,7 @@ public class GUI extends JFrame {
                    discountCode = "";
 
     private int totalHotels = 0, 
-                totalRooms, totalDeluxeRooms, totalExecRooms, selectedHotelRoomSize, selectedHotelDeluxeRooms, selectedHotelExecRooms,
+                totalRooms, totalDeluxeRooms, totalBaseRooms, totalExecRooms, selectedHotelRoomSize, selectedHotelDeluxeRooms, selectedHotelExecRooms,
                 reservationTotal = 0,
                 baseRoomOcc = 0, deluxeRoomOcc = 0, execRoomOcc = 0,
                 remainingBaseRooms, maxDeluxeRooms, remainingDeluxeRooms, 
@@ -568,14 +568,14 @@ public class GUI extends JFrame {
     }
 
     public void setRemainingDeluxeRooms() {
-        int maxDeluxe = (int) Math.floor(totalRooms * 0.6); // 3/5 ratio
-        remainingDeluxeRooms = maxDeluxe - totalDeluxeRooms;
+        int maxDeluxe = (int) Math.floor(remainingBaseRooms * 0.6); // 3/5 ratio
+        remainingDeluxeRooms = maxDeluxe;
         remainingDeluxeRooms = Math.max(remainingDeluxeRooms, 0);
     }
     
     public void setRemainingExecRooms() {
-        int maxExec = (int) Math.floor(totalRooms * 0.4); // 2/5 ratio
-        remainingExecRooms = maxExec - totalExecRooms;
+        int maxExec = (int) Math.floor(remainingBaseRooms * 0.4); // 2/5 ratio
+        remainingExecRooms = maxExec;
         remainingExecRooms = Math.max(remainingExecRooms, 0);
     }
 
