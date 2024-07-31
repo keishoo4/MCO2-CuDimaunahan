@@ -917,14 +917,10 @@ public class Hotel {
                 rooms.get(roomNum).getName() + " removed!\n");
     }
 
-     /**
-     * Calculates the total monthly earnings of the hotel by summing up the daily earnings for each day in the month.
-     *
-     * @return the total monthly earnings of the hotel.
-     */
     public double calculateMonthlyEarnings() {
         double totalEarnings = 0.0;
     
+        // Loop through each day of the month
         for (int day = 1; day <= 31; day++) {
             totalEarnings += calculateDailyEarnings(day);
         }
@@ -932,56 +928,43 @@ public class Hotel {
         return totalEarnings;
     }
     
-     /**
-     * Calculates the total daily earnings of the hotel by summing up the daily earnings 
-     * for each room type in the hotel for a given day.
-     *
-     * @param day The day for which to calculate the daily earnings.
-     * @return The total daily earnings for the hotel on the given day.
-     */
     private double calculateDailyEarnings(int day) {
         double dailyEarnings = 0.0;
     
+        // Loop through all rooms to calculate daily earnings
         for (Room room : getRooms()) {
-            dailyEarnings += calculateRoomEarnings(room, day);
+            dailyEarnings += calculateRoomDailyEarnings(room, day);
         }
     
         for (DeluxeRoom deluxeRoom : getDeluxeRooms()) {
-            dailyEarnings += calculateRoomEarnings(deluxeRoom, day);
+            dailyEarnings += calculateRoomDailyEarnings(deluxeRoom, day);
         }
     
         for (ExecutiveRoom executiveRoom : getExecRooms()) {
-            dailyEarnings += calculateRoomEarnings(executiveRoom, day);
+            dailyEarnings += calculateRoomDailyEarnings(executiveRoom, day);
         }
     
         return dailyEarnings;
     }
     
-     /**
-     * Calculates the total daily earnings of a hotel room by summing up the daily earnings 
-     * for each reservation in the room for a given day.
-     *
-     * @param room The room object for which to calculate the daily earnings.
-     * @param day The day for which to calculate the daily earnings.
-     * @return The total daily earnings for the room on the given day.
-     */
-    private double calculateRoomEarnings(Room room, int day) {
+    private double calculateRoomDailyEarnings(Room room, int day) {
         double roomDailyEarnings = 0.0;
-        
+    
         for (Reservation reservation : room.getReservations()) {
             int checkInDate = reservation.getCheckInDate();
             int checkOutDate = reservation.getCheckOutDate();
             double pricePerNight = room.getPricePerNight();
             String discountCode = reservation.getDiscountCode();
     
-            int numNights = checkOutDate - checkInDate;
-            double totalPrice = fillDates(pricePerNight, checkInDate, checkOutDate, discountCode) * numNights;
-    
-            roomDailyEarnings += totalPrice;
+            // Check if the current day is within the reservation period
+            if (day >= checkInDate && day < checkOutDate) {
+                double totalPrice = fillDates(pricePerNight, checkInDate, checkOutDate, discountCode);
+                roomDailyEarnings += totalPrice / (checkOutDate - checkInDate); // Daily earnings portion
+            }
         }
     
         return roomDailyEarnings;
-    }
+    }    
 
     /**
      * Displays the high-level information of a hotel, including the hotel name, total number of rooms,
