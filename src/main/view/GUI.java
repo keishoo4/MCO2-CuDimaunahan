@@ -2,13 +2,10 @@
 package view;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import java.awt.*;
 import javax.swing.event.*;
-import javax.swing.text.DefaultFormatter;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 
@@ -18,19 +15,18 @@ import java.text.ParseException;
 
 import model.hotel.Hotel;
 import model.hotel.Room;
-import model.hotel.Reservation;
 
 import java.util.*;
 
 public class GUI extends JFrame {
-    private JFrame mainFrame, bookingFrame;
+    private JFrame  bookingFrame;
     private JPanel upperPanel, lowerPanel,
                    hotelHighInfoPanel, hotelLowInfoPanel, 
-                   upperLeftCreatePanel, upperRightManagePanel, lowerRightFiller, 
+                   upperLeftCreatePanel, upperRightManagePanel, 
                    guestNamePanel, checkInPanel, checkOutPanel, discountCodePanel, roomTypePanel, 
                    discountCodeFlowPanel, roomDateAvailPanel, 
                    changeHotelNamePanel1, addRoomsPanel2, removeRoomAndBookingPanel3, updateRoomPriceAndDateModifyPanel4,
-                   updateDateModifierPanel4, removeHotelPanel7;
+                   removeHotelPanel7;
     private JLabel guestLabel, checkInLabel, checkOutLabel, discountCodeLabel, earningsValueLabel,
                    totalBaseRoomsLabel, totalDeluxeRoomsLabel, totalExecRoomsLabel,
                    roomDateAvailLabel, roomInfoLabel, reservationInfoLabel,
@@ -58,15 +54,12 @@ public class GUI extends JFrame {
     private JTabbedPane lowerLeftTabbedPane;
     private DefaultListModel<Hotel> hotelListModel;
     private DefaultListModel<Room> roomDateAvailListModel;
-    private DefaultListModel<String> reservationPriceBreakdownListModel;
     private JList<Hotel> hotelJList;
     private JList<Room> roomDateAvailList;
-    private JList<String> reservationPriceBreakdownList;
     private JScrollPane roomDateAvailScrollPane;
 
     private Font currentFont, newFont;
     private NumberFormatter numberFormatter;
-    private Dimension preferredSize;
 
     private Map<String, Integer> hotelTabIndices = new HashMap<String, Integer>();
 
@@ -81,12 +74,11 @@ public class GUI extends JFrame {
                    checkOutDate = "",
                    discountCode = "";
 
-    private int totalHotels = 0, 
-                totalRooms, totalDeluxeRooms, totalExecRooms, selectedHotelRoomSize, selectedHotelDeluxeRooms, selectedHotelExecRooms,
+    private int totalRooms, selectedHotelRoomSize, selectedHotelDeluxeRooms, selectedHotelExecRooms,
                 reservationTotal = 0,
                 baseRoomOcc = 0, deluxeRoomOcc = 0, execRoomOcc = 0,
                 remainingBaseRooms, maxDeluxeRooms, remainingDeluxeRooms, 
-                maxExecRooms, remainingExecRooms, remainingRooms;
+                maxExecRooms, remainingExecRooms;
 
     private double totalHotelEarnings, bookingPrice;
 
@@ -111,7 +103,6 @@ public class GUI extends JFrame {
         upperLeftCreatePanel = new JPanel();
         upperRightManagePanel = new JPanel();
         lowerLeftTabbedPane = new JTabbedPane();
-        lowerRightFiller = new JPanel();
 
         upperRightManagePanel.setBackground(Color.LIGHT_GRAY);
         upperRightManagePanel.setOpaque(true);
@@ -565,16 +556,14 @@ public class GUI extends JFrame {
         remainingBaseRooms = MAX_TOTAL_ROOMS - totalRooms;
         remainingBaseRooms = Math.max(remainingBaseRooms, 0);
     }
-
     public void setRemainingDeluxeRooms() {
-        int maxDeluxe = (int) Math.floor(totalRooms * 0.6); // 3/5 ratio
-        remainingDeluxeRooms = maxDeluxe - totalDeluxeRooms;
+        maxDeluxeRooms = (int) Math.floor(totalRooms * 0.6); // 3/5 ratio
+        remainingDeluxeRooms = maxDeluxeRooms - selectedHotelDeluxeRooms;
         remainingDeluxeRooms = Math.max(remainingDeluxeRooms, 0);
     }
-    
     public void setRemainingExecRooms() {
-        int maxExec = (int) Math.floor(totalRooms * 0.4); // 2/5 ratio
-        remainingExecRooms = maxExec - totalExecRooms;
+        maxExecRooms = (int) Math.floor(totalRooms * 0.4); // 2/5 ratio
+        remainingExecRooms = maxExecRooms - selectedHotelExecRooms;
         remainingExecRooms = Math.max(remainingExecRooms, 0);
     }
 
@@ -938,10 +927,6 @@ public class GUI extends JFrame {
 
     public void setTotalHotelEarnings(double totalHotelEarnings) {
         this.totalHotelEarnings = totalHotelEarnings;
-    }
-
-    public void setTotalHotels(int totalHotels) {
-        this.totalHotels = totalHotels;
     }
 
     public void setTotalRooms(int totalRooms) {

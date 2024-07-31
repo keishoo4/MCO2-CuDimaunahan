@@ -69,8 +69,7 @@ public class Controller implements ActionListener, DocumentListener,
                     return;
                 }
                 hotelController.addHotel(hotelName, rooms, deluxeRooms, execRooms); // From Model
-                gui.updateComboBoxItems(deluxeRooms, execRooms);
-                gui.setTotalHotels(hotelList.getHotels().size());            
+                gui.updateComboBoxItems(deluxeRooms, execRooms);          
 
                 updateHotelList();
                 gui.clearCreateHotel();
@@ -223,7 +222,6 @@ public class Controller implements ActionListener, DocumentListener,
             return; // This covers both NO_OPTION and CLOSED_OPTION for the first dialog
         }
         hotelList.getHotels().remove(gui.getSelectedHotelIndex());
-        gui.setTotalHotels(hotelList.getHotels().size());
         gui.setCurrentHotelName(STRING_EMPTY);
         gui.setSelectedHotelIndex(-1);
         gui.getBackToFrontManageBtn().doClick();
@@ -508,6 +506,12 @@ public class Controller implements ActionListener, DocumentListener,
         checkInDate = Integer.toString(reservation.getCheckInDate());
         checkOutDate = Integer.toString(reservation.getCheckOutDate());
         discountCode = reservation.getDiscountCode();
+
+        if (discountCode.equals("STAY4_GET1") 
+            && (Integer.parseInt(checkOutDate) - Integer.parseInt(checkInDate)) < 4) {
+            discountCode = "";
+        }
+
         bookingPrice = (hotel.fillDates(roomPrice, Integer.parseInt(checkInDate), 
                        Integer.parseInt(checkOutDate), 
                        discountCode));
@@ -524,7 +528,7 @@ public class Controller implements ActionListener, DocumentListener,
     }
 
     public void updateLowLevelRoomInfo() {
-        int roomNum, roomOccupancy, reservationNum;
+        int roomNum;
         String roomName, roomPrice;
 
         if (gui.getRoomInfoFieldText().equals("")) {
@@ -628,11 +632,10 @@ public class Controller implements ActionListener, DocumentListener,
         ExecutiveRoom execRoom;
         String checkIn, checkOut, guestName, discountCode;
         int roomToUse, deluxeRoomToUse, execRoomToUse,
-            availRooms, availDeluxeRooms, availExecRooms;
+            availDeluxeRooms, availExecRooms;
 
         selectedHotel   = hotelList.getHotels().get(gui.getSelectedHotelIndex());
 
-        availRooms = selectedHotel.removableRooms();
         availDeluxeRooms = selectedHotel.removableDeluxeRooms();
         availExecRooms = selectedHotel.removableExecRooms();
 
