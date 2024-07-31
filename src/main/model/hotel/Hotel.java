@@ -118,7 +118,7 @@ public class Hotel {
      * 
      * @param newPrice the new price per night for all rooms
      */
-    private void changeRoomPrice(double newPrice) {
+    public void changeRoomPrice(double newPrice) {
         for (Room room : rooms) {
             room.setPricePerNight(newPrice);
         }
@@ -524,7 +524,7 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved rooms
      */
-    private int totalRoomsReserved() {
+    public int totalRoomsReserved() {
         int totalRooms = 0;
         totalRooms += totalBaseRoomsReserved();
         totalRooms += totalDeluxeRoomsReserved();
@@ -538,7 +538,7 @@ public class Hotel {
      * @param hotel the Hotel object to calculate the total reserved rooms
      * @return the total number of reserved standard rooms
      */
-    public int totalBaseRoomsReserved(){
+    public int totalBaseRoomsReserved() {
         int totalStandardRooms = 0;
         for (Room room : getRooms()) {
             if (room.getBookStatus())
