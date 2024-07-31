@@ -2,13 +2,10 @@
 package view;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import java.awt.*;
 import javax.swing.event.*;
-import javax.swing.text.DefaultFormatter;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 
@@ -18,19 +15,18 @@ import java.text.ParseException;
 
 import model.hotel.Hotel;
 import model.hotel.Room;
-import model.hotel.Reservation;
 
 import java.util.*;
 
 public class GUI extends JFrame {
-    private JFrame mainFrame, bookingFrame;
+    private JFrame  bookingFrame;
     private JPanel upperPanel, lowerPanel,
                    hotelHighInfoPanel, hotelLowInfoPanel, 
-                   upperLeftCreatePanel, upperRightManagePanel, lowerRightFiller, 
+                   upperLeftCreatePanel, upperRightManagePanel, 
                    guestNamePanel, checkInPanel, checkOutPanel, discountCodePanel, roomTypePanel, 
                    discountCodeFlowPanel, roomDateAvailPanel, 
                    changeHotelNamePanel1, addRoomsPanel2, removeRoomAndBookingPanel3, updateRoomPriceAndDateModifyPanel4,
-                   updateDateModifierPanel4, removeHotelPanel7;
+                   removeHotelPanel7;
     private JLabel guestLabel, checkInLabel, checkOutLabel, discountCodeLabel, earningsValueLabel,
                    totalBaseRoomsLabel, totalDeluxeRoomsLabel, totalExecRoomsLabel,
                    roomDateAvailLabel, roomInfoLabel, reservationInfoLabel,
@@ -58,15 +54,12 @@ public class GUI extends JFrame {
     private JTabbedPane lowerLeftTabbedPane;
     private DefaultListModel<Hotel> hotelListModel;
     private DefaultListModel<Room> roomDateAvailListModel;
-    private DefaultListModel<String> reservationPriceBreakdownListModel;
     private JList<Hotel> hotelJList;
     private JList<Room> roomDateAvailList;
-    private JList<String> reservationPriceBreakdownList;
     private JScrollPane roomDateAvailScrollPane;
 
     private Font currentFont, newFont;
     private NumberFormatter numberFormatter;
-    private Dimension preferredSize;
 
     private Map<String, Integer> hotelTabIndices = new HashMap<String, Integer>();
 
@@ -81,12 +74,16 @@ public class GUI extends JFrame {
                    checkOutDate = "",
                    discountCode = "";
 
+<<<<<<< HEAD
     private int totalHotels = 0, 
                 totalRooms, totalDeluxeRooms, totalBaseRooms, totalExecRooms, selectedHotelRoomSize, selectedHotelDeluxeRooms, selectedHotelExecRooms,
+=======
+    private int totalRooms, selectedHotelRoomSize, selectedHotelDeluxeRooms, selectedHotelExecRooms,
+>>>>>>> b95a4cab65962494d00e144b5fa3a67bd97456c2
                 reservationTotal = 0,
                 baseRoomOcc = 0, deluxeRoomOcc = 0, execRoomOcc = 0,
                 remainingBaseRooms, maxDeluxeRooms, remainingDeluxeRooms, 
-                maxExecRooms, remainingExecRooms, remainingRooms;
+                maxExecRooms, remainingExecRooms;
 
     private double totalHotelEarnings, bookingPrice;
 
@@ -111,7 +108,6 @@ public class GUI extends JFrame {
         upperLeftCreatePanel = new JPanel();
         upperRightManagePanel = new JPanel();
         lowerLeftTabbedPane = new JTabbedPane();
-        lowerRightFiller = new JPanel();
 
         upperRightManagePanel.setBackground(Color.LIGHT_GRAY);
         upperRightManagePanel.setOpaque(true);
@@ -123,8 +119,7 @@ public class GUI extends JFrame {
         gridBagLayoutConfig(upperPanel, upperRightManagePanel, 1, 0, 0.65, 1.0);
 
         // Lower row configuration (80/20 split)
-        gridBagLayoutConfig(lowerPanel, lowerLeftTabbedPane, 0, 0, 0.5, 1.0);
-        gridBagLayoutConfig(lowerPanel, lowerRightFiller, 1, 0, 0.5, 1.0);  
+        gridBagLayoutConfig(lowerPanel, lowerLeftTabbedPane, 0, 0, 1.0, 1.0);
         
         add(upperPanel);
         add(lowerPanel);
@@ -566,16 +561,24 @@ public class GUI extends JFrame {
         remainingBaseRooms = MAX_TOTAL_ROOMS - totalRooms;
         remainingBaseRooms = Math.max(remainingBaseRooms, 0);
     }
-
     public void setRemainingDeluxeRooms() {
+<<<<<<< HEAD
         int maxDeluxe = (int) Math.floor(remainingBaseRooms * 0.6); // 3/5 ratio
         remainingDeluxeRooms = maxDeluxe;
+=======
+        maxDeluxeRooms = (int) Math.floor(totalRooms * 0.6); // 3/5 ratio
+        remainingDeluxeRooms = maxDeluxeRooms - selectedHotelDeluxeRooms;
+>>>>>>> b95a4cab65962494d00e144b5fa3a67bd97456c2
         remainingDeluxeRooms = Math.max(remainingDeluxeRooms, 0);
     }
-    
     public void setRemainingExecRooms() {
+<<<<<<< HEAD
         int maxExec = (int) Math.floor(remainingBaseRooms * 0.4); // 2/5 ratio
         remainingExecRooms = maxExec;
+=======
+        maxExecRooms = (int) Math.floor(totalRooms * 0.4); // 2/5 ratio
+        remainingExecRooms = maxExecRooms - selectedHotelExecRooms;
+>>>>>>> b95a4cab65962494d00e144b5fa3a67bd97456c2
         remainingExecRooms = Math.max(remainingExecRooms, 0);
     }
 
@@ -939,10 +942,6 @@ public class GUI extends JFrame {
 
     public void setTotalHotelEarnings(double totalHotelEarnings) {
         this.totalHotelEarnings = totalHotelEarnings;
-    }
-
-    public void setTotalHotels(int totalHotels) {
-        this.totalHotels = totalHotels;
     }
 
     public void setTotalRooms(int totalRooms) {
@@ -1397,17 +1396,20 @@ public class GUI extends JFrame {
         earningsValueLabel.setText(" " + String.format("%.2f", totalHotelEarnings));
     }
 
-    public void updateLowLevelRoomInfo() {
-        roomInfoLabel.setText("Room Info (1-" + totalRooms + ")");
+    public void updateLowRoomReservationInfo() {
+        // ROOM
+        if (totalRooms == 1)
+            roomInfoLabel.setText("Room Info (1)");
+        else
+            roomInfoLabel.setText("Room Info (1-" + totalRooms + ")");
+        
         roomNameLabel.setText("Room Name: " + roomName);
         roomPriceLabel.setText("Room Price: " + roomPrice);
         roomOccupancyLabel.setText("Room Vacancy: ");
         roomOccupancyValueLabel.setText(roomOccupancy);
-    }
 
-    public void updateLowLevelReservationNum() {
+        // RESERVATION
         updateReservationInfoFieldFormatter(reservationTotal);
-
         if (reservationTotal >= 1) {
             reservationInfoField.setEnabled(true);
             reservationInfoBtn.setEnabled(true);
@@ -1421,9 +1423,6 @@ public class GUI extends JFrame {
             reservationInfoField.setEnabled(false);
             reservationInfoBtn.setEnabled(false);
         }
-    }
-
-    public void updateLowLevelReservationInfo() {
         reservationGuestLabel.setText("Guest Name: " + guestName);
         reservationCheckInLabel.setText("Check-In Date: " + checkInDate);
         reservationCheckOutLabel.setText("Check-Out Date: " + checkOutDate);

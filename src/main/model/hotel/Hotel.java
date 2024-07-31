@@ -926,6 +926,14 @@ public class Hotel {
                 rooms.get(roomNum).getName() + " removed!\n");
     }
 
+    /**
+     * Removes all reservations for a given guest name from the hotel.
+     * 
+     * This method iterates through all the rooms in the hotel (standard, deluxe, and executive)
+     * and removes any reservations that match the given guest name.
+     * 
+     * @param name The guest name for which to remove reservations.
+     */
     public void removeReservation(String name) {
         // Iterate through standard rooms
         removeReservationFromRooms(rooms, name);
@@ -937,6 +945,16 @@ public class Hotel {
         removeReservationFromRooms(execRooms, name);
     }
 
+    /**
+     * Removes reservations from a list of rooms based on a given guest name.
+     * 
+     * This method is a private helper method that iterates through each room's reservations,
+     * checks if the guest name matches the given name, and removes the reservation if a match is found.
+     * 
+     * @param <T>       The type of rooms, which must extend the Room class.
+     * @param rooms     The list of rooms from which to remove reservations.
+     * @param name      The guest name for which to remove reservations.
+     */
     private <T extends Room> void removeReservationFromRooms(ArrayList<T> rooms, String name) {
         for (T room : rooms) {
             Iterator<Reservation> iterator = room.getReservations().iterator();
@@ -965,6 +983,12 @@ public class Hotel {
         return totalEarnings;
     }
     
+    /**
+     * Calculates the total daily earnings of the hotel by summing up the daily earnings of all the rooms for a given day.
+     *
+     * @param day the day for which to calculate the daily earnings
+     * @return the total daily earnings of the hotel
+     */
     private double calculateDailyEarnings(int day) {
         double dailyEarnings = 0.0;
     
@@ -984,6 +1008,13 @@ public class Hotel {
         return dailyEarnings;
     }
     
+    /**
+     * Calculates the daily earnings for a specific room based on the reservations made for that room.
+     *
+     * @param room the room for which to calculate the daily earnings
+     * @param day  the day for which to calculate the daily earnings
+     * @return the daily earnings for the room
+     */
     private double calculateRoomDailyEarnings(Room room, int day) {
         double roomDailyEarnings = 0.0;
     
