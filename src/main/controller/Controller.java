@@ -86,6 +86,7 @@ public class Controller implements ActionListener, DocumentListener,
                 gui.setTotalHotels(hotelList.getHotels().size());            
 
                 updateHotelList();
+                updateCreateHotel();
                 break;
             
             case "CLEAR_HOTEL":
@@ -148,13 +149,24 @@ public class Controller implements ActionListener, DocumentListener,
                 System.out.println("Current Hotel  " + hotel.getName()); // DEBUGGING
                 hotelController.removeRoom();
                 updateRoomsToRemove(hotel);
-                
+                break;
+
+            case "UPDATE_ROOM_PRICE":
+                hotelController.updateRoomsPrice();
+                gui.updateBookingRelated();
+                break;
+
+            case "REMOVE_HOTEL":
+                hotelController.removeHotel();
+                updateHotelList();
                 break;
 
             case "FINALIZE_BOOKING":
+                hotel = hotelList.getHotels().get(hotelIndex);
                 hotelController.bookRoomForSelectedHotel();
                 updateRoomBooking();
                 updateRoomsToRemove(hotel);
+                updateReserationsToRemove(hotel);
                 break;
         }
     }
@@ -192,6 +204,70 @@ public class Controller implements ActionListener, DocumentListener,
                                             + " created successfully!",
                                             "Success", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    public void removeHotel() {
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        if (selectedHotel.totalRoomsReserved() > 0) {
+            JOptionPane.showMessageDialog(gui, "Cannot remove hotel while rooms are reserved.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int response = JOptionPane.showConfirmDialog(gui, "Remove hotel '" + hotel.getName() + "'?", 
+        "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.YES_OPTION) {
+                int secondResponse = JOptionPane.showConfirmDialog(gui, "CONFIRM REMOVAL OF '" + hotel.getName() + "'?", 
+                "Confirm Again", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (secondResponse == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }   
+
+        hotelList.getHotels().remove(gui.getSelectedHotelIndex());
+        gui.setTotalHotels(hotelList.getHotels().size());
+        gui.setCurrentHotelName(STRING_EMPTY);
+        gui.setSelectedHotelIndex(-1);
+        gui.getBackToFrontManageBtn().doClick();
+        gui.getCloseTabBtn().doClick();
+        gui.updateManageHotel();
+        updateHotelList(hotelList.getHotels());
+
+    }
+
+    public void updateRoomsPrice() {
+        selectedHotel = hotelList.getHotels().get(gui.getSelectedHotelIndex());
+
+        if (selectedHotel.totalRoomsReserved() > 0) {
+            JOptionPane.showMessageDialog(gui, "Cannot change price while rooms are reserved.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (gui.getUpdateRoomPriceField().equals("")) {
+            JOptionPane.showMessageDialog(gui, "Please enter a new price.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        double newPrice = Double.parseDouble(gui.getUpdateRoomPriceField());
+        if (newPrice < 100) {
+            JOptionPane.showMessageDialog(gui, "New Price cannot be lower than 100.0.", 
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int response = JOptionPane.showConfirmDialog(gui, "Change base price of ALL rooms to '" + newPrice + "'?", 
+                 "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                return;
+            }
+
+        selectedHotel.setNewPrice(newPrice);
+        selectedHotel.changeRoomPrice(newPrice);
+        gui.updateLowLevelRoomInfo();
+        gui.updateBookingRelated();
     }
 
     public void removeRoom() {
@@ -578,8 +654,8 @@ public class Controller implements ActionListener, DocumentListener,
 
             gui.getRoomDateAvailListModel().clear();
             gui.enableManageHotelBtn();
+            setCurrentHotelInfo(hotel);
         }
-        gui.updateManageHotel();
     }
 
     @Override
@@ -613,25 +689,7 @@ public class Controller implements ActionListener, DocumentListener,
                 System.out.println("Current Hotel List Index: " + gui.getSelectedHotelIndex());
 
                 hotel = hotelList.getHotels().get(hotelListIndex);
-                gui.setCurrentHotelName(hotel.getName());
-        
-                int totalRooms = hotel.getRooms().size() + 
-                                 hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
-                gui.setSelectedHotelName(hotel.getName());
-                gui.setSelectedHotelRoomSize(hotel.getRooms().size());
-                gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
-                gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
-                gui.setTotalHotelEarnings(hotel.calculateMonthlyEarnings());
-                
-                gui.updateRoomInfoFieldFormatter(totalRooms);
-                gui.setTotalRooms(totalRooms);
-
-                gui.updateBookingRelated();
-                gui.updateLowLevelReservationInfo();
-
-                gui.updateManageHotel();
-                gui.updateManageAllRooms();
-                updateRoomsToRemove(hotel);
+                setCurrentHotelInfo(hotel);
             } 
             else {
                 System.out.println("Selected tab not found in hotelTabIndices map");
@@ -640,6 +698,60 @@ public class Controller implements ActionListener, DocumentListener,
         else {
             System.out.println("Hotel List tab selected");
         }        
+    }
+
+    public void setCurrentHotelInfo(Hotel hotel) {
+        gui.setCurrentHotelName(hotel.getName());
+
+        int totalRooms = hotel.getRooms().size() + 
+                            hotel.getDeluxeRooms().size() + hotel.getExecRooms().size();
+        gui.setSelectedHotelName(hotel.getName());
+        gui.setSelectedHotelRoomSize(hotel.getRooms().size());
+        gui.setSelectedHotelDeluxeRoomSize(hotel.getDeluxeRooms().size());
+        gui.setSelectedHotelExecRoomSize(hotel.getExecRooms().size());
+        gui.setTotalHotelEarnings(hotel.calculateMonthlyEarnings());
+        
+        gui.updateRoomInfoFieldFormatter(totalRooms);
+        gui.setTotalRooms(totalRooms);
+
+        gui.updateBookingRelated();
+        gui.updateLowLevelReservationInfo();
+
+        gui.updateManageHotel();
+        gui.updateManageAllRooms();
+        updateRoomsToRemove(hotel);
+        
+        updateReserationsToRemove(hotel);
+    }
+
+    public void updateReserationsToRemove(Hotel hotel) {
+        ArrayList<String> allReservations = new ArrayList<String>();
+        for (Room room : hotel.getRooms()) {
+            for (Reservation reservation : room.getReservations()) {
+                allReservations.add(reservation.getRoom().getName() + ":" 
+                                +  " ("
+                                + reservation.getCheckInDate() + "-"
+                                + reservation.getCheckOutDate() + ") - "
+                                + reservation.getGuestName());
+            }
+        }
+        for (DeluxeRoom room : hotel.getDeluxeRooms()) {
+            for (Reservation reservation : room.getReservations()) {
+                allReservations.add(reservation.getGuestName());
+            }
+        }
+        for (ExecutiveRoom room : hotel.getExecRooms()) {
+            for (Reservation reservation : room.getReservations()) {
+                allReservations.add(reservation.getGuestName());
+            }
+        }
+
+        // Convert the list to a String[] array
+        String[] allReservationsArray = new String[allReservations.size()];
+        allReservationsArray = allReservations.toArray(allReservationsArray);
+
+        // Update reservations for removal
+        gui.updateReservationsForRemoval(allReservationsArray);
     }
 
     public void updateRoomsToRemove(Hotel hotel) {
